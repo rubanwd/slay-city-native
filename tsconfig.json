@@ -1,0 +1,40 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@slay/core": [
+        "./packages/core/src/index.ts"
+      ],
+      "@slay/core/*": [
+        "./packages/core/src/*"
+      ],
+      "@slay/data": [
+        "./packages/data/src/index.ts"
+      ],
+      "@slay/data/*": [
+        "./packages/data/src/*"
+      ],
+      "@slay/tokens": [
+        "./packages/tokens/src/index.ts"
+      ],
+      "@slay/tokens/*": [
+        "./packages/tokens/src/*"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "nativewind-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "upstream"
+  ]
+}

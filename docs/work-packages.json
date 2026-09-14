@@ -1,0 +1,759 @@
+{
+  "project": "SLAY CITY Native — separate-repository Expo / React Native build",
+  "scope": {
+    "in": [
+      "student",
+      "teacher",
+      "parent"
+    ],
+    "out": [
+      "admin console",
+      "signed-out demo (pending OD-7)"
+    ]
+  },
+  "totals": {
+    "engineering_days": 54.5,
+    "calendar_weeks": "12-14",
+    "work_packages": 54
+  },
+  "open_decisions": [
+    {
+      "id": "OD-1",
+      "question": "Move OpenRouter calls from Server Actions to Supabase Edge Functions",
+      "recommended": "yes",
+      "blocks": [
+        "M4",
+        "WP-5.6"
+      ]
+    },
+    {
+      "id": "OD-2",
+      "question": "Implement Sign in with Apple",
+      "recommended": "yes",
+      "blocks": [
+        "M2",
+        "WP-2.5",
+        "M7"
+      ]
+    },
+    {
+      "id": "OD-3",
+      "question": "Enter the Apple Kids Category",
+      "recommended": "no — rate 4+",
+      "blocks": [
+        "WP-7.5"
+      ]
+    },
+    {
+      "id": "OD-4",
+      "question": "Keep Google Analytics on mobile",
+      "recommended": "keep, unless OD-3 is yes",
+      "blocks": [
+        "WP-7.5"
+      ]
+    },
+    {
+      "id": "OD-5",
+      "question": "Offline depth",
+      "recommended": "read-only cache for v1",
+      "blocks": [
+        "WP-6.4"
+      ]
+    },
+    {
+      "id": "OD-6",
+      "question": "Push notifications in v1",
+      "recommended": "defer",
+      "blocks": [
+        "M6"
+      ]
+    },
+    {
+      "id": "OD-7",
+      "question": "Port the signed-out demo",
+      "recommended": "skip",
+      "blocks": [
+        "M4"
+      ]
+    }
+  ],
+  "phases": [
+    {
+      "id": "M0",
+      "name": "Foundations — new repo, snapshot, shared packages",
+      "days": 4,
+      "exit": "Drift check green, Expo app builds, zero commits to the web repo"
+    },
+    {
+      "id": "M1",
+      "name": "Mobile shell",
+      "days": 5,
+      "exit": "App opens on a real phone"
+    },
+    {
+      "id": "M2",
+      "name": "Auth & session",
+      "days": 5.5,
+      "exit": "Sign in, reset and refresh work natively"
+    },
+    {
+      "id": "M3",
+      "name": "Student core loop",
+      "days": 10,
+      "exit": "A mission completes and pays out correctly"
+    },
+    {
+      "id": "M4",
+      "name": "Student surround",
+      "days": 7,
+      "exit": "Student app feature-complete"
+    },
+    {
+      "id": "M5",
+      "name": "Teacher & parent consoles",
+      "days": 11,
+      "exit": "All three roles usable"
+    },
+    {
+      "id": "M6",
+      "name": "Polish",
+      "days": 7,
+      "exit": "60 fps on a low-end Android"
+    },
+    {
+      "id": "M7",
+      "name": "Store readiness",
+      "days": 5,
+      "exit": "Builds submitted for review"
+    },
+    {
+      "id": "M8",
+      "name": "Beta & launch",
+      "days": null,
+      "exit": "Live in both stores"
+    }
+  ],
+  "work_packages": [
+    {
+      "id": "WP-0.1",
+      "phase": "M0",
+      "title": "Repository bootstrap, Expo scaffold, on-demand upstream checkout",
+      "estimate_days": 0.5,
+      "depends_on": [],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-0.2",
+      "phase": "M0",
+      "title": "packages/core — copy pure logic, write .upstream.json manifest",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-0.1"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-0.3",
+      "phase": "M0",
+      "title": "packages/data — queries and RPC wrappers, client injected",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-0.2"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-0.4",
+      "phase": "M0",
+      "title": "packages/tokens — palette and type scale",
+      "estimate_days": 0.5,
+      "depends_on": [
+        "WP-0.1"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-0.5",
+      "phase": "M0",
+      "title": "Drift contract — check-upstream-drift.mjs, CI job, nightly",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-0.2"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-1.1",
+      "phase": "M1",
+      "title": "Expo scaffold with NativeWind and aliases",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-0.4"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-1.2",
+      "phase": "M1",
+      "title": "Nunito via expo-font, typography components",
+      "estimate_days": 0.5,
+      "depends_on": [
+        "WP-1.1"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-1.3",
+      "phase": "M1",
+      "title": "Design-system primitives",
+      "estimate_days": 2,
+      "depends_on": [
+        "WP-1.2"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-1.4",
+      "phase": "M1",
+      "title": "Icons to react-native-svg",
+      "estimate_days": 0.5,
+      "depends_on": [
+        "WP-1.1"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-1.5",
+      "phase": "M1",
+      "title": "Expo Router skeleton with role groups",
+      "estimate_days": 0.5,
+      "depends_on": [
+        "WP-1.1"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-1.6",
+      "phase": "M1",
+      "title": "Portrait lock, splash, icon",
+      "estimate_days": 0.5,
+      "depends_on": [
+        "WP-1.1"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-2.1",
+      "phase": "M2",
+      "title": "Supabase client with SecureStore and AppState refresh",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-1.1"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-2.2",
+      "phase": "M2",
+      "title": "Auth screens",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-2.1"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-2.3",
+      "phase": "M2",
+      "title": "Teacher/parent RLS audit and new RPCs",
+      "estimate_days": 1.5,
+      "depends_on": [],
+      "owner": "agent+review",
+      "parallelisable": false,
+      "lands_in": "rubanwd/slay-city"
+    },
+    {
+      "id": "WP-2.4",
+      "phase": "M2",
+      "title": "Deep links and Supabase allow-list",
+      "estimate_days": 0.5,
+      "depends_on": [
+        "WP-2.2"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-2.5",
+      "phase": "M2",
+      "title": "Google OAuth, and Apple if OD-2(a)",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-2.4"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-2.6",
+      "phase": "M2",
+      "title": "Role-based route guard",
+      "estimate_days": 0.5,
+      "depends_on": [
+        "WP-2.1"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-3.1",
+      "phase": "M3",
+      "title": "City map with pan and zoom",
+      "estimate_days": 2,
+      "depends_on": [
+        "WP-2.6"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-3.2",
+      "phase": "M3",
+      "title": "TaskRunner contract — FREEZE before fan-out",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-3.1"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-3.3",
+      "phase": "M3",
+      "title": "Tier 1 tasks — 21 tap-only components",
+      "estimate_days": 2.5,
+      "depends_on": [
+        "WP-3.2"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-3.4",
+      "phase": "M3",
+      "title": "Tier 2 tasks — 6 timed components",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-3.2"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-3.5",
+      "phase": "M3",
+      "title": "Tier 3 tasks — 3 text-input components",
+      "estimate_days": 0.5,
+      "depends_on": [
+        "WP-3.2"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-3.6",
+      "phase": "M3",
+      "title": "Tier 4 — WordSearch and SnakeGame",
+      "estimate_days": 1.5,
+      "depends_on": [
+        "WP-3.2"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-3.7",
+      "phase": "M3",
+      "title": "Reward screen and modal",
+      "estimate_days": 1.5,
+      "depends_on": [
+        "WP-3.3"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-4.1",
+      "phase": "M4",
+      "title": "Homework flows",
+      "estimate_days": 2,
+      "depends_on": [
+        "WP-3.7"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-4.2",
+      "phase": "M4",
+      "title": "Wardrobe",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-3.7"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-4.3",
+      "phase": "M4",
+      "title": "Profile and levels",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-3.7"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-4.4",
+      "phase": "M4",
+      "title": "Onboarding",
+      "estimate_days": 0.5,
+      "depends_on": [
+        "WP-2.6"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-4.5",
+      "phase": "M4",
+      "title": "Study-time tracker",
+      "estimate_days": 0.5,
+      "depends_on": [
+        "WP-3.7"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-4.6",
+      "phase": "M4",
+      "title": "Feedback with image picker",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-3.7"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-4.7",
+      "phase": "M4",
+      "title": "i18n in SecureStore",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-4.3"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-5.1",
+      "phase": "M5",
+      "title": "Teacher dashboard and groups",
+      "estimate_days": 1.5,
+      "depends_on": [
+        "WP-2.3",
+        "WP-2.6"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-5.2",
+      "phase": "M5",
+      "title": "Homework topic authoring",
+      "estimate_days": 1.5,
+      "depends_on": [
+        "WP-5.1"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-5.3",
+      "phase": "M5",
+      "title": "VocabularyManager",
+      "estimate_days": 2,
+      "depends_on": [
+        "WP-5.2"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-5.4",
+      "phase": "M5",
+      "title": "GrammarManager",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-5.2"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-5.5",
+      "phase": "M5",
+      "title": "Q&A messaging",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-5.1"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-5.6",
+      "phase": "M5",
+      "title": "AI drafting via Edge Functions",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-5.3",
+        "WP-5.4"
+      ],
+      "owner": "agent",
+      "parallelisable": false,
+      "lands_in": "rubanwd/slay-city"
+    },
+    {
+      "id": "WP-5.7",
+      "phase": "M5",
+      "title": "View-as-student without cookies",
+      "estimate_days": 0.5,
+      "depends_on": [
+        "WP-5.1"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-5.8",
+      "phase": "M5",
+      "title": "ParentDashboard",
+      "estimate_days": 1.5,
+      "depends_on": [
+        "WP-2.6"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-5.9",
+      "phase": "M5",
+      "title": "Parent profile and student linking",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-5.8"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-6.1",
+      "phase": "M6",
+      "title": "Reanimated animations",
+      "estimate_days": 1.5,
+      "depends_on": [
+        "WP-4.7",
+        "WP-5.9"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-6.2",
+      "phase": "M6",
+      "title": "Audio via expo-audio",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-4.1"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-6.3",
+      "phase": "M6",
+      "title": "Haptics",
+      "estimate_days": 0.5,
+      "depends_on": [
+        "WP-3.7"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-6.4",
+      "phase": "M6",
+      "title": "Offline caching",
+      "estimate_days": 1.5,
+      "depends_on": [
+        "WP-4.7"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-6.5",
+      "phase": "M6",
+      "title": "Performance pass",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-6.1"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-6.6",
+      "phase": "M6",
+      "title": "Accessibility",
+      "estimate_days": 0.5,
+      "depends_on": [
+        "WP-6.1"
+      ],
+      "owner": "agent",
+      "parallelisable": true
+    },
+    {
+      "id": "WP-6.7",
+      "phase": "M6",
+      "title": "Error boundaries and crash reporting",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-6.5"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-7.1",
+      "phase": "M7",
+      "title": "Apple and Google developer accounts",
+      "estimate_days": 0,
+      "depends_on": [],
+      "owner": "human",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-7.2",
+      "phase": "M7",
+      "title": "EAS Build and Submit configuration",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-7.1",
+        "WP-6.7"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-7.3",
+      "phase": "M7",
+      "title": "Bundle identifiers and versioning",
+      "estimate_days": 0.5,
+      "depends_on": [
+        "WP-7.2"
+      ],
+      "owner": "agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-7.4",
+      "phase": "M7",
+      "title": "Privacy policy, terms, data declarations",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-7.1"
+      ],
+      "owner": "human+agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-7.5",
+      "phase": "M7",
+      "title": "Kids compliance per OD-3",
+      "estimate_days": 1.5,
+      "depends_on": [
+        "WP-7.4"
+      ],
+      "owner": "human+agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-7.6",
+      "phase": "M7",
+      "title": "Store listings and screenshots",
+      "estimate_days": 1,
+      "depends_on": [
+        "WP-7.2"
+      ],
+      "owner": "human+agent",
+      "parallelisable": false
+    },
+    {
+      "id": "WP-7.7",
+      "phase": "M7",
+      "title": "TestFlight and Play internal testing",
+      "estimate_days": 0,
+      "depends_on": [
+        "WP-7.6"
+      ],
+      "owner": "human+agent",
+      "parallelisable": false
+    }
+  ],
+  "repositories": {
+    "upstream": {
+      "name": "rubanwd/slay-city",
+      "role": "live web app; owns supabase/ and the migration timeline; unchanged by this project except for the cross-repo PRs below"
+    },
+    "native": {
+      "name": "rubanwd/slay-city-native",
+      "role": "new Expo app; no supabase/ directory; packages/core is a tracked copy of upstream logic"
+    }
+  },
+  "cross_repo_work": [
+    {
+      "id": "WP-2.3",
+      "lands_in": "rubanwd/slay-city",
+      "what": "SECURITY DEFINER RPCs for teacher writes"
+    },
+    {
+      "id": "WP-5.6",
+      "lands_in": "rubanwd/slay-city",
+      "what": "draft-vocabulary and draft-grammar Edge Functions"
+    },
+    {
+      "id": "WP-2.4",
+      "lands_in": "Supabase dashboard",
+      "what": "redirect allow-list gains slaycity:// alongside the web URLs"
+    }
+  ]
+}
