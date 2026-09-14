@@ -1,6 +1,297 @@
 {
   "upstream": "https://github.com/rubanwd/slay-city",
-  "syncedAt": null,
-  "syncedFrom": null,
-  "files": []
+  "syncedAt": "2026-09-14T19:08:55Z",
+  "syncedFrom": "2ad3d161e1ec262460e4ee29404953a86b276d23",
+  "files": [
+    {
+      "local": "packages/core/src/types/database.ts",
+      "upstream": "src/types/database.ts",
+      "sha256": "a9ba5bb16ee6bb965ea8fe0ddca2a70b1e7e07942ee4f6e09b9ef763ffc75e42",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/types/index.ts",
+      "upstream": "src/types/index.ts",
+      "sha256": "117664686eead3d57c2ae9595842831bc34263dca6025c965254ea98885e9d92",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/parent/homework.test.ts",
+      "upstream": "src/features/parent/homework.test.ts",
+      "sha256": "ad6a19b561c21b4c5a3ecb19e3f98dcb79d91c32b09f9b6fea655d9562d91888",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/parent/homework.ts",
+      "upstream": "src/features/parent/homework.ts",
+      "sha256": "81aaf98c860e89ccb9641bc7cdc45ff2c25d07467aab0711cf1d0e4fcd8c89d3",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/parent/taskFamilies.ts",
+      "upstream": "src/features/parent/taskFamilies.ts",
+      "sha256": "e29d67fedf1a37cd6bcf2647533921941b4b8e85431ea454faa46efd24870a28",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/levels/levels.test.ts",
+      "upstream": "src/features/levels/levels.test.ts",
+      "sha256": "6675e5670077d67850470b1d7eb540f1fa1ee77578fb3dcbfb5859a4e019961e",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/levels/levels.ts",
+      "upstream": "src/features/levels/levels.ts",
+      "sha256": "322c5095a86d2134cf736a47e91f51caab4706fb009c0a59f4f3741a3a6779f3",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/admin/taskImageMeta.ts",
+      "upstream": "src/features/admin/taskImageMeta.ts",
+      "sha256": "ca1236f9472a447fe9083b25f87af09e60932ac818875004685b2fdf83d82062",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/admin/taskImageSlots.ts",
+      "upstream": "src/features/admin/taskImageSlots.ts",
+      "sha256": "4ad1e480ec7e06994c7d417f6338894338ac369f86572cdb063c1c944974a3bc",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/admin/taskTypes.ts",
+      "upstream": "src/features/admin/taskTypes.ts",
+      "sha256": "f65fe5abda016dab7ab4f0249cca8fdee9873adac4282944b6452db7ff0ad4e4",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/admin/userRoles.test.ts",
+      "upstream": "src/features/admin/userRoles.test.ts",
+      "sha256": "ec3e7194cfc66c944de86e869c41702642bdc1e5ce3bdffe71865eebc1c26e8d",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/admin/userRoles.ts",
+      "upstream": "src/features/admin/userRoles.ts",
+      "sha256": "f151cf2d00ae54f6e50dc7adcd96142f21899d8bb5690b8d0a13d09f998e4dc4",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/auth/roleRouting.ts",
+      "upstream": "src/features/auth/roleRouting.ts",
+      "sha256": "fda2f26ca43937f80d168432384e983300fc8a84183cf9a42810daa05abd93ea",
+      "adapted": true,
+      "note": "roleHome() only; ensureRoleProfile/resolveHomePath take a Supabase client and belong in packages/data. A drift alert touching only those two functions does not affect this file."
+    },
+    {
+      "local": "packages/core/src/features/profile/username.test.ts",
+      "upstream": "src/features/profile/username.test.ts",
+      "sha256": "6aa9b54f3d4f4560c01625fe18abc09e7c502ab34dd7e665344e64cf4d543704",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/profile/username.ts",
+      "upstream": "src/features/profile/username.ts",
+      "sha256": "e54856639343f3168dfe51b28d4a5251fbb4cfcbf644883f6fc7a5aaaa0bec9d",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/feedback/feedback.test.ts",
+      "upstream": "src/features/feedback/feedback.test.ts",
+      "sha256": "f9edec7d19d6a181c6b016dd25865001f093224e9022eaad6befaf6826d328da",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/feedback/feedback.ts",
+      "upstream": "src/features/feedback/feedback.ts",
+      "sha256": "33feff85d356822ca9de1c521eaf9d816179443cebbcde78ed63e8590d1556d0",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/mission/missionReward.test.ts",
+      "upstream": "src/features/mission/missionReward.test.ts",
+      "sha256": "4497a2d7bebb089ae2a790b9e694bdfb9aa290b5b66646bef71b893984247431",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/mission/missionReward.ts",
+      "upstream": "src/features/mission/missionReward.ts",
+      "sha256": "ca35b635f7692e09cc347189e2f7a3ba1d46c3c8ce7e0e4bec0289d008ceec5b",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/mission/snakeGrid.test.ts",
+      "upstream": "src/features/mission/snakeGrid.test.ts",
+      "sha256": "a7468f8ea7f3811fc66dae5c307f00f5a012bf220ebfed65c7795af54ea9be21",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/mission/snakeGrid.ts",
+      "upstream": "src/features/mission/snakeGrid.ts",
+      "sha256": "c7f045bd8dc721422f3f3faa9f25475908752cdddc5f2fba148b12758fad90a1",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/mission/taskUtils.ts",
+      "upstream": "src/features/mission/taskUtils.ts",
+      "sha256": "ef6022e4d2b8ae541f9b3ec46a1689e56c65bcc45ef719a4caa7c594f645adf7",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/mission/types.test.ts",
+      "upstream": "src/features/mission/types.test.ts",
+      "sha256": "df1e3333d40fef8723247d2cc07a1c2532578f6e856d9ae8205fd612b7fa46d7",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/mission/types.ts",
+      "upstream": "src/features/mission/types.ts",
+      "sha256": "c725a533858ed367be8c96d384975e09db009ed14f74f5cb5c0030cdc73cc272",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/mission/wordPuzzle.test.ts",
+      "upstream": "src/features/mission/wordPuzzle.test.ts",
+      "sha256": "600a04b4c6068bdaa78fbdbbf23e626a8674fac81630fa5ca3152fc2bfc64018",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/mission/wordPuzzle.ts",
+      "upstream": "src/features/mission/wordPuzzle.ts",
+      "sha256": "0f81a4362c80986c4d38311ad66c77c46b5a21f266b8a2a6117ee80acad0488f",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/teacher/topicSources.test.ts",
+      "upstream": "src/features/teacher/topicSources.test.ts",
+      "sha256": "db718e7fdcf53bd9872fafc17e24f310260d37044fc506fb8ba2964f137d960f",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/teacher/topicSources.ts",
+      "upstream": "src/features/teacher/topicSources.ts",
+      "sha256": "10da8b79891de641a11cef8bb50e72cded1b3d54fc8f4978cd856fd4d1c60fd4",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/map/mapConstants.ts",
+      "upstream": "src/features/map/mapConstants.ts",
+      "sha256": "23f1d73383962bfc26f046b7613b58bda6bb321bb5174987dea20580b584aa16",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/map/mapState.test.ts",
+      "upstream": "src/features/map/mapState.test.ts",
+      "sha256": "22781b2444f9a61500ae6407d53125b9ea570001c5d793481a509589ccb68b78",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/map/mapState.ts",
+      "upstream": "src/features/map/mapState.ts",
+      "sha256": "700f858ef086703cad554ba7bb3698df6cefc3eb6b850be037bccfb2bac7c999",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/demo/demoProgress.test.ts",
+      "upstream": "src/features/demo/demoProgress.test.ts",
+      "sha256": "94e86cc85077772261e41492fd2a0903c5a0dc1c1c9c8b5d16d2648fa80df326",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/demo/demoProgress.ts",
+      "upstream": "src/features/demo/demoProgress.ts",
+      "sha256": "864e0063601333fa0405913eafc564079e73b64f887b68ca72148f655f90a9b0",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/study/studyTime.test.ts",
+      "upstream": "src/features/study/studyTime.test.ts",
+      "sha256": "98ab2b74a8145c2a3cd7b2d1c9f81cdac48c79064877a9268a53e37a3891588d",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/study/studyTime.ts",
+      "upstream": "src/features/study/studyTime.ts",
+      "sha256": "9e6073342537f4fe289ab33a62540cbf1d8f9ab2cb09043e4089792fc703b0fb",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/i18n/index.ts",
+      "upstream": "src/features/i18n/index.ts",
+      "sha256": "64cab1183067e113a1d2f9d17b5939acec14e653855661a822d1254b943fb77c",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/i18n/locales.test.ts",
+      "upstream": "src/features/i18n/locales.test.ts",
+      "sha256": "8406f556d4749b58a4a093c58b4b27d3c78179cbb40bcfbc91690719e9a5257a",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/i18n/locales.ts",
+      "upstream": "src/features/i18n/locales.ts",
+      "sha256": "6914f563f8a01126fb4edb5874454ea41556a5ebfd6668faf3eca8bdbf3e1944",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/i18n/messages.ts",
+      "upstream": "src/features/i18n/messages.ts",
+      "sha256": "16e23f2e039532de25f29b3261577a6266b96180a0bacfcdd77bfb6f0df0db15",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/i18n/plural.test.ts",
+      "upstream": "src/features/i18n/plural.test.ts",
+      "sha256": "e49b0fb585e38233773d925d5e544e249b275b1eb9205561aa2b5f90e4358f06",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/i18n/plural.ts",
+      "upstream": "src/features/i18n/plural.ts",
+      "sha256": "ca8ed063e77e6bb1e76a0f807bebe3b38b46692da8eb85887c7f149dc0420153",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/i18n/messages/en.ts",
+      "upstream": "src/features/i18n/messages/en.ts",
+      "sha256": "371fcd360eed3cd261bdb9748935b15b27c483a8d0b9cfec994fc5ee0a3a9235",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/i18n/messages/ru.ts",
+      "upstream": "src/features/i18n/messages/ru.ts",
+      "sha256": "73f4ab3d344a5146933368aef0ba17522efa72abd7bce98d2076f68b079457a2",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/i18n/messages/uk.ts",
+      "upstream": "src/features/i18n/messages/uk.ts",
+      "sha256": "0864622cb69c6dd633dd0615eb2d7b4f9356a31059a89efe89ecf37cfb635c09",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/wardrobe/categories.ts",
+      "upstream": "src/features/wardrobe/categories.ts",
+      "sha256": "4ed3648c1929d944867fb87429b1994f1254e5da74ebd114a4c568b4addd5ff5",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/wardrobe/mascot.ts",
+      "upstream": "src/features/wardrobe/mascot.ts",
+      "sha256": "b331dc8b50fa95516020875af1adc0393fbba1a687c8a9af3a10d634a6377ba9",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/lib/hiss.test.ts",
+      "upstream": "src/lib/hiss.test.ts",
+      "sha256": "4216011c8f8098cff7fd29cc8db202a9dc209a73e414a5b76d9518ce2e4ec302",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/lib/hiss.ts",
+      "upstream": "src/lib/hiss.ts",
+      "sha256": "aff4bdf286054ac8d7f6a519357de3ae5e00b0155c9b25e44471ca2ac1f4aff6",
+      "adapted": true,
+      "note": "Synthesis maths only; playSnakeHiss drives the Web Audio API and becomes an expo-audio player in WP-6.2. A drift alert inside playSnakeHiss belongs in the platform adapter."
+    }
+  ]
 }
