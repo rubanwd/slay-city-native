@@ -90,7 +90,12 @@ judgement call.
 
 ### Resolving drift
 
-1. Read the upstream change. `git -C upstream log -p -- <upstream path>`
+1. Read the upstream change. `diff -u <local file> upstream/<upstream path>` —
+   this needs no git history and answers the question directly: what differs from
+   the copy we hold. `fetch-upstream.mjs` makes a **shallow** clone, so
+   `git -C upstream log` sees nothing before its tip; when you do want the
+   commits and their messages, deepen it first with
+   `git -C upstream fetch --depth=100 origin main`.
 2. **Not adapted, logic changed** → copy the file, run the tests, update the hash.
 3. **Not adapted, cosmetic only** → copy it anyway. Divergence for style reasons is
    how real divergence gets hidden.

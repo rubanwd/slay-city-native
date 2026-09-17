@@ -100,9 +100,15 @@ async function main() {
       console.log(dim(`    upstream: ${entry.upstream}`));
       if (entry.note) console.log(dim(`    note: ${entry.note}`));
     }
-    console.log(dim("\n  Review each change:"));
-    console.log(dim("    git -C <upstream> log -p -- <upstream path>"));
-    console.log(dim("  Then copy it across (or hand-apply it, if adapted), run the"));
+    // `git log` is deliberately not suggested here: fetch-upstream.mjs makes a
+    // shallow clone, so history before its tip is absent and the command fails.
+    // A plain diff needs no history and answers the actual question — what is
+    // different from the copy we hold.
+    console.log(dim("\n  See what changed:"));
+    console.log(dim("    diff -u <local> <upstream>/<upstream path>"));
+    console.log(dim("  For the commits behind it, deepen the shallow checkout first:"));
+    console.log(dim("    git -C upstream fetch --depth=100 origin main"));
+    console.log(dim("\n  Then copy it across (or hand-apply it, if adapted), run the"));
     console.log(dim("  tests, and update the sha256 in the manifest."));
     console.log(dim("  Resolution rules: docs/SYNC.md §4."));
   }

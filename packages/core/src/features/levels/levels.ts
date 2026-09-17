@@ -17,7 +17,7 @@ export const KNOWLEDGE_LEVELS = [
   "upper_intermediate",
 ] as const satisfies readonly KnowledgeLevel[];
 
-/** The level every profile and district starts on — the only one with content today. */
+/** The level every profile and district starts on, and the first one that got content. */
 export const DEFAULT_KNOWLEDGE_LEVEL: KnowledgeLevel = "elementary";
 
 /** Human-readable names, used in every level picker and admin heading. */

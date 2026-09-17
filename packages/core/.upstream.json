@@ -1,7 +1,7 @@
 {
   "upstream": "https://github.com/rubanwd/slay-city",
-  "syncedAt": "2026-09-14T19:08:55Z",
-  "syncedFrom": "2ad3d161e1ec262460e4ee29404953a86b276d23",
+  "syncedAt": "2026-09-17T15:14:07Z",
+  "syncedFrom": "21b4d87c880185f58ff85a5b32c1a88b50877741",
   "files": [
     {
       "local": "packages/core/src/types/database.ts",
@@ -42,7 +42,7 @@
     {
       "local": "packages/core/src/features/levels/levels.ts",
       "upstream": "src/features/levels/levels.ts",
-      "sha256": "322c5095a86d2134cf736a47e91f51caab4706fb009c0a59f4f3741a3a6779f3",
+      "sha256": "064128f75e19afc39f1fc213af43273e5b1e3e7f8ee64d9b9f1fe5259f76a988",
       "adapted": false
     },
     {
