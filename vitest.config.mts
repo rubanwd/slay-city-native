@@ -16,6 +16,7 @@ export default defineConfig({
     alias: {
       // Mirrors tsconfig: the copied modules import each other as "@/…".
       "@/": `${r("./packages/core/src")}/`,
+      "@slay/core/types": r("./packages/core/src/types/index.ts"),
       "@slay/core": r("./packages/core/src/index.ts"),
       "@slay/data": r("./packages/data/src/index.ts"),
       "@slay/tokens": r("./packages/tokens/src/index.ts"),
