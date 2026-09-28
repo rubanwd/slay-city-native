@@ -9,6 +9,7 @@ web-build/
 *.key
 *.mobileprovision
 .DS_Store
+.env
 .env*.local
 npm-debug.*
 yarn-debug.*
