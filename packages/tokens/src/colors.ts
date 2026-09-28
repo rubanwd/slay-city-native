@@ -24,6 +24,12 @@ export const semantic = {
   foreground: colors.white,
   accent: colors.neonPink,
   highlight: colors.limeGreen,
+  /**
+   * Raised surface — the web's SlayCard background. Upstream writes it as a raw
+   * `bg-[#1a1a1a]` rather than a token; it is named here so this repository
+   * never has to. A neutral, not an addition to the locked brand palette.
+   */
+  surface: "#1A1A1A",
 } as const;
 
 export type ColorName = keyof typeof colors;
