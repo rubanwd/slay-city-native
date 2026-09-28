@@ -55,3 +55,111 @@ export function letterSpacing(token: keyof typeof letterSpacingEm, size: number)
 export const fontFamily = {
   primary: "Nunito",
 } as const;
+
+/**
+ * Maps each numeric weight to the specific Nunito font file loaded via
+ * `@expo-google-fonts/nunito`. React Native has no `font-weight` fake-bolding for
+ * custom fonts — the family name itself carries the weight.
+ */
+export const fontFamilyByWeight: Record<(typeof fontWeight)[keyof typeof fontWeight], string> = {
+  "400": "Nunito_400Regular",
+  "500": "Nunito_500Medium",
+  "600": "Nunito_600SemiBold",
+  "700": "Nunito_700Bold",
+  "800": "Nunito_800ExtraBold",
+  "900": "Nunito_900Black",
+};
+
+/**
+ * `SlayText`'s eight variants, one row per `src/styles/typography.css` class. `vw`
+ * is the clamp's fluid percentage — `fluidFontSize` reproduces
+ * `clamp(min, vw/100 * width, max)` at a given viewport width, in points.
+ *
+ * At the 390pt design width every variant lands on its `min`, per design/SCN-5.
+ */
+export const typeScale = {
+  display: {
+    min: 40,
+    vw: 10,
+    max: 64,
+    weight: fontWeight.black,
+    lineHeightRatio: lineHeight.tight,
+    letterSpacingEm: letterSpacingEm.tight,
+    uppercase: false,
+  },
+  h1: {
+    min: 28,
+    vw: 7,
+    max: 40,
+    weight: fontWeight.extrabold,
+    lineHeightRatio: lineHeight.tight,
+    letterSpacingEm: letterSpacingEm.tight,
+    uppercase: false,
+  },
+  h2: {
+    min: 20,
+    vw: 5,
+    max: 28,
+    weight: fontWeight.bold,
+    lineHeightRatio: lineHeight.snug,
+    letterSpacingEm: letterSpacingEm.normal,
+    uppercase: false,
+  },
+  h3: {
+    min: 16,
+    vw: 4,
+    max: 20,
+    weight: fontWeight.bold,
+    lineHeightRatio: lineHeight.snug,
+    letterSpacingEm: letterSpacingEm.normal,
+    uppercase: false,
+  },
+  body: {
+    min: 14,
+    vw: 3.5,
+    max: 16,
+    weight: fontWeight.regular,
+    lineHeightRatio: lineHeight.normal,
+    letterSpacingEm: letterSpacingEm.normal,
+    uppercase: false,
+  },
+  bodyStrong: {
+    min: 14,
+    vw: 3.5,
+    max: 16,
+    weight: fontWeight.semibold,
+    lineHeightRatio: lineHeight.normal,
+    letterSpacingEm: letterSpacingEm.normal,
+    uppercase: false,
+  },
+  small: {
+    min: 12,
+    vw: 3,
+    max: 14,
+    weight: fontWeight.medium,
+    lineHeightRatio: lineHeight.snug,
+    letterSpacingEm: letterSpacingEm.normal,
+    uppercase: false,
+  },
+  label: {
+    min: 10,
+    vw: 2.5,
+    max: 12,
+    weight: fontWeight.bold,
+    lineHeightRatio: lineHeight.snug,
+    letterSpacingEm: letterSpacingEm.widest,
+    uppercase: true,
+  },
+} as const;
+
+export type TextVariant = keyof typeof typeScale;
+
+/**
+ * Reproduces the web's `clamp(min, vw, max)` fluid font size at a concrete
+ * viewport width, in points. Pass `useWindowDimensions().width`.
+ */
+export function fluidFontSize(variant: TextVariant, width: number): number {
+  const { min, vw, max } = typeScale[variant];
+  const preferred = (vw / 100) * width;
+  return Math.min(Math.max(min, preferred), max);
+}

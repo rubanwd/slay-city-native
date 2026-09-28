@@ -13,6 +13,7 @@ const colors = {
   "neon-orange": "#FF8A00",
   black: "#111111",
   white: "#FFFFFF",
+  surface: "#1A1A1A",
 };
 
 module.exports = {
