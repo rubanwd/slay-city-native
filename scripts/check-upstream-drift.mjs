@@ -29,7 +29,13 @@ function parseArgs(argv) {
   return { upstream: resolve(argv[i + 1]) };
 }
 
-const sha256 = (buf) => createHash("sha256").update(buf).digest("hex");
+// Manifest hashes are computed against the content Git actually stores (LF line
+// endings), not whatever a given checkout produces on disk. A machine with
+// core.autocrlf=true (the Windows default) checks files out with CRLF, which
+// would otherwise hash differently from the same file on a LF checkout and
+// report every tracked file as drifted. Normalizing first keeps the check
+// deterministic across platforms.
+const sha256 = (buf) => createHash("sha256").update(buf.toString("utf8").replace(/\r\n/g, "\n")).digest("hex");
 
 /** ANSI colour, suppressed when not a TTY or when NO_COLOR is set. */
 const useColor = process.stdout.isTTY && !process.env.NO_COLOR;
