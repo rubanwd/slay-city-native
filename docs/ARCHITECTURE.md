@@ -146,10 +146,13 @@ key from an `.ipa` in minutes. These move to Edge Functions:
 The secret moves from Vercel env vars to Supabase Secrets. The web's Server Actions
 become thin callers of the same functions, so there is one implementation, not two.
 
-> **Requires product-owner approval.** The root `AGENTS.md` lists *"The decision to
-> call OpenRouter exclusively from Next.js Server Actions"* under **What Not to
-> Change Without Permission**. There is no way to ship AI drafting to a mobile
-> teacher console without changing it. See Open Decision **OD-1**.
+> **✅ Approved 2026-09-29 — OD-1(a).** The root `AGENTS.md` lists *"The decision
+> to call OpenRouter exclusively from Next.js Server Actions"* under **What Not
+> to Change Without Permission**. There is no way to ship AI drafting to a
+> mobile teacher console without changing it, because the API key cannot ship in
+> a mobile binary. The amendment lands in the web repository alongside the
+> functions. Full plan, signatures, error taxonomy and rate limiting:
+> [EDGE-FUNCTIONS-PLAN.md](EDGE-FUNCTIONS-PLAN.md).
 
 ### Category D — not ported
 
@@ -247,7 +250,7 @@ Blocking. Each needs an explicit answer before the phase that depends on it star
 
 | ID | Decision | Options | Blocks |
 | --- | --- | --- | --- |
-| **OD-1** | Move OpenRouter calls out of Server Actions into Edge Functions | (a) Yes — one implementation, both platforms. **Recommended.** (b) No — teacher AI drafting is web-only, mobile teachers author manually | M4 |
+| ~~**OD-1**~~ | ~~Move OpenRouter calls out of Server Actions into Edge Functions~~ | ✅ **APPROVED (a)** 2026-09-29 — *the API key cannot ship in a mobile binary.* Plan: [EDGE-FUNCTIONS-PLAN.md](EDGE-FUNCTIONS-PLAN.md) | ~~M4~~ released |
 | **OD-2** | Sign in with Apple | (a) Implement it — keeps Google everywhere. **Recommended.** (b) Hide Google on iOS, email/password only there | M2, M7 |
 | **OD-3** | Apple Kids Category | (a) Enter it — better discovery, but bans third-party analytics and needs a parental gate. (b) Stay out, rate 4+. **Recommended** — Google Analytics is already wired in via `@next/third-parties` | M7 |
 | **OD-4** | Analytics on mobile | (a) Drop GA on mobile. **Recommended if OD-3(a).** (b) Keep it | M6 |

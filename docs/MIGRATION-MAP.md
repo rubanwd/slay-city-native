@@ -99,6 +99,14 @@ exist on a phone. **Audit RLS, then wrap.** See `WP-2.3`.
 | `teacher/openRouterChat.ts`, `vocabularyPrompt.ts`, `grammarPrompt.ts` | `supabase/functions/draft-vocabulary/`, `draft-grammar/` |
 | `admin/openRouterImage.ts`, `generateTaskImage.ts`, `generateLocationIcon.ts`, `generateMapBackground.ts` | `supabase/functions/generate-image/` — web-only caller, but the key must move regardless |
 
+**OD-1 approved 2026-09-29.** Full plan — signatures, error taxonomy, rate
+limiting and the native call path — in
+[EDGE-FUNCTIONS-PLAN.md](EDGE-FUNCTIONS-PLAN.md) §3.1, which also corrects the
+"6 files" count above: `teacher/vocabularyActions.ts` and
+`teacher/grammarActions.ts` are missing from this row, and
+`admin/openRouterImage.ts` belongs to the *teacher* set too, because
+`generateWordImage()` imports it directly.
+
 ## 3. Routes → Expo Router 🔵
 
 | Next.js App Router | Expo Router |

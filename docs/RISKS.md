@@ -155,9 +155,10 @@ A mobile binary is not a secret store. `OPENROUTER_API_KEY` shipped in an `.ipa`
 `.aab` is extractable in minutes and bills to your account.
 
 **Mitigation:** the key never enters this repository. AI generation goes through Edge
-Functions (`OD-1`). `WP-5.6` includes an explicit acceptance check: grep the built
-binary for the key and for `openrouter.ai`. The Edge Functions themselves land in the
-web repository, which owns `supabase/`.
+Functions (`OD-1` — **approved 2026-09-29**). `WP-5.6` includes an explicit acceptance
+check: grep the built binary for the key and for `openrouter.ai`. The Edge Functions
+themselves land in the web repository, which owns `supabase/`. Signatures, error
+taxonomy and rate limiting: [EDGE-FUNCTIONS-PLAN.md](EDGE-FUNCTIONS-PLAN.md).
 
 ## R10 — Text input on native 🟢 low, but noticeable
 

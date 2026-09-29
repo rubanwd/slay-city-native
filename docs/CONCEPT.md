@@ -203,7 +203,9 @@ in the project and it gates the entire teacher console, so it starts in week 1.
 `.ipa`. AI drafting moves behind `draft-vocabulary` and `draft-grammar` Edge
 Functions, which live in the **web repository's** `supabase/functions/`.
 
-This changes a rule the root `AGENTS.md` locks. See open decision **OD-1**.
+This changes a rule the root `AGENTS.md` locks. **OD-1 is approved** (2026-09-29)
+— the key cannot ship in a mobile binary. See
+[EDGE-FUNCTIONS-PLAN.md](EDGE-FUNCTIONS-PLAN.md).
 
 ## 7. Technology
 
@@ -260,7 +262,7 @@ lists under *What Not to Change Without Permission*.
 
 | ID | Decision | Recommendation | Blocks |
 | --- | --- | --- | --- |
-| **OD-1** 🔒 | Move OpenRouter calls into Edge Functions | Yes — the key cannot ship in a binary | M4, WP-5.6 |
+| ~~**OD-1** 🔒~~ | ~~Move OpenRouter calls into Edge Functions~~ | ✅ **APPROVED** 2026-09-29 — the key cannot ship in a binary | ~~M4, WP-5.6~~ released |
 | **OD-2** 🔒 | Implement Sign in with Apple | Yes — Guideline 4.8 requires it wherever Google sign-in exists | M2, M7 |
 | **OD-3** | Enter the Apple Kids Category | No — rate 4+; the category bans third-party analytics | WP-7.5 |
 | **OD-4** | Keep Google Analytics on mobile | Keep, unless OD-3 is yes | WP-7.5 |

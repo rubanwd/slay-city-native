@@ -136,6 +136,14 @@ No data fetching and no business logic inside `app/`.
   user; anything the client could decide, a user could forge.
 - **No secrets in the bundle.** No `OPENROUTER_API_KEY`, no service-role key, ever.
   The anon key is public by design and is the only key allowed.
+  > **Explicit override of the root manual — `OD-1`, approved 2026-09-29.** The
+  > web repository's `AGENTS.md` locks *"the decision to call OpenRouter
+  > exclusively from Next.js Server Actions"*. AI drafting calls
+  > `draft-vocabulary` / `draft-grammar` / `generate-image` Edge Functions
+  > instead, because the API key cannot ship in a mobile binary. The amendment
+  > to the root manual lands in the **web** repository with the functions; this
+  > repository never holds the key either way. See
+  > [docs/EDGE-FUNCTIONS-PLAN.md](docs/EDGE-FUNCTIONS-PLAN.md).
 - Privileged work happens in a `SECURITY DEFINER` RPC or an Edge Function that
   re-checks the caller's role in SQL. A client-side role check is a UX affordance,
   never an authorisation.

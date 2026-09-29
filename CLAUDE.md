@@ -25,7 +25,10 @@ browser for the same mission. `packages/core/.upstream.json` records what is
 tracked; `npm run upstream:check` fails when upstream moves.
 
 There is no `supabase/` directory here on purpose. The web repository owns the
-migration timeline — new RPCs and Edge Functions go there as pull requests.
+migration timeline — new RPCs and Edge Functions go there as pull requests. The
+two staged for it are [docs/MIGRATIONS-NEEDED.md](docs/MIGRATIONS-NEEDED.md)
+(teacher RLS) and [docs/EDGE-FUNCTIONS-PLAN.md](docs/EDGE-FUNCTIONS-PLAN.md)
+(OpenRouter AI drafting — `OD-1` approved, the key never ships in the binary).
 
 ## Commands
 

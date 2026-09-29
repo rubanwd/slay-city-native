@@ -255,7 +255,7 @@ that re-checks the caller's role in SQL.
 | `WP-5.3` | `VocabularyManager` | 2d | The 632-LOC component's full feature set, including per-word images from Storage; images optional, per the existing behaviour; long lists virtualised |
 | `WP-5.4` | `GrammarManager` | 1d | Full feature set of the 383-LOC component |
 | `WP-5.5` | Q&A messaging | 1d | `get_topic_messages`; unread counts correct; a teacher cannot post as another teacher (negative test) |
-| `WP-5.6` | AI drafting | 1d | Edge Functions land upstream in `rubanwd/slay-city`; this repo only calls them.  **no OpenRouter key in the bundle** — verified by grepping the built binary; failures degrade to manual authoring. *Skipped under OD-1(b).* |
+| `WP-5.6` | AI drafting | 1d | Edge Functions land upstream in `rubanwd/slay-city`; this repo only calls them.  **no OpenRouter key in the bundle** — verified by grepping the built binary; failures degrade to manual authoring. **OD-1 approved** — specified in [EDGE-FUNCTIONS-PLAN.md](EDGE-FUNCTIONS-PLAN.md), upstream PR staged in [UPSTREAM-PR-WP-5.6.md](UPSTREAM-PR-WP-5.6.md). |
 | `WP-5.7` | View-as-student | 0.5d | Works without cookies; clearly indicated on screen; cannot be entered by a non-teacher; exiting restores the teacher view |
 | `WP-5.8` | `ParentDashboard` | 1.5d | Progress, streaks, study time and homework summary match the web for the same student; readable at 390 pt without horizontal scrolling |
 | `WP-5.9` | Parent profile & linking | 1d | `link_student_by_email` works; a parent sees only linked students; the parent console is fully translated, per `AGENTS.md` |

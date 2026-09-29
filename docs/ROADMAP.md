@@ -35,7 +35,7 @@ M0 ── M1 ── M2 ──┬── M3 ── M4 ──┐
    (RLS audit, upstream PR)
 
 WP-7.1 (dev accounts) ─── start at M0, needed by M7
-OD-1, OD-2 answered ───── needed by M4, M2
+OD-2 answered ─────────── needed by M2   (OD-1 answered 2026-09-29 ✅)
 ```
 
 Two things must start earlier than their phase:
@@ -55,7 +55,7 @@ such.
 | Package | What lands upstream | Why it cannot live here |
 | --- | --- | --- |
 | `WP-2.3` | New `SECURITY DEFINER` RPCs for teacher writes | The web repo owns `supabase/migrations/` and its CI applies them |
-| `WP-5.6` | `draft-vocabulary`, `draft-grammar` Edge Functions | Same — plus the web's Server Actions become callers, so one implementation serves both apps |
+| `WP-5.6` | `draft-vocabulary`, `draft-grammar` Edge Functions | Same — plus the web's Server Actions become callers, so one implementation serves both apps. Specified in [EDGE-FUNCTIONS-PLAN.md](EDGE-FUNCTIONS-PLAN.md); PR staged in [UPSTREAM-PR-WP-5.6.md](UPSTREAM-PR-WP-5.6.md) |
 | `WP-2.4` | Nothing in code — a Supabase dashboard change | The redirect allow-list gains `slaycity://` **alongside** the web URLs |
 
 Everything else is confined to `slay-city-native`.
@@ -150,7 +150,7 @@ each of the 32 task types, sees the reward, and the XP and coins in Supabase mat
 what the web app grants for the same mission.
 
 ## M4 — Student surround
-**7 days · needs M3 · needs OD-1 and OD-7 answered**
+**7 days · needs M3 · needs OD-7 answered** (OD-1 answered ✅)
 
 `WP-4.1` homework · `WP-4.2` wardrobe · `WP-4.3` profile and levels ·
 `WP-4.4` onboarding · `WP-4.5` study-time tracker · `WP-4.6` feedback ·
@@ -160,7 +160,8 @@ what the web app grants for the same mission.
 student app is feature-complete against the web app.
 
 ## M5 — Teacher & parent consoles
-**11 days · needs M2 and WP-2.3 merged upstream · needs OD-1 answered**
+**11 days · needs M2 and WP-2.3 merged upstream · OD-1 answered ✅ — `WP-5.6` now
+needs the [upstream PR](UPSTREAM-PR-WP-5.6.md) merged**
 
 `WP-5.1` dashboard and groups · `WP-5.2` topic authoring · `WP-5.3`
 `VocabularyManager` · `WP-5.4` `GrammarManager` · `WP-5.5` Q&A ·
