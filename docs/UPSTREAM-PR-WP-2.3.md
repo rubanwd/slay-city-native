@@ -10,7 +10,13 @@
 > Server Actions themselves, staged in
 > [`docs/migrations/wp-2.3/thin-callers/`](migrations/wp-2.3/thin-callers/README.md),
 > ready to copy over the matching paths in the web repo's `src/`. `AC5` is met
-> once both are on the same branch.
+> once both are on the same branch. `SCN-13` hardened the negative-test
+> harness itself: `tests/fixtures.sql` replaces the old "fill in these ids by
+> hand" block, an `anon`-role section was added alongside the existing
+> student/non-owning-teacher/owning-teacher ones, and
+> [`ci-database-tests.yml`](migrations/wp-2.3/ci-database-tests.yml) stages the
+> job to merge into the web repo's CI so the suite runs on every push instead
+> of only when someone remembers to run it by hand.
 >
 > Audit that specified it: [MIGRATIONS-NEEDED.md](MIGRATIONS-NEEDED.md) and the
 > operation-by-operation reference
@@ -273,7 +279,7 @@ backfill or cleanup is needed before applying it.
 
 ### Test plan
 
-- [ ] `tests/negative-tests.sql` run in full against a branch database with 1/4–5/5 applied: every check prints `PASS`, nothing prints `FAIL`. (With 5/5 held back, §11 prints `SKIP 11` and the rest still passes.)
+- [ ] `tests/negative-tests.sql` run in full against a branch database with 1/4–5/5 applied: every check prints `PASS`, nothing prints `FAIL`. (With 5/5 held back, §11 prints `SKIP 11` and the rest still passes.) As of `SCN-13` this needs no manual fixture setup — it includes `tests/fixtures.sql` itself — and the same run is wired into CI via `ci-database-tests.yml`, so this box is really "confirm the new CI job is green," not a manual run.
 - [ ] §5a run against **production before** the migration, to confirm finding F1 is real and not an artefact of the migration timeline (unknown U-1): the forged `user_stats` insert is expected to *succeed* there.
 - [ ] `select count(*) from public.homework_topic_messages where btrim(body) = '' or char_length(body) > 2000;` returns `0` before applying 2/4 — the `validate constraint` step will fail loudly otherwise.
 - [ ] `select p.id from public.profiles p left join public.user_stats s on s.profile_id = p.id where s.id is null and p.role in ('student','parent');` recorded before and after 3/4, so the backfill's effect is a number and not a hope.
@@ -315,6 +321,7 @@ run.
 
 - [x] `profiles.age` answered (F2 / U-6) — resolved on `SCN-11-1`: widen to 5–99, `…0005_widen_profile_age_range.sql`
 - [x] Thin callers written (`AC5`) — resolved on `SCN-12`: staged in `docs/migrations/wp-2.3/thin-callers/`, not yet run against the web repo's own `vitest` (see that directory's `README.md`)
+- [x] Negative tests hardened and CI-wired (`SCN-13`) — `tests/fixtures.sql` replaces manual id fill-in, an `anon`-role section (§0) was added, and `ci-database-tests.yml` stages the job for `.github/workflows/ci.yml`; not yet merged into the web repo's own CI (see `docs/migrations/wp-2.3/README.md#ci`)
 - [ ] Live database compared against the migration timeline (U-1): `select * from pg_policies where tablename in ('homework_topics','homework_vocab_words','homework_vocab_tasks','homework_grammar_points','homework_grammar_tasks','vocab_image_cache','homework_topic_messages','homework_topic_reads','profiles','user_stats');` and `select grantee, privilege_type from information_schema.role_table_grants where table_name = 'user_stats';`
 - [ ] Q&A moderation by the owning teacher confirmed as intended (U-4) — it is preserved here, and `tests/negative-tests.sql` §9c is the check that changes if it is not
 - [ ] Forged `user_stats` values audited (U-3) and a clean-up decided

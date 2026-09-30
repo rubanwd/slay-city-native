@@ -19,7 +19,10 @@
 | `20260930000003_onboarding_profile_rpc.sql` | `create_my_profile`, the `user_stats` trigger, the stranded-profile backfill (W-21, W-22) | `down/…_onboarding_profile_rpc_down.sql` |
 | `20260930000004_revoke_direct_write_grants.sql` | removes `authenticated`'s write grants on the eight audited tables | `down/…_revoke_direct_write_grants_down.sql` |
 | `20260930000005_widen_profile_age_range.sql` | widens `profiles.age`'s CHECK from 7–14 to 5–99 (decision recorded on `SCN-11-1`) | `down/…_widen_profile_age_range_down.sql` |
+| `tests/bootstrap.sql` | nothing to the target database — run against a *fresh* one first, see [Verifying](#verifying) | n/a |
+| `tests/fixtures.sql` | nothing — included by `negative-tests.sql`, rolled back with it | n/a |
 | `tests/negative-tests.sql` | nothing — one transaction that ends in `ROLLBACK` | n/a |
+| `ci-database-tests.yml` | nothing — a CI job to merge into the web repo's `.github/workflows/ci.yml`, see [CI](#ci) | n/a |
 
 `W` ids refer to the operation inventory in the audit that specified this work:
 `docs/native-app/DIRECT-WRITES.md` upstream, mirrored here as
@@ -59,17 +62,65 @@ Two things the rollbacks deliberately do not undo:
 
 ## Verifying
 
-`tests/negative-tests.sql` is the evidence for `AC3` and `AC4`. Fill in the
-fixture ids at the top, run the whole file, read the notices. It fakes
-`request.jwt.claims` and `set local role authenticated` — the same role and
-claim shape PostgREST gives a signed-in request — so it exercises the grants
-and policies a real client meets, not a superuser's view of them.
+`tests/negative-tests.sql` is the evidence for `AC3` and `AC4`, hardened with
+explicit CI regression coverage on `SCN-13`. It fakes `request.jwt.claims` and
+`set local role authenticated` (or, for the unauthenticated case, `anon`) —
+the same role and claim shape PostgREST gives a real request — so it exercises
+the grants and policies a real client meets, not a superuser's view of them.
+Section 0 covers `anon` (no session at all), sections 1–3 a `student`, section
+6 a **non-owning teacher** (`AC4`, the cross-group-isolation case), and
+section 7 the owning teacher's flows, to prove the boundary doesn't also
+reject the caller it's supposed to let through.
 
-Sections 4 and 5 assert the revokes and therefore need 4/4 applied. Section 5a
-is worth running against production **before** the migration too: there it is
-expected to succeed, and that success is finding F1.
+As of `SCN-13` nothing needs filling in by hand: `tests/fixtures.sql` creates
+its own rows and `negative-tests.sql` pulls it in itself (`\ir fixtures.sql`).
+Run it against a *fresh* database that has replayed the whole migration
+timeline — `tests/bootstrap.sql` first (the roles, schemas and `auth`/`storage`
+stand-ins a plain `postgres:16-alpine` container doesn't have; see
+[[upstream-schema-replays-on-stock-postgres]] in project memory for how this
+was derived), then every file in the web repository's `supabase/migrations/`
+in order, including 1/4–5/5 above:
+
+```bash
+psql -v ON_ERROR_STOP=1 -f tests/bootstrap.sql
+for f in $(ls path/to/supabase/migrations/*.sql | sort); do
+  psql -v ON_ERROR_STOP=1 -f "$f"
+done
+psql -v ON_ERROR_STOP=1 -f tests/negative-tests.sql
+```
+
+`psql -v ON_ERROR_STOP=1` is what makes this CI-safe: the first `DO` block
+that raises aborts the script and exits non-zero, rather than leaving a `FAIL`
+notice for someone to notice or not.
+
+Sections 4 and 5 assert the revokes and therefore need 4/4 applied — without
+it they fail outright (confirmed while writing `SCN-13`: holding 4/4 back and
+re-running prints `FAIL 4c: DELETE on homework_vocab_tasks still granted` and
+`psql` exits 3, which is the point — a weakened grant is a failed run, not a
+quiet pass). Section 5a is worth running against production **before** the
+migration too: there it is expected to succeed, and that success is finding
+F1.
 
 Section 11 covers 5/5 — the widened `profiles.age` range — and reads the
 constraint first: if 5/5 is not applied it prints `SKIP 11` and the rest of the
 file still passes, so the two halves of this directory can be verified
 independently.
+
+## CI
+
+`ci-database-tests.yml` is the job to merge into the web repository's
+`.github/workflows/ci.yml`, which today runs lint, type-check, the `unit`
+vitest project and the Next.js build with no database step at all (checked
+against `upstream/.github/workflows/ci.yml` as fetched for this package). Add
+it as a sibling of the existing `ci` job and add its name to `migrate`'s
+`needs:` list, so a push to `main` only reaches `supabase db push` after the
+authorization boundary passes too.
+
+It assumes this package has already been copied into place per the table
+above, plus `tests/bootstrap.sql`, `tests/fixtures.sql` and
+`tests/negative-tests.sql` copied to a new `supabase/tests/wp-2.3/` — nothing
+under `supabase/` in the web repo runs a database test today, so that
+directory doesn't exist yet. Plain `psql` + `DO` blocks was chosen over pgTAP
+so the job needs nothing beyond the `postgresql-client` GitHub's
+`ubuntu-latest` runner already has — no new tool, no `supabase/config.toml`
+change, no local Supabase CLI dependency.

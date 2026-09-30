@@ -1,0 +1,67 @@
+# SLAY CITY — WP-2.3 database authorization tests, staged for
+# `rubanwd/slay-city`'s `.github/workflows/ci.yml`
+#
+# Not a standalone workflow: this is one job to merge into the existing `ci`
+# workflow there (see `upstream/.github/workflows/ci.yml` as fetched for this
+# package — today it runs lint, type-check, the `unit` vitest project and the
+# Next.js build, with no database step at all). Add this job alongside `ci`
+# and add its name to `migrate`'s `needs:` list, so a push to `main` still
+# only reaches `supabase db push` after both the app checks and the RPC
+# authorization boundary pass.
+#
+# What it proves: same thing `tests/negative-tests.sql` proves locally — a
+# `student`, a non-owning `teacher`, and `anon` cannot reach a write the audit
+# scoped to the owning teacher (WP-2.3 `AC3`/`AC4`), demonstrated against the
+# *real* migration timeline replayed on stock Postgres, not a mocked
+# PostgREST client. `psql -v ON_ERROR_STOP=1` is what makes a weakened
+# `can_author_group`/`can_author_topic` check — or a re-opened grant — fail
+# the run instead of printing a `NOTICE` nobody reads.
+#
+# Paths below assume this package's layout has already been copied into the
+# web repository as `docs/migrations/wp-2.3/README.md` describes:
+#   docs/migrations/wp-2.3/2026*.sql                -> supabase/migrations/
+#   docs/migrations/wp-2.3/tests/{bootstrap,fixtures,negative-tests}.sql
+#                                                    -> supabase/tests/wp-2.3/
+# `supabase/tests/` is new — nothing else in the repo runs a database test
+# today (`grep -rn "tests/database\|pgTAP" .` upstream is empty at the base
+# commit this package was written against). Plain `psql` + `DO` blocks was
+# chosen over pgTAP for this first test so the job needs nothing beyond the
+# `postgresql-client` GitHub's `ubuntu-latest` runner already ships — no new
+# tool, no new Postgres extension, no change to `supabase/config.toml`.
+
+  database-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: postgres
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Bootstrap the roles/schemas Supabase provides and stock Postgres does not
+        run: psql -v ON_ERROR_STOP=1 -f supabase/tests/wp-2.3/bootstrap.sql
+
+      - name: Replay the migration timeline
+        run: |
+          for f in $(ls supabase/migrations/*.sql | sort); do
+            echo "applying $f"
+            psql -v ON_ERROR_STOP=1 -f "$f"
+          done
+
+      - name: Run the WP-2.3 authorization boundary tests
+        run: psql -v ON_ERROR_STOP=1 -f supabase/tests/wp-2.3/negative-tests.sql

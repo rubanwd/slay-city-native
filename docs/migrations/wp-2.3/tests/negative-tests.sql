@@ -4,51 +4,108 @@
 -- with the caller's JWT claims faked rather than the UI driven — WP-2.3 `AC3`
 -- ("a student-role JWT cannot perform each teacher-only write, via direct API
 -- calls, not through the UI") and `AC4` ("a teacher cannot write to a group
--- they do not own").
+-- they do not own"). Section 0 adds the unauthenticated case (`anon`, no JWT
+-- at all), which `AC3` does not name but the same boundary has to hold for.
 --
--- HOW TO RUN
+-- HOW TO RUN — locally
 --
---   1. Apply migrations 1/4 … 5/5. Sections 4 and 5 need 4/4 (the revokes)
---      and section 11 needs 5/5 (the widened age range); everything else
---      passes without them. Sections that need a migration you have not
---      applied say so and skip, except the two revoke sections, which fail.
---   2. Fill in the ids in the first block from the target database. They must
---      be real rows: `auth.uid()` comes from the faked claims, but every scope
---      check joins real data.
---   3. Run the whole file. It is one transaction ending in ROLLBACK, so it
---      leaves nothing behind — including the rows the parity section creates.
---   4. Every check prints `PASS …`. The first failure raises and aborts the
---      transaction; there is no "some tests failed" summary to misread.
+--   1. Stand up a database with the migration timeline applied: the bootstrap
+--      in `bootstrap.sql`, then every file in `upstream/supabase/migrations/`
+--      in order, then the five files in `docs/migrations/wp-2.3/` in order.
+--      See `../README.md` and [[upstream-schema-replays-on-stock-postgres]]
+--      for how that replays unmodified against a plain `postgres:16-alpine`
+--      container. Sections 4 and 5 need 4/4 (the revokes) and section 11
+--      needs 5/5 (the widened age range); everything else passes without
+--      them, printing `SKIP` for the parts that need a migration you have not
+--      applied, except the two revoke sections, which fail outright without
+--      4/4.
+--   2. Run `psql -v ON_ERROR_STOP=1 -f negative-tests.sql`. It pulls in
+--      `fixtures.sql` itself (via `\ir`, resolved relative to this file, not
+--      the caller's working directory) — `fixtures.sql` creates the rows this
+--      suite needs and points the `wp23.*` config vars at them, so there is
+--      nothing to fill in by hand.
+--   3. Every check prints `PASS …`. The first failure raises and aborts the
+--      transaction; there is no "some tests failed" summary to misread. It is
+--      one transaction ending in `ROLLBACK`, so nothing survives the run —
+--      including the rows `fixtures.sql` and the parity section (§7) create.
 --
--- The caller is switched with top-level `set local role authenticated` plus
--- `request.jwt.claims`, which is what PostgREST does for a signed-in request:
--- the table grants and RLS under test are the ones a real client meets. Role
--- switching stays at the top level on purpose — a `SET ROLE` buried in a
--- function is the kind of thing that quietly does not do what it looks like.
+-- HOW TO RUN — in CI
+--
+--   `../ci-database-tests.yml` is the job to paste into the web repository's
+--   `.github/workflows/ci.yml`: a `postgres:16-alpine` service container, the
+--   same three-step replay as above, then
+--   `psql -v ON_ERROR_STOP=1 -f bootstrap.sql -f <migrations> -f
+--   negative-tests.sql`. `psql -v ON_ERROR_STOP=1` exits non-zero the moment
+--   any `DO` block here raises, which is what turns a weakened role/scope
+--   check into a failed CI run rather than a `NOTICE` nobody reads.
+--
+-- The caller is switched with top-level `set local role authenticated` (or,
+-- in section 0, `anon`) plus `request.jwt.claims`, which is what PostgREST
+-- does for a signed-in (or anonymous) request: the table grants and RLS under
+-- test are the ones a real client meets. Role switching stays at the top
+-- level on purpose — a `SET ROLE` buried in a function is the kind of thing
+-- that quietly does not do what it looks like.
 
 begin;
 
+\ir fixtures.sql
+
 -- =========================================================================
--- Fixture ids — FILL THESE IN
+-- 0. Anonymous — no JWT at all, the public anon key a client ships with
 --
---   student_id      a profile with role 'student', a member of owned_group_id
---   teacher_id      the profile that owns owned_group_id
---   other_teacher   a profile with role 'teacher' that owns neither
---                   owned_group_id nor topic_id — the AC4 subject
---   owned_group_id  a teacher_groups row owned by teacher_id
---   topic_id        a homework_topics row in owned_group_id
---   foreign_topic   a homework_topics row in a group student_id is NOT in
---   fresh_user_id   an auth.users row with no profile, for section 10.
---                   Leave it all-zero to skip that section.
+-- Distinct from section 1: a student's JWT is rejected *inside* the function
+-- by `can_author_group`/`can_author_topic`, which still had to be reachable
+-- to run that check. `anon` never gets that far — `revoke all … from public`
+-- plus `grant execute … to authenticated` (asserted mechanically in §5c/§5d)
+-- means Postgres refuses the call before the function body runs at all. Both
+-- layers are worth proving: a role/scope bug inside a function would still
+-- show up in section 1 even if this section passed for the wrong reason.
 -- =========================================================================
 
-select set_config('wp23.student_id',     '00000000-0000-0000-0000-000000000000', true);
-select set_config('wp23.teacher_id',     '00000000-0000-0000-0000-000000000000', true);
-select set_config('wp23.other_teacher',  '00000000-0000-0000-0000-000000000000', true);
-select set_config('wp23.owned_group_id', '00000000-0000-0000-0000-000000000000', true);
-select set_config('wp23.topic_id',       '00000000-0000-0000-0000-000000000000', true);
-select set_config('wp23.foreign_topic',  '00000000-0000-0000-0000-000000000000', true);
-select set_config('wp23.fresh_user_id',  '00000000-0000-0000-0000-000000000000', true);
+set local role anon;
+select set_config('request.jwt.claims', '', true);
+
+do $$
+begin
+  begin
+    perform public.create_homework_topic(
+      current_setting('wp23.owned_group_id')::uuid, 'Injected by anon'
+    );
+    raise exception 'FAIL 0a: anon created a homework topic';
+  exception when insufficient_privilege then
+    raise notice 'PASS 0a: create_homework_topic rejected anon before the function ran';
+  end;
+
+  begin
+    perform public.publish_homework_vocabulary(
+      current_setting('wp23.topic_id')::uuid,
+      '[{"word":"cat","translation":"кіт"}]'::jsonb,
+      '[]'::jsonb
+    );
+    raise exception 'FAIL 0b: anon published vocabulary';
+  exception when insufficient_privilege then
+    raise notice 'PASS 0b: publish_homework_vocabulary rejected anon';
+  end;
+
+  begin
+    perform public.post_topic_message(
+      current_setting('wp23.topic_id')::uuid, 'Posted with no session at all'
+    );
+    raise exception 'FAIL 0c: anon posted a Q&A message';
+  exception when insufficient_privilege then
+    raise notice 'PASS 0c: post_topic_message rejected anon';
+  end;
+
+  begin
+    perform public.create_my_profile('Anon Player', null::smallint, null);
+    raise exception 'FAIL 0d: anon created a profile';
+  exception when insufficient_privilege then
+    raise notice 'PASS 0d: create_my_profile rejected anon';
+  end;
+end;
+$$;
+
+reset role;
 
 -- =========================================================================
 -- 1. A student cannot author topics — W-01, W-02, W-03
