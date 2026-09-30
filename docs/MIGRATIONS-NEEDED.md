@@ -365,7 +365,7 @@ untrusted anyway, so this is hardening rather than a hole. Cheapest fix is
 keeps T1–T3 as plain writes. Whatever is decided, the mobile client must not be
 the only place the rule lives.
 
-### 7.3 `profiles.age` — the DB is stricter than the action, and they disagree
+### 7.3 `profiles.age` — the DB is stricter than the action, and they disagree — **resolved, `SCN-11-1`**
 
 `20260703000001_add_profile_age.sql` declares
 `age smallint check (age is null or age between 7 and 14)`. No later migration
@@ -377,6 +377,13 @@ and then hits `23514`, surfaced as a raw Postgres constraint message. This is a
 **pre-existing web bug**, not a security issue, but it sits on one of the two
 writes that needs an RPC anyway — settle the intended range while writing
 `create_my_profile()` rather than encoding the disagreement into it.
+
+**Decision:** the form's range (5–99) is canonical, because `age` is
+write-only — collected once at onboarding and never read back by any
+age-gated logic — so widening it carries no product risk, while narrowing the
+form to 7–14 would turn away a parent onboarding for their child or an adult
+learner. The column widens to match in
+`docs/migrations/wp-2.3/20260930000005_widen_profile_age_range.sql`.
 
 ### 7.4 `publishVocabulary` / `publishGrammar` are not atomic
 
