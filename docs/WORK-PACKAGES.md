@@ -179,8 +179,8 @@ that re-checks the caller's role in SQL.
 - `AC1` Scheme `slaycity://` registered on both platforms. `AC2` Supabase redirect allow-list contains the mobile links **and still contains the web ones**. `AC3` A password-reset email opens the app directly at the reset screen. `AC4` A cold-start deep link works, not only a warm one.
 
 ### WP-2.5 · Social sign-in
-`1d` · deps: WP-2.4, OD-2
-- `AC1` Google sign-in completes and produces a valid session. `AC2` Cancelling mid-flow leaves the app in a clean state. `AC3` If OD-2(a): Sign in with Apple works and is presented no less prominently than Google.
+`1d` · deps: WP-2.4 · **OD-2 answered ✅ 2026-09-30** — [OD-2-DECISION.md](OD-2-DECISION.md)
+- `AC1` Google sign-in completes and produces a valid session. `AC2` Cancelling mid-flow leaves the app in a clean state. `AC3` Sign in with Apple works and is presented no less prominently than Google, on both the login and register screens.
 
 ### WP-2.6 · Route guard
 `0.5d` · deps: WP-2.1

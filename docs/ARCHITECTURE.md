@@ -193,11 +193,14 @@ unchanged — the routing rules do not get rewritten, only the redirect mechanis
 Supabase's redirect allow-list must gain the mobile deep links **alongside** the
 existing web URLs; removing the web ones breaks password reset in production.
 
-> **Requires product-owner approval.** App Store Review Guideline 4.8 requires an
-> equivalent privacy-preserving login option — in practice Sign in with Apple —
-> whenever an app offers third-party social login. SLAY CITY offers Google. The root
-> `AGENTS.md` puts Apple OAuth under **Do Not Build Yet**. One of the two has to
-> give. See Open Decision **OD-2**.
+> **OD-2 approved 2026-09-30.** App Store Review Guideline 4.8 requires an
+> equivalent privacy-preserving login option — Sign in with Apple — wherever an
+> app offers third-party social login, and SLAY CITY offers Google. The root
+> `AGENTS.md`'s "Apple OAuth: Do Not Build Yet" is a web-scoped product-scope
+> choice, not a security invariant, so it is overridden in **this**
+> repository's own `AGENTS.md` rather than amended upstream. Full decision,
+> including which screens need both options, in
+> [OD-2-DECISION.md](OD-2-DECISION.md).
 
 ## 5. Design system
 
@@ -251,7 +254,7 @@ Blocking. Each needs an explicit answer before the phase that depends on it star
 | ID | Decision | Options | Blocks |
 | --- | --- | --- | --- |
 | ~~**OD-1**~~ | ~~Move OpenRouter calls out of Server Actions into Edge Functions~~ | ✅ **APPROVED (a)** 2026-09-29 — *the API key cannot ship in a mobile binary.* Plan: [EDGE-FUNCTIONS-PLAN.md](EDGE-FUNCTIONS-PLAN.md) | ~~M4~~ released |
-| **OD-2** | Sign in with Apple | (a) Implement it — keeps Google everywhere. **Recommended.** (b) Hide Google on iOS, email/password only there | M2, M7 |
+| ~~**OD-2**~~ | ~~Sign in with Apple~~ | ✅ **APPROVED (a)** 2026-09-30 — *Guideline 4.8 makes it mandatory, not optional, wherever Google sign-in exists.* Decision: [OD-2-DECISION.md](OD-2-DECISION.md) | ~~M2, M7~~ released |
 | **OD-3** | Apple Kids Category | (a) Enter it — better discovery, but bans third-party analytics and needs a parental gate. (b) Stay out, rate 4+. **Recommended** — Google Analytics is already wired in via `@next/third-parties` | M7 |
 | **OD-4** | Analytics on mobile | (a) Drop GA on mobile. **Recommended if OD-3(a).** (b) Keep it | M6 |
 | **OD-5** | Offline play depth | (a) Read-only cache of map + profile. **Recommended for v1.** (b) Full offline missions with a sync queue — significant extra work | M6 |

@@ -263,7 +263,7 @@ lists under *What Not to Change Without Permission*.
 | ID | Decision | Recommendation | Blocks |
 | --- | --- | --- | --- |
 | ~~**OD-1** 🔒~~ | ~~Move OpenRouter calls into Edge Functions~~ | ✅ **APPROVED** 2026-09-29 — the key cannot ship in a binary | ~~M4, WP-5.6~~ released |
-| **OD-2** 🔒 | Implement Sign in with Apple | Yes — Guideline 4.8 requires it wherever Google sign-in exists | M2, M7 |
+| ~~**OD-2** 🔒~~ | ~~Implement Sign in with Apple~~ | ✅ **APPROVED** 2026-09-30 — Guideline 4.8 requires it wherever Google sign-in exists | ~~M2, M7~~ released |
 | **OD-3** | Enter the Apple Kids Category | No — rate 4+; the category bans third-party analytics | WP-7.5 |
 | **OD-4** | Keep Google Analytics on mobile | Keep, unless OD-3 is yes | WP-7.5 |
 | **OD-5** | Offline depth | Read-only cache for v1 | WP-6.4 |

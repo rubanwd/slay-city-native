@@ -35,6 +35,11 @@
       "id": "OD-2",
       "question": "Implement Sign in with Apple",
       "recommended": "yes",
+      "status": "approved",
+      "decision": "yes — implement Sign in with Apple on the login and register screens, alongside Google, per WP-2.5",
+      "rationale": "App Store Review Guideline 4.8 requires an equivalent login option wherever Google sign-in exists",
+      "decided_on": "2026-09-30",
+      "plan": "docs/OD-2-DECISION.md",
       "blocks": [
         "M2",
         "WP-2.5",

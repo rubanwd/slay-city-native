@@ -144,6 +144,15 @@ No data fetching and no business logic inside `app/`.
   > to the root manual lands in the **web** repository with the functions; this
   > repository never holds the key either way. See
   > [docs/EDGE-FUNCTIONS-PLAN.md](docs/EDGE-FUNCTIONS-PLAN.md).
+  > **Explicit override of the root manual — `OD-2`, approved 2026-09-30.** The
+  > web repository's `AGENTS.md` lists *"Apple OAuth"* under **Do Not Build
+  > Yet**. That line is a web-scoped product-scope choice, not a security
+  > invariant, so this repository overrides it locally rather than amending
+  > it upstream: App Store Review Guideline 4.8 requires Sign in with Apple
+  > wherever Sign in with Google exists, and this app must offer Google to
+  > match the web. The web app stays untouched — it is desktop-only and never
+  > submitted for App Store review, so Guideline 4.8 never attaches to it. See
+  > [docs/OD-2-DECISION.md](docs/OD-2-DECISION.md).
 - Privileged work happens in a `SECURITY DEFINER` RPC or an Edge Function that
   re-checks the caller's role in SQL. A client-side role check is a UX affordance,
   never an authorisation.

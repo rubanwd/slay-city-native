@@ -35,7 +35,7 @@ M0 ── M1 ── M2 ──┬── M3 ── M4 ──┐
    (RLS audit, upstream PR)
 
 WP-7.1 (dev accounts) ─── start at M0, needed by M7
-OD-2 answered ─────────── needed by M2   (OD-1 answered 2026-09-29 ✅)
+OD-2 answered ─────────── needed by M2   (OD-1 answered 2026-09-29 ✅, OD-2 answered 2026-09-30 ✅)
 ```
 
 Two things must start earlier than their phase:
@@ -119,13 +119,14 @@ navigates between placeholders, and a side-by-side screenshot of the primitives
 against the web app is approved.
 
 ## M2 — Auth & session
-**5.5 days · needs M1 · needs OD-2 answered**
+**5.5 days · needs M1 · OD-2 answered ✅ 2026-09-30**
 
 - `WP-2.1` Supabase client with SecureStore adapter and `AppState` auto-refresh
 - `WP-2.2` Login, register, forgot-password, reset-password screens
 - `WP-2.3` **Teacher/parent RLS audit** → upstream PR
 - `WP-2.4` Deep links: scheme, `slaycity://auth/callback`, Supabase allow-list
-- `WP-2.5` Google OAuth via `expo-auth-session`; Sign in with Apple if OD-2(a)
+- `WP-2.5` Google OAuth via `expo-auth-session`; Sign in with Apple, per
+  [OD-2-DECISION.md](OD-2-DECISION.md)
 - `WP-2.6` Route guard driven by `roleHome()` from core
 
 **Exit:** a real account signs in on both platforms; the session survives an app

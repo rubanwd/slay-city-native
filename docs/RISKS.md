@@ -18,18 +18,20 @@ tests using a student JWT. Do this in M0/M2, not when M5 starts.
 thing stopping these writes — that is a production incident, not a migration finding.
 Stop and report it.
 
-## R2 — Sign in with Apple 🟠 high
+## R2 — Sign in with Apple 🟠 high — mitigated
 
 App Store Review Guideline 4.8 requires an equivalent privacy-preserving login
 option whenever an app offers third-party social login. SLAY CITY offers Google
 (`signInWithGoogle`). The root `AGENTS.md` lists Apple OAuth under **Do Not Build
-Yet**.
+Yet** — a web-scoped product decision, not a rule this repository inherits.
 
 This is a hard requirement, not a recommendation, and it is a common cause of first
 rejection. The cheap escape is hiding Google on iOS — but then an account created
 with Google on the web cannot sign in on an iPhone at all, which is worse.
 
-**Mitigation:** answer `OD-2` before M2. Recommendation: implement it.
+**Mitigation:** `OD-2` **approved 2026-09-30** — implement Sign in with Apple on
+the login and register screens (`WP-2.5`). See
+[OD-2-DECISION.md](OD-2-DECISION.md).
 
 ## R3 — Kids privacy: COPPA, GDPR-K, and the two families programmes 🟠 high
 
