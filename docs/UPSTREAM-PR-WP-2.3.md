@@ -6,7 +6,11 @@
 > describes **is written** and lives in
 > [`docs/migrations/wp-2.3/`](migrations/wp-2.3/README.md) — five migrations, five
 > rollbacks and a negative-test harness, ready to copy into
-> `supabase/migrations/` on a branch.
+> `supabase/migrations/` on a branch. `SCN-12` added the other half: the ported
+> Server Actions themselves, staged in
+> [`docs/migrations/wp-2.3/thin-callers/`](migrations/wp-2.3/thin-callers/README.md),
+> ready to copy over the matching paths in the web repo's `src/`. `AC5` is met
+> once both are on the same branch.
 >
 > Audit that specified it: [MIGRATIONS-NEEDED.md](MIGRATIONS-NEEDED.md) and the
 > operation-by-operation reference
@@ -168,6 +172,8 @@ means restoring a grant by mistake cannot on its own open a hole.
 
 ### Thin callers — the TypeScript side
 
+**Written on `SCN-12`, staged in
+[`docs/migrations/wp-2.3/thin-callers/`](migrations/wp-2.3/thin-callers/README.md).**
 The Server Actions keep their exported names, parameters and return types and
 become `supabase.rpc(...)` calls. The mapping, argument for argument:
 
@@ -308,6 +314,7 @@ run.
 ## Checklist before opening this
 
 - [x] `profiles.age` answered (F2 / U-6) — resolved on `SCN-11-1`: widen to 5–99, `…0005_widen_profile_age_range.sql`
+- [x] Thin callers written (`AC5`) — resolved on `SCN-12`: staged in `docs/migrations/wp-2.3/thin-callers/`, not yet run against the web repo's own `vitest` (see that directory's `README.md`)
 - [ ] Live database compared against the migration timeline (U-1): `select * from pg_policies where tablename in ('homework_topics','homework_vocab_words','homework_vocab_tasks','homework_grammar_points','homework_grammar_tasks','vocab_image_cache','homework_topic_messages','homework_topic_reads','profiles','user_stats');` and `select grantee, privilege_type from information_schema.role_table_grants where table_name = 'user_stats';`
 - [ ] Q&A moderation by the owning teacher confirmed as intended (U-4) — it is preserved here, and `tests/negative-tests.sql` §9c is the check that changes if it is not
 - [ ] Forged `user_stats` values audited (U-3) and a clean-up decided

@@ -12,7 +12,7 @@ const SHARED_PACKAGE_BANS = [
 
 module.exports = [
   ...expoConfig,
-  { ignores: ["node_modules/", ".expo/", "upstream/", "dist/", "android/", "ios/"] },
+  { ignores: ["node_modules/", ".expo/", "upstream/", "dist/", "android/", "ios/", "docs/"] },
   {
     files: ["packages/core/**/*.ts", "packages/core/**/*.tsx"],
     rules: {
