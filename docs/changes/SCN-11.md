@@ -34,7 +34,10 @@ streaks.
 
 Four migrations, four matching rollbacks and a runnable negative-test harness
 were authored under **`docs/migrations/wp-2.3/`**, staged for the web
-repository's `supabase/migrations/`. Per `AGENTS.md` ("Migrations belong
+repository's `supabase/migrations/`. A fifth migration and rollback were added
+by the sub-item `SCN-11-1` once the one open product question — the
+`profiles.age` range — was settled, and the harness grew a section covering it;
+the directory is now the complete five-migration deliverable. Per `AGENTS.md` ("Migrations belong
 upstream") and the ticket's own acceptance criterion, **no `supabase/` directory
 was created in this repository** — the same pattern `SCN-7` used for the OD-1
 Edge Functions, except that here the SQL itself is written, not just described.
@@ -179,8 +182,19 @@ cannot on its own open a hole.
   — (new) restores every grant exactly as the base migrations issued it, naming
   the source migration for each. This is the rollback to reach for first in an
   incident.
-- `docs/migrations/wp-2.3/tests/negative-tests.sql` — (new) 61 assertions in one
-  transaction that ends in `ROLLBACK`, covering `AC3` and `AC4`.
+- `docs/migrations/wp-2.3/20260930000005_widen_profile_age_range.sql` and
+  `down/20260930000005_widen_profile_age_range_down.sql` — (new, authored on
+  `SCN-11-1`) widen `profiles_age_check` from 7–14 to the onboarding form's
+  5–99, closing finding F2. Listed here because they are part of the same
+  staged pull request; the reasoning is in
+  [SCN-11-1.md](SCN-11-1.md).
+- `docs/migrations/wp-2.3/tests/negative-tests.sql` — (new) 66 assertions in one
+  transaction that ends in `ROLLBACK`, covering `AC3` and `AC4`. §11 covers
+  migration 5/5: it reads `profiles_age_check` first and prints `SKIP 11`
+  instead of failing when only 1/4–4/4 are applied, then drives ages 5, 99 and
+  `null` through the student's own JWT — reading each value back, because an
+  UPDATE that RLS filters to zero rows reports success — and confirms 4 and 100
+  still raise `23514`.
 - `docs/UPSTREAM-PR-WP-2.3.md` — (new) the staged pull-request body for
   `rubanwd/slay-city`: what, why, the parity table, the authorization model, the
   `supabase.rpc(...)` mapping for every Server Action including the snake_case
@@ -279,17 +293,33 @@ For the web repository, when the staged migrations are applied there:
 
 Everything below was run.
 
-- **The migrations apply cleanly.** A throwaway `postgres:16-alpine` container
-  was stood up, a 240-line stub of the upstream schema replayed by hand from
-  `upstream/supabase/migrations` at `7612da5` (the roles, `auth.uid()`, the
-  three enums, the twelve tables, `is_admin` / `is_teacher` /
-  `is_group_member` / `available_knowledge_levels`, the role-escalation trigger,
-  and all 45 policies and grants), then all four migrations applied with
-  `ON_ERROR_STOP=1`. All four exited 0 with no errors.
+- **The migrations apply cleanly — against the real upstream schema, not a
+  stub.** A throwaway `postgres:16-alpine` container was stood up with an
+  85-line bootstrap supplying only what the Supabase platform provides and a
+  stock Postgres does not (the `anon` / `authenticated` / `service_role` roles,
+  `auth.users`, `auth.uid()` / `auth.role()` / `auth.jwt()` reading
+  `request.jwt.claims`, `storage.objects` / `storage.buckets` /
+  `storage.foldername`, and the `supabase_realtime` publication). **All 67
+  upstream migrations from `upstream/supabase/migrations` at `7612da5` then
+  replayed unmodified**, followed by all five WP-2.3 migrations, every file
+  with `ON_ERROR_STOP=1` and every file exiting 0. An earlier run of this item
+  used a hand-written stub of the schema; replaying the genuine timeline
+  removes the risk that the stub, not the migration, is what the tests agree
+  with.
+- **The diff the migration set makes to the database was measured, not
+  asserted.** A second database was built from the same bootstrap and the same
+  67 migrations and left untouched, then the two schemas compared on grants,
+  functions, policies and triggers. The difference is exactly **+17 functions,
+  +1 trigger (`profiles_create_user_stats`), −22 `authenticated` table grants,
+  and zero policy rows changed** — `AC6` verified mechanically rather than by
+  reading the SQL. All 17 functions pin `search_path = public, pg_temp`; the 16
+  callable ones grant EXECUTE to `authenticated` and nothing to `PUBLIC`; the
+  17th is the trigger function, and calling it directly as `authenticated` was
+  confirmed to raise *"trigger functions can only be called as triggers"*.
 - **The negative tests pass.** `tests/negative-tests.sql`, with real fixtures
   seeded (a teacher owning a group, a student who is a member of it, a second
   teacher owning nothing, two topics, an `auth.users` row with no profile):
-  **61 `PASS`, 0 `FAIL`, 0 errors.** Coverage: a student rejected on all three
+  **66 `PASS`, 0 `FAIL`, 0 errors, exit 0.** Coverage: a student rejected on all three
   topic RPCs and all four publish/clear RPCs *while being a group member who can
   read the topic* (the F6 case); a non-owning teacher rejected on all seven
   (`AC4`); the student's legitimate Q&A writes succeeding with `author_id` and
@@ -299,15 +329,26 @@ Everything below was run.
   exactly the rows the Server Actions produce, including the dropped incomplete
   word and the 0-based ordering; and three mechanical checks that no new
   function leaves EXECUTE open to PUBLIC, that `authenticated` can execute all
-  sixteen, and that `search_path` is pinned on all of them.
+  sixteen, and that `search_path` is pinned on all of them. §11 additionally
+  confirms the widened age range end to end: 5, 99 and `null` accepted and read
+  back, 4 and 100 rejected with `23514`. With 5/5 rolled back and the rest left
+  in place the file still exits 0, printing `SKIP 11` — so the age migration
+  can be reviewed and shipped separately from the lockdown.
 - **F1 was reproduced, not assumed.** With migration 4/4 rolled back and the
   original grant restored, `insert into user_stats (…, xp, coins, level,
   current_streak, longest_streak) values (…, 999999, 999999, 99, 365, 365)` as
   the row's own owner **succeeded**. That is the live web behaviour the audit
   described, reproduced against the replayed policy and grant.
-- **The rollbacks are clean.** Applied in reverse (`004 → 003 → 002 → 001`): all
-  seventeen functions gone, the trigger gone, the body CHECK gone, and the
-  `authenticated` grant set byte-identical to §5.2 of the audit.
+- **The rollbacks are clean.** Applied in reverse
+  (`005 → 004 → 003 → 002 → 001`), then the database compared against the
+  untouched baseline built from the same 67 upstream migrations: the grant,
+  function, policy and trigger snapshots are **identical, line for line**. The
+  seventeen functions, the trigger and the body CHECK are gone and every grant
+  is back. Re-applying all five forward afterwards succeeded again, so the set
+  is apply → roll back → apply safe.
+- **Migration 5/5 round-trips.** Its rollback restores `age is null or age
+  between 7 and 14` and re-applying restores `age is null or age between 5 and
+  99`, both read back from `pg_get_constraintdef`.
 - **The container and every temporary file were removed afterwards.** Nothing
   from the verification run is left on disk or in the working tree.
 - **Repository checks.** `npm run lint`, `npm run type-check` and `npm test` all
@@ -323,8 +364,8 @@ Everything below was run.
   TypeScript toolchain to check.
 
 To see it working yourself: copy `docs/migrations/wp-2.3/*.sql` into the web
-repo's `supabase/migrations/`, fill in the seven fixture ids at the top of
-`tests/negative-tests.sql`, and run it — every check prints `PASS`, and the
+repo's `supabase/migrations/` (all five), fill in the seven fixture ids at the
+top of `tests/negative-tests.sql`, and run it — every check prints `PASS`, and the
 first failure aborts the transaction rather than being summarised away.
 
 ## Limitations and follow-ups

@@ -8,8 +8,10 @@
 --
 -- HOW TO RUN
 --
---   1. Apply migrations 1/4 … 4/4. Sections 6 and 9 need 4/4 (the revokes);
---      everything else passes without it.
+--   1. Apply migrations 1/4 … 5/5. Sections 4 and 5 need 4/4 (the revokes)
+--      and section 11 needs 5/5 (the widened age range); everything else
+--      passes without them. Sections that need a migration you have not
+--      applied say so and skip, except the two revoke sections, which fail.
 --   2. Fill in the ids in the first block from the target database. They must
 --      be real rows: `auth.uid()` comes from the faked claims, but every scope
 --      check joins real data.
@@ -875,5 +877,93 @@ begin
   raise notice 'PASS 10d: create_my_profile has no role parameter — student is hard-coded';
 end;
 $$;
+
+-- =========================================================================
+-- 11. `profiles.age` accepts the onboarding form's whole range — needs 5/5
+--
+-- Migration 5/5 widened `profiles_age_check` from 7–14 to 5–99, the range
+-- `features/onboarding/actions.ts` has validated and displayed since commit
+-- `32247f5` (finding F2, decided on SCN-11-1). Before it, ages 5, 6 and 15–99
+-- passed the form and then failed the insert with a raw 23514.
+--
+-- `create_my_profile` deliberately does not re-check the range — the column
+-- constraint is the single place it is expressed, so that the two cannot
+-- disagree again — which makes the constraint itself the thing to test. It is
+-- exercised here the way a client meets it: the student's own JWT, through
+-- the UPDATE grant 4/4 leaves in place and `profiles_update_own`. An UPDATE
+-- that RLS filters to zero rows reports success, so every accepting case
+-- reads the value back rather than trusting the statement.
+-- =========================================================================
+
+select set_config(
+  'request.jwt.claims',
+  json_build_object('sub', current_setting('wp23.student_id'), 'role', 'authenticated')::text,
+  true
+);
+set local role authenticated;
+
+do $$
+declare
+  v_student uuid := current_setting('wp23.student_id')::uuid;
+  v_def text;
+  v_original smallint;
+  v_age smallint;
+begin
+  select pg_get_constraintdef(oid) into v_def
+  from pg_constraint
+  where conrelid = 'public.profiles'::regclass and conname = 'profiles_age_check';
+
+  if v_def is null then
+    raise exception 'FAIL 11a: public.profiles has no profiles_age_check constraint';
+  end if;
+
+  if v_def !~ '\m5\M' or v_def !~ '\m99\M' then
+    raise notice 'SKIP 11: migration 5/5 is not applied — the constraint is still %', v_def;
+    return;
+  end if;
+  raise notice 'PASS 11a: profiles_age_check is the widened range — %', v_def;
+
+  select age into v_original from public.profiles where id = v_student;
+
+  update public.profiles set age = 5 where id = v_student;
+  select age into v_age from public.profiles where id = v_student;
+  if v_age is distinct from 5::smallint then
+    raise exception 'FAIL 11b: age 5 was not stored — read back %', v_age;
+  end if;
+  raise notice 'PASS 11b: age 5, the form''s lower bound, is accepted';
+
+  update public.profiles set age = 99 where id = v_student;
+  select age into v_age from public.profiles where id = v_student;
+  if v_age is distinct from 99::smallint then
+    raise exception 'FAIL 11c: age 99 was not stored — read back %', v_age;
+  end if;
+  raise notice 'PASS 11c: age 99, the form''s upper bound, is accepted';
+
+  update public.profiles set age = null where id = v_student;
+  select age into v_age from public.profiles where id = v_student;
+  if v_age is not null then
+    raise exception 'FAIL 11d: age is no longer nullable — read back %', v_age;
+  end if;
+  raise notice 'PASS 11d: age is still optional';
+
+  begin
+    update public.profiles set age = 4 where id = v_student;
+    raise exception 'FAIL 11e: age 4 was accepted — the range was widened too far';
+  exception when check_violation then
+    raise notice 'PASS 11e: age 4 is still rejected with 23514';
+  end;
+
+  begin
+    update public.profiles set age = 100 where id = v_student;
+    raise exception 'FAIL 11f: age 100 was accepted — the range was widened too far';
+  exception when check_violation then
+    raise notice 'PASS 11f: age 100 is still rejected with 23514';
+  end;
+
+  update public.profiles set age = v_original where id = v_student;
+end;
+$$;
+
+reset role;
 
 rollback;

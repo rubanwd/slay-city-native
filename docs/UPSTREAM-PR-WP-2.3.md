@@ -267,7 +267,7 @@ backfill or cleanup is needed before applying it.
 
 ### Test plan
 
-- [ ] `tests/negative-tests.sql` run in full against a branch database with 1/4–4/4 applied: every check prints `PASS`, nothing prints `FAIL`.
+- [ ] `tests/negative-tests.sql` run in full against a branch database with 1/4–5/5 applied: every check prints `PASS`, nothing prints `FAIL`. (With 5/5 held back, §11 prints `SKIP 11` and the rest still passes.)
 - [ ] §5a run against **production before** the migration, to confirm finding F1 is real and not an artefact of the migration timeline (unknown U-1): the forged `user_stats` insert is expected to *succeed* there.
 - [ ] `select count(*) from public.homework_topic_messages where btrim(body) = '' or char_length(body) > 2000;` returns `0` before applying 2/4 — the `validate constraint` step will fail loudly otherwise.
 - [ ] `select p.id from public.profiles p left join public.user_stats s on s.profile_id = p.id where s.id is null and p.role in ('student','parent');` recorded before and after 3/4, so the backfill's effect is a number and not a hope.

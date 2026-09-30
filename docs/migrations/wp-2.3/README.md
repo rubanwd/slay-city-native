@@ -68,3 +68,8 @@ and policies a real client meets, not a superuser's view of them.
 Sections 4 and 5 assert the revokes and therefore need 4/4 applied. Section 5a
 is worth running against production **before** the migration too: there it is
 expected to succeed, and that success is finding F1.
+
+Section 11 covers 5/5 — the widened `profiles.age` range — and reads the
+constraint first: if 5/5 is not applied it prints `SKIP 11` and the rest of the
+file still passes, so the two halves of this directory can be verified
+independently.
