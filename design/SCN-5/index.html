@@ -1,0 +1,1023 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SLAY CITY Native UI Components</title>
+<!--
+  DESIGN REFERENCE FOR SCN-5 — Create design-system UI components in src/components/ui
+
+  For the implementing agent:
+  1. The machine-readable spec is the JSON in <script id="slay-ui-spec"> directly below.
+     Every value is extracted from rubanwd/slay-city @ 7612da5; `source` names the class it came from.
+  2. Read spec.decisions FIRST. Nine of them override parts of the SCN-5 prompt — above all:
+     dark only (no light mode), keep the web's variant names, md button is 52pt.
+  3. The CSS in <style> renders the specimens with the same values, so it can be read as a second source.
+  Units are React Native points; web px map 1:1.
+-->
+<script type="application/json" id="slay-ui-spec">
+{
+  "name": "SLAY CITY Native — UI component design reference",
+  "for": "SCN-5 · Create design-system UI components in src/components/ui",
+  "source": {
+    "repo": "rubanwd/slay-city",
+    "commit": "7612da5",
+    "files": [
+      "src/components/ui/SlayButton.tsx",
+      "src/components/ui/SlayCard.tsx",
+      "src/components/layout/AppContainer.tsx",
+      "src/features/admin/formStyles.ts",
+      "src/features/auth/AuthForm.tsx",
+      "src/features/profile/ProfileUsernameCard.tsx",
+      "src/styles/typography.css",
+      "src/styles/theme.css",
+      "tailwind.config.ts"
+    ]
+  },
+  "theme": "dark only",
+  "units": "points (React Native). Web px map 1:1.",
+  "decisions": [
+    {
+      "id": "D1",
+      "topic": "Colour scheme",
+      "promptSays": "Support dark mode via NativeWind's scheme detection; design light and dark modes.",
+      "doInstead": "Dark only. Do not implement a light palette, `dark:` variants or colour-scheme detection.",
+      "why": "The web app has no light theme anywhere — no `dark:` variant, no prefers-color-scheme rule. AGENTS.md makes #111111 the base. This repo already agrees: app.json sets userInterfaceStyle \"dark\" and tailwind.config.js sets darkMode \"class\" because \"the app is dark-only\"."
+    },
+    {
+      "id": "D2",
+      "topic": "Button variant names",
+      "promptSays": "Button (primary, secondary, tertiary).",
+      "doInstead": "Keep the web's names: variant \"pink\" | \"green\" | \"ghost\", default \"pink\". Keep sizes \"sm\" | \"md\" | \"lg\", default \"md\", and the loading, iconLeft, iconRight props.",
+      "why": "WP-1.3 AC1: every web variant exists under the same prop name, so ported screens stay greppable against upstream. By usage, green is the everyday call to action (70 of 128 buttons), ghost the secondary (35), pink the accent (23) — do not remap them onto primary/secondary/tertiary."
+    },
+    {
+      "id": "D3",
+      "topic": "Palette size",
+      "promptSays": "Use the six brand colours.",
+      "doInstead": "Seven tokens: neon-pink, lime-green, cyan, purple, neon-orange, black, white. Plus the neutral `surface` #1A1A1A, added to packages/tokens alongside this document.",
+      "why": "AGENTS.md lists seven. `surface` is the web SlayCard background, which upstream writes as a raw bg-[#1a1a1a]; naming it keeps raw hex out of this repo."
+    },
+    {
+      "id": "D4",
+      "topic": "NativeWind preset",
+      "promptSays": "Export a shared preset file for NativeWind configuration (tailwind.config.js in the root).",
+      "doInstead": "It exists. Extend packages/tokens/preset.js, which tailwind.config.js already consumes. Do not create a second preset.",
+      "why": "Built in WP-0.1; one preset is what keeps a className and a StyleSheet from drifting apart."
+    },
+    {
+      "id": "D5",
+      "topic": "Medium button height",
+      "promptSays": "(not mentioned)",
+      "doInstead": "md is 52pt tall.",
+      "why": "The web asks for h-13 (3.25rem = 52px), but h-13 is not in Tailwind 3's spacing scale and generates no CSS, so the 49 md buttons in production render at their 24px line height. 52 is the evident intent; 24 would also break the 44pt minimum touch target. This is a web bug, not a design."
+    },
+    {
+      "id": "D6",
+      "topic": "Ripple feedback",
+      "promptSays": "Pressable with ripple feedback.",
+      "doInstead": "Pressed feedback is the web's darkening (below), on both platforms, plus a light haptic on buttons. Android ripple is off by default; allow it only as an opt-in on ghost and list-row surfaces, colour rgba(255,255,255,0.10).",
+      "why": "The web has no ripple. iOS has none either, so ripple-only feedback leaves iOS with nothing, and a ripple on top of the darkening doubles the feedback on pink and green."
+    },
+    {
+      "id": "D7",
+      "topic": "Input error state",
+      "promptSays": "Design the error state.",
+      "doInstead": "The field itself does not change. The error is a message under it in neon-pink, announced to screen readers. There is no red.",
+      "why": "That is exactly the web: aria-invalid is set but unstyled, and every form reports errors as text-neon-pink under the field. Red is not in the palette, and a pink border would be indistinguishable from the focus state."
+    },
+    {
+      "id": "D8",
+      "topic": "Type scale",
+      "promptSays": "Heading, body, caption using the web app's type scale.",
+      "doInstead": "Size text with fluidFontSize(token, width) from packages/tokens using useWindowDimensions(). At the 390pt design width every style renders at its minimum.",
+      "why": "The web scale is clamp(min, vw, max); at 390 each preferred value sits below its minimum (h1: 7vw = 27.3 < 28). Heading → display/h1/h2/h3, body → body/bodyStrong, caption → small/label."
+    },
+    {
+      "id": "D9",
+      "topic": "Small button touch target",
+      "promptSays": "(not mentioned)",
+      "doInstead": "sm stays 40pt visually; add hitSlop {top: 2, bottom: 2} so the touch target is 44pt.",
+      "why": "AGENTS.md here requires 44×44pt touch targets; the web's sm is 40px tall."
+    }
+  ],
+  "tokens": {
+    "brand": {
+      "neon-pink": "#FF2D8E",
+      "lime-green": "#9DFF00",
+      "cyan": "#00F0FF",
+      "purple": "#6A00FF",
+      "neon-orange": "#FF8A00",
+      "black": "#111111",
+      "white": "#FFFFFF"
+    },
+    "semantic": {
+      "background": "#111111",
+      "foreground": "#FFFFFF",
+      "accent": "#FF2D8E",
+      "highlight": "#9DFF00",
+      "surface": "#1A1A1A",
+      "error": "#FF2D8E (neon-pink — no red)",
+      "success": "#9DFF00"
+    },
+    "alphaWhite": {
+      "white/5": {
+        "rgba": "rgba(255,255,255,0.05)",
+        "onBlack": "#1D1D1D",
+        "onSurface": "#252525"
+      },
+      "white/10": {
+        "rgba": "rgba(255,255,255,0.10)",
+        "onBlack": "#292929",
+        "onSurface": "#313131"
+      },
+      "white/15": {
+        "rgba": "rgba(255,255,255,0.15)",
+        "onBlack": "#353535",
+        "onSurface": "#3C3C3C"
+      },
+      "white/20": {
+        "rgba": "rgba(255,255,255,0.20)",
+        "onBlack": "#414141",
+        "onSurface": "#484848"
+      },
+      "white/25": {
+        "rgba": "rgba(255,255,255,0.25)",
+        "onBlack": "#4C4C4C",
+        "onSurface": "#535353"
+      },
+      "white/40": {
+        "rgba": "rgba(255,255,255,0.40)",
+        "onBlack": "#707070",
+        "onSurface": "#767676"
+      },
+      "white/50": {
+        "rgba": "rgba(255,255,255,0.50)",
+        "onBlack": "#888888",
+        "onSurface": "#8C8C8C"
+      },
+      "white/60": {
+        "rgba": "rgba(255,255,255,0.60)",
+        "onBlack": "#A0A0A0",
+        "onSurface": "#A3A3A3"
+      }
+    },
+    "fontFamily": "Nunito (weights 400–900, bundled via expo-font)",
+    "type": {
+      "display": {
+        "source": "src/styles/typography.css .text-display",
+        "fontSize": {
+          "min": 40,
+          "vw": 10,
+          "max": 64,
+          "at320": 40,
+          "at390": 40,
+          "at430": 43.0
+        },
+        "fontWeight": 900,
+        "lineHeightRatio": 1.1,
+        "lineHeightAt390": 44.0,
+        "letterSpacingEm": -0.02,
+        "letterSpacingAt390": -0.8,
+        "uppercase": false,
+        "sample": "AMAZING!"
+      },
+      "h1": {
+        "source": "src/styles/typography.css .text-h1",
+        "fontSize": {
+          "min": 28,
+          "vw": 7,
+          "max": 40,
+          "at320": 28,
+          "at390": 28,
+          "at430": 30.1
+        },
+        "fontWeight": 800,
+        "lineHeightRatio": 1.1,
+        "lineHeightAt390": 30.8,
+        "letterSpacingEm": -0.02,
+        "letterSpacingAt390": -0.56,
+        "uppercase": false,
+        "sample": "Word Quest"
+      },
+      "h2": {
+        "source": "src/styles/typography.css .text-h2",
+        "fontSize": {
+          "min": 20,
+          "vw": 5,
+          "max": 28,
+          "at320": 20,
+          "at390": 20,
+          "at430": 21.5
+        },
+        "fontWeight": 700,
+        "lineHeightRatio": 1.25,
+        "lineHeightAt390": 25.0,
+        "letterSpacingEm": 0,
+        "letterSpacingAt390": 0,
+        "uppercase": false,
+        "sample": "City Map"
+      },
+      "h3": {
+        "source": "src/styles/typography.css .text-h3",
+        "fontSize": {
+          "min": 16,
+          "vw": 4,
+          "max": 20,
+          "at320": 16,
+          "at390": 16,
+          "at430": 17.2
+        },
+        "fontWeight": 700,
+        "lineHeightRatio": 1.25,
+        "lineHeightAt390": 20.0,
+        "letterSpacingEm": 0,
+        "letterSpacingAt390": 0,
+        "uppercase": false,
+        "sample": "Coffee Corner"
+      },
+      "body": {
+        "source": "src/styles/typography.css .text-body",
+        "fontSize": {
+          "min": 14,
+          "vw": 3.5,
+          "max": 16,
+          "at320": 14,
+          "at390": 14,
+          "at430": 15.05
+        },
+        "fontWeight": 400,
+        "lineHeightRatio": 1.5,
+        "lineHeightAt390": 21.0,
+        "letterSpacingEm": 0,
+        "letterSpacingAt390": 0,
+        "uppercase": false,
+        "sample": "Match each word to its picture before the timer runs out."
+      },
+      "bodyStrong": {
+        "source": "src/styles/typography.css .text-body-strong",
+        "fontSize": {
+          "min": 14,
+          "vw": 3.5,
+          "max": 16,
+          "at320": 14,
+          "at390": 14,
+          "at430": 15.05
+        },
+        "fontWeight": 600,
+        "lineHeightRatio": 1.5,
+        "lineHeightAt390": 21.0,
+        "letterSpacingEm": 0,
+        "letterSpacingAt390": 0,
+        "uppercase": false,
+        "sample": "apple · banana · cherry"
+      },
+      "small": {
+        "source": "src/styles/typography.css .text-small",
+        "fontSize": {
+          "min": 12,
+          "vw": 3,
+          "max": 14,
+          "at320": 12,
+          "at390": 12,
+          "at430": 12.9
+        },
+        "fontWeight": 500,
+        "lineHeightRatio": 1.25,
+        "lineHeightAt390": 15.0,
+        "letterSpacingEm": 0,
+        "letterSpacingAt390": 0,
+        "uppercase": false,
+        "sample": "Owned · 150 coins"
+      },
+      "label": {
+        "source": "src/styles/typography.css .text-label",
+        "fontSize": {
+          "min": 10,
+          "vw": 2.5,
+          "max": 12,
+          "at320": 10,
+          "at390": 10,
+          "at430": 10.75
+        },
+        "fontWeight": 700,
+        "lineHeightRatio": 1.25,
+        "lineHeightAt390": 12.5,
+        "letterSpacingEm": 0.12,
+        "letterSpacingAt390": 1.2,
+        "uppercase": true,
+        "sample": "Vocabulary learned"
+      }
+    },
+    "radius": {
+      "xl": 12,
+      "2xl": 16
+    },
+    "motion": {
+      "buttonMs": 150,
+      "cardMs": 200,
+      "inputColorsMs": 150
+    }
+  },
+  "components": {
+    "SlayText": {
+      "file": "src/components/ui/SlayText.tsx",
+      "web": "no component — utility classes .text-display … .text-label from typography.css",
+      "variants": [
+        "display",
+        "h1",
+        "h2",
+        "h3",
+        "body",
+        "bodyStrong",
+        "small",
+        "label"
+      ],
+      "defaultVariant": "body",
+      "color": "#FFFFFF unless overridden"
+    },
+    "SlayButton": {
+      "file": "src/components/ui/SlayButton.tsx",
+      "web": "src/components/ui/SlayButton.tsx",
+      "props": {
+        "variant": "pink | green | ghost (default pink)",
+        "size": "sm | md | lg (default md)",
+        "loading": "boolean — shows spinner in place of iconLeft AND disables",
+        "disabled": "boolean",
+        "iconLeft": "node",
+        "iconRight": "node (hidden while loading)"
+      },
+      "base": {
+        "layout": "row, centred, gap by size",
+        "fontWeight": 800,
+        "textTransform": "uppercase",
+        "letterSpacingEm": 0.05,
+        "source": "font-extrabold tracking-wide uppercase (tracking-wide is 0.05em in the web config, not Tailwind's 0.025em)"
+      },
+      "sizes": {
+        "sm": {
+          "height": 40,
+          "paddingHorizontal": 16,
+          "fontSize": 14,
+          "lineHeight": 20,
+          "borderRadius": 12,
+          "gap": 6,
+          "letterSpacing": 0.7,
+          "source": "h-10 px-4 text-sm rounded-xl gap-1.5"
+        },
+        "md": {
+          "height": 52,
+          "paddingHorizontal": 24,
+          "fontSize": 16,
+          "lineHeight": 24,
+          "borderRadius": 16,
+          "gap": 8,
+          "letterSpacing": 0.8,
+          "source": "h-13 px-6 text-base rounded-2xl gap-2"
+        },
+        "lg": {
+          "height": 64,
+          "paddingHorizontal": 32,
+          "fontSize": 18,
+          "lineHeight": 28,
+          "borderRadius": 16,
+          "gap": 10,
+          "letterSpacing": 0.9,
+          "source": "h-16 px-8 text-lg rounded-2xl gap-2.5"
+        }
+      },
+      "variants": {
+        "pink": {
+          "source": "bg-neon-pink text-white hover:brightness-110 active:brightness-90",
+          "background": "#FF2D8E",
+          "text": "#FFFFFF",
+          "border": null,
+          "pressed": {
+            "overlay": "rgba(0,0,0,0.10)",
+            "approxBackground": "#E62880",
+            "source": "active:brightness-90"
+          },
+          "usage": 23
+        },
+        "green": {
+          "source": "bg-lime-green text-black hover:brightness-110 active:brightness-90",
+          "background": "#9DFF00",
+          "text": "#111111",
+          "border": null,
+          "pressed": {
+            "overlay": "rgba(0,0,0,0.10)",
+            "approxBackground": "#8DE600",
+            "source": "active:brightness-90"
+          },
+          "usage": 70
+        },
+        "ghost": {
+          "source": "bg-transparent text-white border border-white/25 hover:bg-white/10 active:bg-white/5",
+          "background": "transparent",
+          "text": "#FFFFFF",
+          "border": {
+            "width": 1,
+            "color": "rgba(255,255,255,0.25)"
+          },
+          "pressed": {
+            "background": "rgba(255,255,255,0.05)",
+            "source": "active:bg-white/5"
+          },
+          "usage": 35
+        }
+      },
+      "states": {
+        "default": "as variant",
+        "pressed": "variant.pressed — pink/green get a 10% black overlay (== brightness(0.9)); ghost gets rgba(255,255,255,0.05)",
+        "disabled": {
+          "opacity": 0.4,
+          "interaction": "none",
+          "source": "disabled:opacity-40 disabled:pointer-events-none"
+        },
+        "loading": {
+          "opacity": 0.4,
+          "spinner": "ActivityIndicator in the label colour, replacing iconLeft; label stays visible",
+          "source": "loading sets disabled, so the disabled opacity applies too"
+        },
+        "error": "not a button state in the web app"
+      },
+      "haptics": "expo-haptics impactAsync(Light) on press (native-only, WP-1.3 AC2)",
+      "transitionMs": 150
+    },
+    "SlayCard": {
+      "file": "src/components/ui/SlayCard.tsx",
+      "web": "src/components/ui/SlayCard.tsx",
+      "props": {
+        "variant": "pink | green | cyan | purple | ghost (default pink)",
+        "hoverable": "boolean — becomes 'pressable' on native",
+        "flush": "boolean — no padding"
+      },
+      "base": {
+        "background": "#1A1A1A (surface)",
+        "borderRadius": 16,
+        "borderWidth": 1,
+        "padding": 16,
+        "overflow": "hidden",
+        "source": "bg-[#1a1a1a] rounded-2xl border p-4 overflow-hidden"
+      },
+      "variants": {
+        "pink": {
+          "borderColor": "rgba(255,45,142,0.60)",
+          "glow": "0 0 12px 0 rgba(255,45,142,0.25)",
+          "pressedGlow": "0 0 24px 4px rgba(255,45,142,0.45)",
+          "pressedBorderColor": "#FF2D8E"
+        },
+        "green": {
+          "borderColor": "rgba(157,255,0,0.60)",
+          "glow": "0 0 12px 0 rgba(157,255,0,0.20)",
+          "pressedGlow": "0 0 24px 4px rgba(157,255,0,0.40)",
+          "pressedBorderColor": "#9DFF00"
+        },
+        "cyan": {
+          "borderColor": "rgba(0,240,255,0.60)",
+          "glow": "0 0 12px 0 rgba(0,240,255,0.20)",
+          "pressedGlow": "0 0 24px 4px rgba(0,240,255,0.40)",
+          "pressedBorderColor": "#00F0FF"
+        },
+        "purple": {
+          "borderColor": "rgba(106,0,255,0.60)",
+          "glow": "0 0 12px 0 rgba(106,0,255,0.25)",
+          "pressedGlow": "0 0 24px 4px rgba(106,0,255,0.45)",
+          "pressedBorderColor": "#6A00FF"
+        },
+        "ghost": {
+          "borderColor": "rgba(255,255,255,0.15)",
+          "glow": null,
+          "pressedGlow": null,
+          "pressedBorderColor": "rgba(255,255,255,0.40)"
+        }
+      },
+      "pressed": {
+        "scale": 1.02,
+        "ghost": {
+          "borderColor": "rgba(255,255,255,0.40)",
+          "background": "rgba(255,255,255,0.05)"
+        },
+        "source": "hover:scale-[1.02] + hover shadow/border (web shows it on hover; native while pressed)"
+      },
+      "subcomponents": {
+        "Header": {
+          "layout": "row, space-between, centred, gap 8",
+          "marginBottom": 12,
+          "divided": {
+            "paddingBottom": 12,
+            "marginBottom": 12,
+            "borderBottom": "1px rgba(255,255,255,0.10)"
+          }
+        },
+        "Content": {
+          "flex": 1,
+          "minWidth": 0
+        },
+        "Footer": {
+          "layout": "row, space-between, centred, gap 8",
+          "marginTop": 12,
+          "divided": {
+            "paddingTop": 12,
+            "marginTop": 12,
+            "borderTop": "1px rgba(255,255,255,0.10)"
+          }
+        }
+      },
+      "glowImplementation": "RN boxShadow (new architecture, enabled in app.json). Put the shadow on an outer View and overflow:hidden + radius on an inner View — iOS clips a shadow on the same view.",
+      "transitionMs": 200
+    },
+    "SlayInput": {
+      "file": "src/components/ui/SlayInput.tsx",
+      "web": "no component — the INPUT_CLASS string, copied into 5 forms (src/features/admin/formStyles.ts)",
+      "field": {
+        "background": "rgba(255,255,255,0.10)",
+        "borderWidth": 1,
+        "borderColor": "rgba(255,255,255,0.20)",
+        "borderRadius": 12,
+        "paddingHorizontal": 16,
+        "paddingVertical": 12,
+        "text": "#FFFFFF, body style (14/21 at 390)",
+        "placeholder": "rgba(255,255,255,0.40)",
+        "caret": "#FF2D8E (selectionColor)",
+        "height": 47,
+        "source": "w-full px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/40 caret-neon-pink border border-white/20"
+      },
+      "states": {
+        "default": "as field",
+        "focused": {
+          "background": "rgba(255,255,255,0.15)",
+          "borderColor": "#FF2D8E",
+          "ring": "0 0 0 2px rgba(255,45,142,0.60) — boxShadow spread, outside the border",
+          "source": "focus:bg-white/15 focus:border-neon-pink focus:ring-2 focus:ring-neon-pink/60"
+        },
+        "disabled": {
+          "opacity": 0.5,
+          "source": "disabled:opacity-50"
+        },
+        "error": {
+          "field": "unchanged",
+          "message": "under the field — small style, weight 600, #FF2D8E, accessibilityRole alert",
+          "source": "text-small font-semibold text-neon-pink role=alert"
+        }
+      },
+      "label": {
+        "style": "label (10pt, 700, uppercase, letterSpacing 1.2)",
+        "color": "rgba(255,255,255,0.50)",
+        "gapToField": 6,
+        "source": "text-label text-white/50 uppercase tracking-widest; gap-1.5"
+      },
+      "hint": {
+        "style": "small",
+        "color": "rgba(255,255,255,0.40)"
+      },
+      "success": {
+        "style": "small, weight 600",
+        "color": "#9DFF00"
+      },
+      "formLevelError": {
+        "fontSize": 14,
+        "lineHeight": 20,
+        "fontWeight": 600,
+        "color": "#FF2D8E",
+        "align": "center",
+        "source": "text-sm font-semibold text-neon-pink text-center (auth forms)"
+      }
+    },
+    "AppContainer": {
+      "file": "src/components/layout/AppContainer.tsx",
+      "web": "src/components/layout/AppContainer.tsx (the SCN-5 'SafeArea wrapper')",
+      "background": "#111111",
+      "text": "#FFFFFF",
+      "paddingHorizontal": 20,
+      "maxWidth": 448,
+      "flush": "removes the horizontal padding",
+      "safeArea": "native-only: react-native-safe-area-context, prop edges (default top + bottom). Screens inside a tab navigator pass edges={['top']}; the tab bar owns the bottom inset.",
+      "source": "w-full max-w-md mx-auto bg-black text-white px-5; web pads the bottom with env(safe-area-inset-bottom)"
+    },
+    "SlayPressable": {
+      "file": "src/components/ui/SlayPressable.tsx",
+      "role": "The one pressed-state primitive the others build on. Pressed styles come from the component using it.",
+      "feedback": "style callback on pressed; optional haptic; android_ripple off unless ripple prop is set",
+      "ripple": {
+        "default": "off",
+        "optInColor": "rgba(255,255,255,0.10)",
+        "allowedOn": [
+          "ghost button",
+          "list rows"
+        ]
+      },
+      "minimumTouchTarget": 44
+    }
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* ── Document chrome. Dark only, like the product: specimens must sit on the real ground. ── */
+:root {
+  --ground: #111111; --surface: #1A1A1A; --line: rgba(255,255,255,.10); --line-2: rgba(255,255,255,.16);
+  --ink: #FFFFFF; --ink-2: rgba(255,255,255,.62); --ink-3: rgba(255,255,255,.42);
+  --pink: #FF2D8E; --lime: #9DFF00; --cyan: #00F0FF; --purple: #6A00FF; --orange: #FF8A00;
+  --font: "Nunito", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html { background: var(--ground); }
+body { margin: 0; background: var(--ground); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 20px; padding-block: 0 72px; }
+code { font-family: var(--mono); font-size: 12px; color: var(--ink); background: rgba(255,255,255,.07); padding: 1px 5px; border-radius: 4px; white-space: nowrap; }
+header.top { padding-block: 48px 28px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+.eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 14px; }
+.eyebrow b { color: var(--pink); font-weight: 500; }
+h1 { font-size: clamp(30px, 6vw, 44px); font-weight: 900; line-height: 1.05; letter-spacing: -.02em; margin: 0 0 14px; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--pink); }
+.lede { max-width: 64ch; color: var(--ink-2); margin: 0; }
+.lede strong { color: var(--ink); }
+section { padding-block: 40px; border-bottom: 1px solid var(--line); }
+h2 { font-size: 24px; font-weight: 800; letter-spacing: -.01em; margin: 0 0 6px; }
+.src { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); margin: 0 0 22px; }
+.src b { color: var(--ink-2); font-weight: 500; }
+h3 { font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin: 30px 0 14px; }
+p.note { max-width: 68ch; color: var(--ink-2); margin: 12px 0 0; font-size: 14px; }
+p.note b { color: var(--ink); }
+.scroll { overflow-x: auto; }
+
+/* Decisions */
+.decs { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
+.dec { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--orange); border-radius: 0 12px 12px 0; padding: 16px 18px; }
+.dec p { margin: 0; }
+.dec-id { font-family: var(--mono); font-size: 11.5px; color: var(--orange); margin-bottom: 10px !important; }
+.dec-prompt, .dec-do { font-size: 13.5px; margin-bottom: 8px !important; }
+.dec-prompt { color: var(--ink-3); text-decoration: line-through; text-decoration-color: rgba(255,255,255,.25); }
+.dec-prompt span, .dec-do span { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; margin-bottom: 2px; }
+.dec-prompt span { color: var(--ink-3); }
+.dec-do { color: var(--ink); font-weight: 600; }
+.dec-do span { color: var(--lime); font-weight: 400; }
+.dec-why { font-size: 13px; color: var(--ink-2); }
+
+/* Tokens */
+.sws { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.sw { display: grid; gap: 4px; font-size: 13px; }
+.sw i { display: block; height: 56px; border-radius: 12px; border: 1px solid var(--line-2); }
+.sw em { font-style: normal; font-size: 11px; color: var(--ink-3); }
+table.t { border-collapse: collapse; font-size: 13px; min-width: 520px; }
+table.t th, table.t td { text-align: left; padding: 8px 14px 8px 0; border-bottom: 1px solid var(--line); vertical-align: middle; }
+table.t thead th { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); font-weight: 400; }
+.chip { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 6px; border: 1px solid var(--line-2); }
+
+/* Type */
+.type-row { display: grid; grid-template-columns: 150px 1fr; gap: 6px 20px; padding: 14px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.type-name { display: grid; gap: 3px; }
+.type-name span { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+.type-sample { font-family: var(--font); color: #FFFFFF; min-width: 0; overflow-wrap: anywhere; }
+.type-vals { grid-column: 2; display: flex; flex-wrap: wrap; gap: 4px 14px; font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); }
+.type-vals .dim { color: var(--ink-3); }
+
+/* ── SPECIMEN: SlayButton. Values from SlayButton.tsx; tracking-wide = 0.05em per the web config. ── */
+.b { display: inline-flex; align-items: center; justify-content: center; font-family: var(--font); font-weight: 800; text-transform: uppercase; letter-spacing: .05em; user-select: none; transition: all 150ms; border: 0; white-space: nowrap; }
+.b-sm { height: 40px; padding: 0 16px; font-size: 14px; line-height: 20px; border-radius: 12px; gap: 6px; }   /* h-10 px-4 text-sm rounded-xl gap-1.5 */
+.b-md { height: 52px; padding: 0 24px; font-size: 16px; line-height: 24px; border-radius: 16px; gap: 8px; }   /* h-13 (intended; see D5) px-6 text-base rounded-2xl gap-2 */
+.b-lg { height: 64px; padding: 0 32px; font-size: 18px; line-height: 28px; border-radius: 16px; gap: 10px; }  /* h-16 px-8 text-lg rounded-2xl gap-2.5 */
+.b-pink  { background: #FF2D8E; color: #FFFFFF; }                                     /* bg-neon-pink text-white */
+.b-green { background: #9DFF00; color: #111111; }                                     /* bg-lime-green text-black */
+.b-ghost { background: transparent; color: #FFFFFF; box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); } /* border border-white/25 */
+.b-pink.is-pressed, .b-green.is-pressed { background-image: linear-gradient(rgba(0,0,0,.10), rgba(0,0,0,.10)); } /* active:brightness-90 == 10% black overlay */
+.b-ghost.is-pressed { background: rgba(255,255,255,.05); }                            /* active:bg-white/5 */
+.b.is-disabled, .b.is-loading { opacity: .4; }                                        /* disabled:opacity-40 (loading disables) */
+.b-web-today { height: auto; }                                                        /* h-13 generates no CSS in Tailwind 3 */
+.spin { animation: spin 1s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+table.matrix { border-collapse: separate; border-spacing: 14px 12px; margin-left: -14px; }
+table.matrix thead th { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); font-weight: 400; text-align: left; }
+table.matrix tbody th { text-align: left; font-weight: 400; white-space: nowrap; }
+.sub { display: block; font-family: var(--mono); font-size: 10.5px; color: var(--ink-3); margin-top: 3px; }
+.size-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; padding: 10px 0; }
+.vals { font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); }
+.cmp { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-end; margin-top: 8px; }
+.cmp figure { margin: 0; display: grid; gap: 8px; justify-items: start; }
+.cmp figcaption { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+
+/* ── SPECIMEN: SlayCard. bg-[#1a1a1a] rounded-2xl border p-4 overflow-hidden, per-variant border + glow. ── */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 18px; }
+.c { position: relative; display: flex; flex-direction: column; background: #1A1A1A; border-radius: 16px; border: 1px solid; padding: 16px; overflow: hidden; transition: all 200ms; }
+.c p { margin: 0; }
+.c-k { margin-bottom: 10px !important; }
+.c-t { font-size: 16px; font-weight: 700; line-height: 1.25; }          /* h3 at 390 */
+.c-s { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.5); margin-top: 2px !important; }
+.c-pink   { border-color: rgba(255,45,142,.60); box-shadow: 0 0 12px 0 rgba(255,45,142,.25); }
+.c-green  { border-color: rgba(157,255,0,.60);  box-shadow: 0 0 12px 0 rgba(157,255,0,.20); }
+.c-cyan   { border-color: rgba(0,240,255,.60);  box-shadow: 0 0 12px 0 rgba(0,240,255,.20); }
+.c-purple { border-color: rgba(106,0,255,.60);  box-shadow: 0 0 12px 0 rgba(106,0,255,.25); }
+.c-ghost  { border-color: rgba(255,255,255,.15); }
+.c.is-pressed { transform: scale(1.02); }
+.c-pink.is-pressed  { border-color: #FF2D8E; box-shadow: 0 0 24px 4px rgba(255,45,142,.45); }
+.c-green.is-pressed { border-color: #9DFF00; box-shadow: 0 0 24px 4px rgba(157,255,0,.40); }
+.c-ghost.is-pressed { border-color: rgba(255,255,255,.40); background: #252525; }     /* white/5 over #1A1A1A */
+.c-hd, .c-ft { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.c-hd { padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,.10); }  /* Header divided */
+.c-ft { padding-top: 12px; margin-top: 12px; border-top: 1px solid rgba(255,255,255,.10); }           /* Footer divided */
+.c-flush { padding: 0; }
+.media { height: 96px; background: linear-gradient(135deg, #6A00FF, #FF2D8E); }
+.anat { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; margin-top: 4px; }
+.tag { font-family: var(--mono); font-size: 10.5px; color: var(--ink-3); }
+
+/* ── SPECIMEN: SlayInput. INPUT_CLASS from formStyles.ts; label = .text-label text-white/50. ── */
+.fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 22px 24px; }
+.field { display: flex; flex-direction: column; gap: 6px; }                           /* gap-1.5 */
+.state-tag { margin: 0 0 4px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+.lbl { font-size: 10px; font-weight: 700; line-height: 1.25; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+.in { display: block; width: 100%; padding: 12px 16px; border-radius: 12px; background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.20); color: #FFFFFF; font-size: 14px; line-height: 21px; transition: all 150ms; }
+.in.ph { color: rgba(255,255,255,.40); }                                              /* placeholder-white/40 */
+.in.is-focus { background: rgba(255,255,255,.15); border-color: #FF2D8E; box-shadow: 0 0 0 2px rgba(255,45,142,.60); }
+.in.is-disabled { opacity: .5; }
+.caret { display: inline-block; width: 2px; height: 17px; background: #FF2D8E; vertical-align: -3px; margin-left: 1px; }  /* caret-neon-pink */
+.hint { margin: 0; font-size: 12px; font-weight: 500; line-height: 1.25; color: rgba(255,255,255,.40); }
+.err { margin: 0; font-size: 12px; font-weight: 600; line-height: 1.25; color: #FF2D8E; }
+.ok { margin: 0; font-size: 12px; font-weight: 600; line-height: 1.25; color: #9DFF00; }
+
+/* ── SPECIMEN: AppContainer + safe area, drawn at 390×844 scale 0.5. ── */
+.phone-wrap { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; }
+.phone { position: relative; width: 195px; height: 422px; border-radius: 28px; background: #111111; border: 1px solid var(--line-2); overflow: hidden; flex-shrink: 0; }
+.inset-top { position: absolute; inset: 0 0 auto 0; height: 29.5px; background: repeating-linear-gradient(135deg, rgba(0,240,255,.16) 0 4px, transparent 4px 8px); }
+.inset-bot { position: absolute; inset: auto 0 0 0; height: 17px; background: repeating-linear-gradient(135deg, rgba(0,240,255,.16) 0 4px, transparent 4px 8px); }
+.gutter { position: absolute; top: 29.5px; bottom: 17px; width: 10px; background: rgba(255,45,142,.14); }
+.gutter.l { left: 0; } .gutter.r { right: 0; }
+.content { position: absolute; top: 37px; left: 10px; right: 10px; display: grid; gap: 7px; }
+.content i { display: block; height: 8px; border-radius: 3px; background: rgba(255,255,255,.14); }
+.content i:first-child { width: 60%; height: 12px; background: rgba(255,255,255,.35); }
+.legend { display: grid; gap: 10px; font-size: 13.5px; color: var(--ink-2); max-width: 46ch; }
+.legend div { display: flex; gap: 10px; align-items: baseline; }
+.legend b { color: var(--ink); font-weight: 700; }
+.key { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; transform: translateY(2px); }
+
+@media (prefers-reduced-motion: reduce) { .spin { animation: none; } .b, .c, .in { transition: none; } }
+@media (max-width: 560px) { .type-row { grid-template-columns: 1fr; } .type-vals { grid-column: 1; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <p class="eyebrow">Design reference · <b>SCN-5</b> · slay-city-native</p>
+  <h1>SLAY CITY Native <em>UI components</em></h1>
+  <p class="lede">
+    Text, button, card, input, screen container and pressable — every state, taken from the web app's own
+    source at <strong>rubanwd/slay-city@7612da5</strong>, not estimated from screenshots. Dark only, like the
+    product. Units are React Native points; web pixels map one to one. The same values are in machine-readable
+    form in <code>&lt;script id="slay-ui-spec"&gt;</code> at the top of this file.
+  </p>
+</header>
+
+<section id="decisions">
+  <h2>Before you implement</h2>
+  <p class="src">Nine places where the SCN-5 prompt and the web app disagree. The web app wins in each; here is why.</p>
+  <div class="decs">
+      <article class="dec">
+        <p class="dec-id">D1 · Colour scheme</p>
+        <p class="dec-prompt"><span>Prompt says</span>Support dark mode via NativeWind&#x27;s scheme detection; design light and dark modes.</p>
+        <p class="dec-do"><span>Do instead</span>Dark only. Do not implement a light palette, `dark:` variants or colour-scheme detection.</p>
+        <p class="dec-why">The web app has no light theme anywhere — no `dark:` variant, no prefers-color-scheme rule. AGENTS.md makes #111111 the base. This repo already agrees: app.json sets userInterfaceStyle &quot;dark&quot; and tailwind.config.js sets darkMode &quot;class&quot; because &quot;the app is dark-only&quot;.</p>
+      </article>
+      <article class="dec">
+        <p class="dec-id">D2 · Button variant names</p>
+        <p class="dec-prompt"><span>Prompt says</span>Button (primary, secondary, tertiary).</p>
+        <p class="dec-do"><span>Do instead</span>Keep the web&#x27;s names: variant &quot;pink&quot; | &quot;green&quot; | &quot;ghost&quot;, default &quot;pink&quot;. Keep sizes &quot;sm&quot; | &quot;md&quot; | &quot;lg&quot;, default &quot;md&quot;, and the loading, iconLeft, iconRight props.</p>
+        <p class="dec-why">WP-1.3 AC1: every web variant exists under the same prop name, so ported screens stay greppable against upstream. By usage, green is the everyday call to action (70 of 128 buttons), ghost the secondary (35), pink the accent (23) — do not remap them onto primary/secondary/tertiary.</p>
+      </article>
+      <article class="dec">
+        <p class="dec-id">D3 · Palette size</p>
+        <p class="dec-prompt"><span>Prompt says</span>Use the six brand colours.</p>
+        <p class="dec-do"><span>Do instead</span>Seven tokens: neon-pink, lime-green, cyan, purple, neon-orange, black, white. Plus the neutral `surface` #1A1A1A, added to packages/tokens alongside this document.</p>
+        <p class="dec-why">AGENTS.md lists seven. `surface` is the web SlayCard background, which upstream writes as a raw bg-[#1a1a1a]; naming it keeps raw hex out of this repo.</p>
+      </article>
+      <article class="dec">
+        <p class="dec-id">D4 · NativeWind preset</p>
+        <p class="dec-prompt"><span>Prompt says</span>Export a shared preset file for NativeWind configuration (tailwind.config.js in the root).</p>
+        <p class="dec-do"><span>Do instead</span>It exists. Extend packages/tokens/preset.js, which tailwind.config.js already consumes. Do not create a second preset.</p>
+        <p class="dec-why">Built in WP-0.1; one preset is what keeps a className and a StyleSheet from drifting apart.</p>
+      </article>
+      <article class="dec">
+        <p class="dec-id">D5 · Medium button height</p>
+        <p class="dec-prompt"><span>Prompt says</span>(not mentioned)</p>
+        <p class="dec-do"><span>Do instead</span>md is 52pt tall.</p>
+        <p class="dec-why">The web asks for h-13 (3.25rem = 52px), but h-13 is not in Tailwind 3&#x27;s spacing scale and generates no CSS, so the 49 md buttons in production render at their 24px line height. 52 is the evident intent; 24 would also break the 44pt minimum touch target. This is a web bug, not a design.</p>
+      </article>
+      <article class="dec">
+        <p class="dec-id">D6 · Ripple feedback</p>
+        <p class="dec-prompt"><span>Prompt says</span>Pressable with ripple feedback.</p>
+        <p class="dec-do"><span>Do instead</span>Pressed feedback is the web&#x27;s darkening (below), on both platforms, plus a light haptic on buttons. Android ripple is off by default; allow it only as an opt-in on ghost and list-row surfaces, colour rgba(255,255,255,0.10).</p>
+        <p class="dec-why">The web has no ripple. iOS has none either, so ripple-only feedback leaves iOS with nothing, and a ripple on top of the darkening doubles the feedback on pink and green.</p>
+      </article>
+      <article class="dec">
+        <p class="dec-id">D7 · Input error state</p>
+        <p class="dec-prompt"><span>Prompt says</span>Design the error state.</p>
+        <p class="dec-do"><span>Do instead</span>The field itself does not change. The error is a message under it in neon-pink, announced to screen readers. There is no red.</p>
+        <p class="dec-why">That is exactly the web: aria-invalid is set but unstyled, and every form reports errors as text-neon-pink under the field. Red is not in the palette, and a pink border would be indistinguishable from the focus state.</p>
+      </article>
+      <article class="dec">
+        <p class="dec-id">D8 · Type scale</p>
+        <p class="dec-prompt"><span>Prompt says</span>Heading, body, caption using the web app&#x27;s type scale.</p>
+        <p class="dec-do"><span>Do instead</span>Size text with fluidFontSize(token, width) from packages/tokens using useWindowDimensions(). At the 390pt design width every style renders at its minimum.</p>
+        <p class="dec-why">The web scale is clamp(min, vw, max); at 390 each preferred value sits below its minimum (h1: 7vw = 27.3 &lt; 28). Heading → display/h1/h2/h3, body → body/bodyStrong, caption → small/label.</p>
+      </article>
+      <article class="dec">
+        <p class="dec-id">D9 · Small button touch target</p>
+        <p class="dec-prompt"><span>Prompt says</span>(not mentioned)</p>
+        <p class="dec-do"><span>Do instead</span>sm stays 40pt visually; add hitSlop {top: 2, bottom: 2} so the touch target is 44pt.</p>
+        <p class="dec-why">AGENTS.md here requires 44×44pt touch targets; the web&#x27;s sm is 40px tall.</p>
+      </article></div>
+</section>
+
+<section id="tokens">
+  <h2>Tokens</h2>
+  <p class="src"><b>packages/tokens</b> · colours locked by AGENTS.md · type from src/styles/typography.css</p>
+  <div class="sws"><div class="sw"><i style="background:#FF2D8E"></i><b>neon-pink</b><code>#FF2D8E</code></div><div class="sw"><i style="background:#9DFF00"></i><b>lime-green</b><code>#9DFF00</code></div><div class="sw"><i style="background:#00F0FF"></i><b>cyan</b><code>#00F0FF</code></div><div class="sw"><i style="background:#6A00FF"></i><b>purple</b><code>#6A00FF</code></div><div class="sw"><i style="background:#FF8A00"></i><b>neon-orange</b><code>#FF8A00</code></div><div class="sw"><i style="background:#111111"></i><b>black</b><code>#111111</code></div><div class="sw"><i style="background:#FFFFFF"></i><b>white</b><code>#FFFFFF</code></div><div class="sw"><i style="background:#1A1A1A"></i><b>surface</b><code>#1A1A1A</code><em>neutral · card bg</em></div></div>
+
+  <h3>White at opacity — every grey in the product</h3>
+  <div class="scroll"><table class='t'><thead><tr><th>token</th><th>value</th><th>on #111111</th><th>on #1A1A1A</th></tr></thead><tbody><tr><th><code>white/5</code></th><td><code>rgba(255,255,255,0.05)</code></td><td><i class='chip' style='background:#1D1D1D'></i><code>#1D1D1D</code></td><td><i class='chip' style='background:#252525'></i><code>#252525</code></td></tr><tr><th><code>white/10</code></th><td><code>rgba(255,255,255,0.10)</code></td><td><i class='chip' style='background:#292929'></i><code>#292929</code></td><td><i class='chip' style='background:#313131'></i><code>#313131</code></td></tr><tr><th><code>white/15</code></th><td><code>rgba(255,255,255,0.15)</code></td><td><i class='chip' style='background:#353535'></i><code>#353535</code></td><td><i class='chip' style='background:#3C3C3C'></i><code>#3C3C3C</code></td></tr><tr><th><code>white/20</code></th><td><code>rgba(255,255,255,0.20)</code></td><td><i class='chip' style='background:#414141'></i><code>#414141</code></td><td><i class='chip' style='background:#484848'></i><code>#484848</code></td></tr><tr><th><code>white/25</code></th><td><code>rgba(255,255,255,0.25)</code></td><td><i class='chip' style='background:#4C4C4C'></i><code>#4C4C4C</code></td><td><i class='chip' style='background:#535353'></i><code>#535353</code></td></tr><tr><th><code>white/40</code></th><td><code>rgba(255,255,255,0.40)</code></td><td><i class='chip' style='background:#707070'></i><code>#707070</code></td><td><i class='chip' style='background:#767676'></i><code>#767676</code></td></tr><tr><th><code>white/50</code></th><td><code>rgba(255,255,255,0.50)</code></td><td><i class='chip' style='background:#888888'></i><code>#888888</code></td><td><i class='chip' style='background:#8C8C8C'></i><code>#8C8C8C</code></td></tr><tr><th><code>white/60</code></th><td><code>rgba(255,255,255,0.60)</code></td><td><i class='chip' style='background:#A0A0A0'></i><code>#A0A0A0</code></td><td><i class='chip' style='background:#A3A3A3'></i><code>#A3A3A3</code></td></tr></tbody></table></div>
+  <p class="note">The web never uses a grey hex; every neutral is white at an opacity over the ground. Use the
+  <b>rgba</b> value in React Native. The composited hexes are for comparison only.</p>
+
+  <h3>Type · Nunito · at the 390pt design width</h3>
+  
+      <div class="type-row">
+        <div class="type-name"><code>display</code><span>.text-display</span></div>
+        <div class="type-sample" style="font-size:40px;font-weight:900;line-height:1.1;letter-spacing:-0.02em;">AMAZING!</div>
+        <div class="type-vals">
+          <span>40/44.0</span><span>w900</span>
+          <span>ls -0.8</span><span class="dim">40–64 · 10vw</span>
+          <span class="dim">320: 40 · 430: 43.0</span>
+        </div>
+      </div>
+      <div class="type-row">
+        <div class="type-name"><code>h1</code><span>.text-h1</span></div>
+        <div class="type-sample" style="font-size:28px;font-weight:800;line-height:1.1;letter-spacing:-0.02em;">Word Quest</div>
+        <div class="type-vals">
+          <span>28/30.8</span><span>w800</span>
+          <span>ls -0.56</span><span class="dim">28–40 · 7vw</span>
+          <span class="dim">320: 28 · 430: 30.1</span>
+        </div>
+      </div>
+      <div class="type-row">
+        <div class="type-name"><code>h2</code><span>.text-h2</span></div>
+        <div class="type-sample" style="font-size:20px;font-weight:700;line-height:1.25;letter-spacing:0em;">City Map</div>
+        <div class="type-vals">
+          <span>20/25.0</span><span>w700</span>
+          <span>ls 0</span><span class="dim">20–28 · 5vw</span>
+          <span class="dim">320: 20 · 430: 21.5</span>
+        </div>
+      </div>
+      <div class="type-row">
+        <div class="type-name"><code>h3</code><span>.text-h3</span></div>
+        <div class="type-sample" style="font-size:16px;font-weight:700;line-height:1.25;letter-spacing:0em;">Coffee Corner</div>
+        <div class="type-vals">
+          <span>16/20.0</span><span>w700</span>
+          <span>ls 0</span><span class="dim">16–20 · 4vw</span>
+          <span class="dim">320: 16 · 430: 17.2</span>
+        </div>
+      </div>
+      <div class="type-row">
+        <div class="type-name"><code>body</code><span>.text-body</span></div>
+        <div class="type-sample" style="font-size:14px;font-weight:400;line-height:1.5;letter-spacing:0em;">Match each word to its picture before the timer runs out.</div>
+        <div class="type-vals">
+          <span>14/21.0</span><span>w400</span>
+          <span>ls 0</span><span class="dim">14–16 · 3.5vw</span>
+          <span class="dim">320: 14 · 430: 15.05</span>
+        </div>
+      </div>
+      <div class="type-row">
+        <div class="type-name"><code>bodyStrong</code><span>.text-body-strong</span></div>
+        <div class="type-sample" style="font-size:14px;font-weight:600;line-height:1.5;letter-spacing:0em;">apple · banana · cherry</div>
+        <div class="type-vals">
+          <span>14/21.0</span><span>w600</span>
+          <span>ls 0</span><span class="dim">14–16 · 3.5vw</span>
+          <span class="dim">320: 14 · 430: 15.05</span>
+        </div>
+      </div>
+      <div class="type-row">
+        <div class="type-name"><code>small</code><span>.text-small</span></div>
+        <div class="type-sample" style="font-size:12px;font-weight:500;line-height:1.25;letter-spacing:0em;">Owned · 150 coins</div>
+        <div class="type-vals">
+          <span>12/15.0</span><span>w500</span>
+          <span>ls 0</span><span class="dim">12–14 · 3vw</span>
+          <span class="dim">320: 12 · 430: 12.9</span>
+        </div>
+      </div>
+      <div class="type-row">
+        <div class="type-name"><code>label</code><span>.text-label</span></div>
+        <div class="type-sample" style="font-size:10px;font-weight:700;line-height:1.25;letter-spacing:0.12em;text-transform:uppercase;">Vocabulary learned</div>
+        <div class="type-vals">
+          <span>10/12.5</span><span>w700</span>
+          <span>ls 1.2</span><span class="dim">10–12 · 2.5vw</span>
+          <span class="dim">320: 10 · 430: 10.75</span>
+        </div>
+      </div>
+  <p class="note">Sizes are fluid — <code>clamp(min, vw, max)</code>. At 390 every style is at its minimum; it grows
+  slowly on wider phones and reaches the maximum only on tablets. Use <code>fluidFontSize(token, width)</code> from
+  <code>packages/tokens</code> with <code>useWindowDimensions()</code>. Letter spacing above is already converted from
+  em to points at 390; recompute it from <code>letterSpacingEm × fontSize</code> when the size changes.
+  <b>Heading</b> = display, h1, h2, h3 · <b>body</b> = body, bodyStrong · <b>caption</b> = small, label.</p>
+</section>
+
+<section id="button">
+  <h2>SlayButton</h2>
+  <p class="src"><b>web</b> src/components/ui/SlayButton.tsx → <b>native</b> src/components/ui/SlayButton.tsx · 128 uses in the web app</p>
+  <h3>Variants × states · md</h3>
+  <div class='scroll'><table class='matrix'><thead><tr><th></th><th>default</th><th>pressed</th><th>disabled</th><th>loading</th></tr></thead><tbody><tr><th><code>pink</code><span class='sub'>23 uses</span></th><td><span class="b b-pink b-md"><span>Play</span></span></td><td><span class="b b-pink b-md is-pressed"><span>Play</span></span></td><td><span class="b b-pink b-md is-disabled"><span>Play</span></span></td><td><span class="b b-pink b-md is-loading"><svg class="spin" width="1em" height="1em" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle opacity=".25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path opacity=".75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg><span>Play</span></span></td></tr><tr><th><code>green</code><span class='sub'>70 uses</span></th><td><span class="b b-green b-md"><span>Play</span></span></td><td><span class="b b-green b-md is-pressed"><span>Play</span></span></td><td><span class="b b-green b-md is-disabled"><span>Play</span></span></td><td><span class="b b-green b-md is-loading"><svg class="spin" width="1em" height="1em" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle opacity=".25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path opacity=".75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg><span>Play</span></span></td></tr><tr><th><code>ghost</code><span class='sub'>35 uses</span></th><td><span class="b b-ghost b-md"><span>Play</span></span></td><td><span class="b b-ghost b-md is-pressed"><span>Play</span></span></td><td><span class="b b-ghost b-md is-disabled"><span>Play</span></span></td><td><span class="b b-ghost b-md is-loading"><svg class="spin" width="1em" height="1em" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle opacity=".25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path opacity=".75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg><span>Play</span></span></td></tr></tbody></table></div>
+  <p class="note"><b>Pressed</b> on pink and green is the web's <code>active:brightness-90</code>, which is exactly a
+  10% black overlay (≈ <code>#E62880</code> and <code>#8DE600</code>). <b>Loading</b> puts a spinner in place of the left
+  icon in the label colour and disables the button, so the 40% disabled opacity applies to it too — that is what the
+  web shows. Buttons have no error state. Add a light haptic on press.</p>
+
+  <h3>Sizes</h3>
+  <div class="size-row"><span class="b b-green b-sm"><span>Start mission</span></span>
+          <span class="vals"><code>sm</code> h 40 · px 16 · 14/20 · r 12 · gap 6 · ls 0.7</span></div><div class="size-row"><span class="b b-green b-md"><span>Start mission</span></span>
+          <span class="vals"><code>md</code> h 52 · px 24 · 16/24 · r 16 · gap 8 · ls 0.8</span></div><div class="size-row"><span class="b b-green b-lg"><span>Start mission</span></span>
+          <span class="vals"><code>lg</code> h 64 · px 32 · 18/28 · r 16 · gap 10 · ls 0.9</span></div>
+  <div class="cmp">
+    <figure><span class="b b-pink b-md"><span>Next</span></span><figcaption>md · native · 52pt</figcaption></figure>
+    <figure><span class="b b-pink b-md b-web-today"><span>Next</span></span><figcaption>md · web today · 24px (D5)</figcaption></figure>
+    <figure><span class="b b-green b-sm"><span>Save</span></span><figcaption>sm · 40pt visual · 44pt touch (D9)</figcaption></figure>
+  </div>
+</section>
+
+<section id="card">
+  <h2>SlayCard</h2>
+  <p class="src"><b>web</b> src/components/ui/SlayCard.tsx → <b>native</b> src/components/ui/SlayCard.tsx · Header / Content / Footer subcomponents</p>
+  <h3>Variants · at rest</h3>
+  <div class="cards"><div class="c c-pink"><p class="c-k"><code>pink</code></p><p class="c-t">Coffee Corner</p>
+          <p class="c-s">3 missions · 120 XP</p></div><div class="c c-green"><p class="c-k"><code>green</code></p><p class="c-t">Coffee Corner</p>
+          <p class="c-s">3 missions · 120 XP</p></div><div class="c c-cyan"><p class="c-k"><code>cyan</code></p><p class="c-t">Coffee Corner</p>
+          <p class="c-s">3 missions · 120 XP</p></div><div class="c c-purple"><p class="c-k"><code>purple</code></p><p class="c-t">Coffee Corner</p>
+          <p class="c-s">3 missions · 120 XP</p></div><div class="c c-ghost"><p class="c-k"><code>ghost</code></p><p class="c-t">Coffee Corner</p>
+          <p class="c-s">3 missions · 120 XP</p></div></div>
+  <h3>Pressed · the web's hover, shown while pressed</h3>
+  <div class="cards"><div class="c c-pink is-pressed"><p class="c-k"><code>pink</code> pressed</p><p class="c-t">Coffee Corner</p></div><div class="c c-green is-pressed"><p class="c-k"><code>green</code> pressed</p><p class="c-t">Coffee Corner</p></div><div class="c c-ghost is-pressed"><p class="c-k"><code>ghost</code> pressed</p><p class="c-t">Coffee Corner</p></div></div>
+  <h3>Anatomy</h3>
+  <div class="anat">
+    <div class="c c-cyan">
+      <div class="c-hd"><span style="font-weight:700">Header</span><span class="tag">divided</span></div>
+      <p style="font-size:14px;line-height:21px;color:rgba(255,255,255,.62);margin:0">Content fills the rest: flex 1, minWidth 0.</p>
+      <div class="c-ft"><span class="tag">Footer · divided</span><span class="b b-ghost b-sm"><span>Open</span></span></div>
+    </div>
+    <div class="c c-purple c-flush"><div class="media"></div>
+      <div style="padding:16px"><p class="c-t">flush</p><p class="c-s">no padding — for full-bleed media</p></div></div>
+  </div>
+  <p class="note">The glow is RN <code>boxShadow</code> (new architecture, already on in app.json). Put it on an outer
+  View and <code>overflow: hidden</code> + radius on an inner one: iOS clips a shadow drawn by the same view that clips its
+  children. The web's <code>sm:p-5</code> applies from 640pt, so phones always get 16.</p>
+</section>
+
+<section id="input">
+  <h2>SlayInput</h2>
+  <p class="src"><b>web</b> no component — the INPUT_CLASS string in five forms (formStyles.ts, AuthForm, OnboardingForm, …) → <b>native</b> src/components/ui/SlayInput.tsx</p>
+  <div class="fields"><div class="field"><p class="state-tag">Default</p>
+          <span class="lbl">Username</span><span class="in ph">Your username</span></div><div class="field"><p class="state-tag">Filled</p>
+          <span class="lbl">Username</span><span class="in">slay_master</span><p class="hint">2–20 letters, numbers, spaces or _</p></div><div class="field"><p class="state-tag">Focused</p>
+          <span class="lbl">Username</span><span class="in is-focus">slay_mas<i class="caret"></i></span></div><div class="field"><p class="state-tag">Disabled</p>
+          <span class="lbl">Username</span><span class="in is-disabled">slay_master</span></div><div class="field"><p class="state-tag">Error</p>
+          <span class="lbl">Username</span><span class="in">sl</span><p class="err" role="alert">Username must be at least 2 characters.</p></div><div class="field"><p class="state-tag">Success</p>
+          <span class="lbl">Username</span><span class="in">slay_master</span><p class="ok">Username saved.</p></div></div>
+  <p class="note"><b>Error</b> leaves the field untouched and puts a neon-pink message under it with
+  <code>accessibilityRole="alert"</code> (D7). Form-level errors — a failed sign-in — are centred, 14/20, weight 600,
+  neon-pink. The focus ring is a 2pt spread shadow <i>outside</i> the 1pt border. Set <code>selectionColor</code> to neon-pink for the caret.</p>
+</section>
+
+<section id="screen">
+  <h2>AppContainer · the safe-area wrapper</h2>
+  <p class="src"><b>web</b> src/components/layout/AppContainer.tsx → <b>native</b> src/components/layout/AppContainer.tsx</p>
+  <div class="phone-wrap">
+    <div class="phone" aria-label="390 by 844 screen at half scale">
+      <div class="inset-top"></div><div class="gutter l"></div><div class="gutter r"></div><div class="inset-bot"></div>
+      <div class="content"><i></i><i></i><i></i><i style="width:80%"></i></div>
+    </div>
+    <div class="legend">
+      <div><span class="key" style="background:#111111;border:1px solid rgba(255,255,255,.2)"></span><span><b>Ground</b> #111111, text white.</span></div>
+      <div><span class="key" style="background:rgba(255,45,142,.4)"></span><span><b>Gutter</b> 20pt left and right (<code>px-5</code>); <code>flush</code> removes it.</span></div>
+      <div><span class="key" style="background:rgba(0,240,255,.4)"></span><span><b>Safe area</b> from react-native-safe-area-context, prop <code>edges</code>, default top + bottom. Inside the tab navigator pass <code>['top']</code> — the tab bar owns the bottom. Insets drawn here are an example device (59 / 34).</span></div>
+      <div><span class="key" style="background:transparent;border:1px dashed rgba(255,255,255,.4)"></span><span><b>Max width</b> 448pt, centred (<code>max-w-md</code>) — only matters on tablets.</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="pressable">
+  <h2>SlayPressable</h2>
+  <p class="src"><b>native only</b> src/components/ui/SlayPressable.tsx — the one pressed-state primitive the others build on</p>
+  <div class="scroll"><table class="t">
+    <thead><tr><th>used by</th><th>pressed looks like</th><th>web source</th><th>haptic</th></tr></thead>
+    <tbody>
+      <tr><td>SlayButton pink / green</td><td>10% black overlay</td><td><code>active:brightness-90</code></td><td>light</td></tr>
+      <tr><td>SlayButton ghost</td><td>fill <code>rgba(255,255,255,0.05)</code></td><td><code>active:bg-white/5</code></td><td>light</td></tr>
+      <tr><td>SlayCard (pressable)</td><td>scale 1.02, full-colour border, stronger glow</td><td><code>hover:scale-[1.02]</code></td><td>none</td></tr>
+      <tr><td>list rows (future)</td><td>opt-in ripple <code>rgba(255,255,255,0.10)</code>, Android only</td><td>—</td><td>none</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">Android ripple is <b>off</b> by default (D6): the web has none, iOS has none, and on pink or green it
+  doubles the darkening. Every pressable reaches 44×44pt — pad with <code>hitSlop</code> when the visual is smaller.</p>
+</section>
+
+</div>
+</body>
+</html>

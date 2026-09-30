@@ -1,6 +1,8 @@
 export { colors, semantic, alpha, withAlpha, type ColorName } from "./colors";
 export {
   fontSize,
+  fluidFontSize,
+  type FontSizeToken,
   fontWeight,
   lineHeight,
   letterSpacingEm,
