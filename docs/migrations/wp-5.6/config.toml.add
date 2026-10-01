@@ -1,0 +1,24 @@
+# SLAY CITY — WP-5.6 addition to `supabase/config.toml`
+#
+# Paste these two blocks into the web repository's `supabase/config.toml`,
+# immediately after the existing `[functions.update-streak]` block (currently the
+# only one, just before `[analytics]`). Nothing else in that file changes.
+#
+# `verify_jwt = true` is the platform default and is spelled out anyway, matching
+# how `update-streak` does it: both functions need the caller's identity, and an
+# anonymous drafting call is not a degraded case to handle gracefully — it is a
+# call that must never reach the function body. The gateway rejecting it is the
+# first of the gates; `_shared/draftHandler.ts` re-checks the header regardless,
+# because a config regression should not become an open endpoint.
+
+# AI vocabulary drafting (OD-1). Reads OPENROUTER_API_KEY from Supabase Secrets;
+# re-checks the caller's role and the topic's ownership in SQL, and claims
+# rate-limit quota, before any outbound request.
+[functions.draft-vocabulary]
+enabled = true
+verify_jwt = true
+
+# AI grammar drafting (OD-1). Same gates, same secrets, same taxonomy.
+[functions.draft-grammar]
+enabled = true
+verify_jwt = true

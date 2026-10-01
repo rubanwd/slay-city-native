@@ -2,8 +2,16 @@
 
 > **Status: NOT OPENED.** This is a staged pull-request description for
 > [rubanwd/slay-city](https://github.com/rubanwd/slay-city), written by `SCN-7`
-> so the work is specified before anyone starts it. Nothing in it has been
-> implemented.
+> so the work is specified before anyone starts it.
+>
+> **`SCN-14` (2026-10-01) has now written most of it.** The two text functions,
+> the rate-limit migration, their tests and the web-side thin callers are staged,
+> verified and ready to copy — see
+> [`migrations/wp-5.6/README.md`](migrations/wp-5.6/README.md) for the file map,
+> the destinations and the verification results. What is **still unwritten** is
+> `generate-image` (out of `SCN-14`'s scope) and the `AGENTS.md` amendment, which
+> belongs in the pull request itself. The "Files" and "Test plan" sections below
+> are annotated accordingly.
 >
 > Design and rationale: [EDGE-FUNCTIONS-PLAN.md](EDGE-FUNCTIONS-PLAN.md).
 > Decision: **OD-1 — APPROVED**, 2026-09-29.
@@ -95,34 +103,67 @@ There is no rate limiting on AI spend in this project today. This PR adds:
 
 ### Files
 
+`✅` = written and verified by `SCN-14`, staged at the path in
+[`migrations/wp-5.6/`](migrations/wp-5.6/README.md) given in that file's map.
+`⬜` = still to write.
+
 ```
-supabase/functions/_shared/openrouter.ts                      new
-supabase/functions/_shared/teacherAuth.ts                     new
-supabase/functions/_shared/rateLimit.ts                       new
-supabase/functions/_shared/response.ts                        new
-supabase/functions/_shared/prompts/vocabularyPrompt.ts        moved from src/features/teacher/
-supabase/functions/_shared/prompts/vocabularyPrompt.test.ts   moved
-supabase/functions/_shared/prompts/grammarPrompt.ts           moved from src/features/teacher/
-supabase/functions/_shared/prompts/grammarPrompt.test.ts      moved
-supabase/functions/draft-vocabulary/index.ts                  new
-supabase/functions/draft-vocabulary/index.test.ts             new
-supabase/functions/draft-grammar/index.ts                     new
-supabase/functions/draft-grammar/index.test.ts                new
-supabase/functions/generate-image/index.ts                    new
-supabase/functions/generate-image/index.test.ts               new
-supabase/migrations/<ts>_ai_generation_rate_limit.sql         new
-supabase/config.toml                                          modified — verify_jwt on for all three
-src/features/teacher/openRouterChat.ts                        deleted
-src/features/teacher/vocabularyActions.ts                     modified — thin caller
-src/features/teacher/grammarActions.ts                        modified — thin caller
-src/features/homework/vocabulary.ts                           modified — parseGeneratedWords moved out
-src/features/homework/grammar.ts                              modified — parseGeneratedGrammar moved out
-src/features/admin/openRouterImage.ts                         modified or deleted — see "Open question"
-AGENTS.md                                                     modified — the OD-1 amendment
+✅ supabase/functions/_shared/response.ts                        new
+✅ supabase/functions/_shared/requestBody.ts                     new  (not in the original list)
+✅ supabase/functions/_shared/openrouter.ts                      new
+✅ supabase/functions/_shared/openrouter.test.ts                 new  (not in the original list)
+✅ supabase/functions/_shared/teacherAuth.ts                     new
+✅ supabase/functions/_shared/rateLimit.ts                       new
+✅ supabase/functions/_shared/draftHandler.ts                    new  (the shared gate chain)
+✅ supabase/functions/_shared/edgeRuntime.ts                     new  (the only Deno/supabase-js file)
+✅ supabase/functions/_shared/testPorts.ts                       new  (test-only)
+✅ supabase/functions/_shared/prompts/vocabularyPrompt.ts        moved from src/features/teacher/
+✅ supabase/functions/_shared/prompts/vocabularyPrompt.test.ts   moved
+✅ supabase/functions/_shared/prompts/grammarPrompt.ts           moved from src/features/teacher/
+✅ supabase/functions/_shared/prompts/grammarPrompt.test.ts      moved
+✅ supabase/functions/_shared/drafts/vocabularyDraft.ts          moved parser from src/features/homework/
+✅ supabase/functions/_shared/drafts/vocabularyDraft.test.ts     moved
+✅ supabase/functions/_shared/drafts/grammarDraft.ts             moved parser from src/features/homework/
+✅ supabase/functions/_shared/drafts/grammarDraft.test.ts        moved
+✅ supabase/functions/draft-vocabulary/index.ts                  new
+✅ supabase/functions/draft-vocabulary/spec.ts                   new  (pure, so index.test.ts can run)
+✅ supabase/functions/draft-vocabulary/index.test.ts             new
+✅ supabase/functions/draft-grammar/index.ts                     new
+✅ supabase/functions/draft-grammar/spec.ts                      new
+✅ supabase/functions/draft-grammar/index.test.ts                new
+⬜ supabase/functions/generate-image/index.ts                    new  — out of SCN-14's scope
+⬜ supabase/functions/generate-image/index.test.ts               new  — out of SCN-14's scope
+✅ supabase/migrations/20260930000010_ai_generation_rate_limit.sql  new
+✅ supabase/tests/wp-5.6/{fixtures,rate-limit-tests}.sql         new  (not in the original list)
+✅ supabase/config.toml                                          modified — verify_jwt on for both text functions
+✅ src/features/teacher/aiDrafting.ts                            new  — the shared wire contract
+✅ src/lib/functionError.ts                                      new  — FunctionsHttpError unwrapping
+✅ src/features/teacher/openRouterChat.ts                        deleted
+✅ src/features/teacher/grammarPrompt.ts                         deleted (moved)
+✅ src/features/teacher/grammarPrompt.test.ts                    deleted (moved)
+✅ src/features/teacher/vocabularyPrompt.ts                      modified — buildVocabularyPrompt moved out
+✅ src/features/teacher/vocabularyPrompt.test.ts                 modified — two describes moved out
+✅ src/features/teacher/vocabularyActions.ts                     modified — thin caller
+✅ src/features/teacher/vocabularyActions.test.ts                modified — draft coverage added
+✅ src/features/teacher/grammarActions.ts                        modified — thin caller
+✅ src/features/teacher/grammarActions.test.ts                   modified — draft coverage added
+✅ src/features/homework/vocabulary.ts                           modified — parseGeneratedWords moved out
+✅ src/features/homework/vocabulary.test.ts                      modified — its describe moved out
+✅ src/features/homework/grammar.ts                              modified — parseGeneratedGrammar moved out
+✅ src/features/homework/grammar.test.ts                         modified — its describe moved out
+✅ src/lib/testSupabase.ts                                       modified — functions.invoke added
+⬜ src/features/admin/openRouterImage.ts                         unchanged — see "Open question"; this is
+                                                                 the remaining process.env key read
+⬜ AGENTS.md                                                     modified — the OD-1 amendment
 ```
 
 Exact contracts, the handler gate order, and the full error taxonomy are in
-[EDGE-FUNCTIONS-PLAN.md](EDGE-FUNCTIONS-PLAN.md) §4–§6. Do not re-derive them.
+[EDGE-FUNCTIONS-PLAN.md](EDGE-FUNCTIONS-PLAN.md) §4–§6. Do not re-derive them —
+`SCN-14` implemented them as written, with the two deliberate departures recorded
+in [`migrations/wp-5.6/README.md`](migrations/wp-5.6/README.md) (the
+configuration check is hoisted above the quota claim, and `claim_ai_generation`
+takes an advisory lock because "count and insert in one statement" does not
+actually serialise under READ COMMITTED).
 
 ### Manual amendment (`AGENTS.md`)
 
@@ -154,11 +195,12 @@ dated exception, not an oversight.
 
 ### Test plan
 
-- [ ] `deno test supabase/functions/` — the moved prompt tests pass unchanged, assertion for assertion.
-- [ ] Unit tests per function covering the gate order: `405` on GET; `401` with no/expired JWT; `403` for a student JWT on a topic in their own group **(the §6.2 case)**; `403` for a teacher against another teacher's topic; `403` for a non-admin sending `act_as_teacher_id`; `400` on a malformed body; `429` once the budget is spent; `422` on a model response that parses to zero words.
-- [ ] Each of those asserts **no outbound `fetch`** was made. Money is spent at the API call; a gate that fires after it is not a gate.
-- [ ] `claim_ai_generation` under concurrency: N parallel claims against a budget of M grant exactly M.
-- [ ] `npm run lint`, `npm run type-check`, `npm test` in the web app.
+- [x] ~~`deno test supabase/functions/`~~ → **`npx vitest --project unit`**. Corrected: `update-streak/index.test.ts` already uses vitest, and `vitest.config.ts`'s `unit` project already includes `supabase/functions/**/*.{test,spec}.ts`, so the function tests need no new runner. The moved prompt tests pass unchanged, assertion for assertion. `SCN-14`: 8 files, 83 tests, green.
+- [x] Unit tests per function covering the gate order: `405` on GET; `401` with no/expired JWT; `403` for a student JWT on a topic in their own group **(the §6.2 case)**; `403` for a teacher against another teacher's topic; `403` for a non-admin sending `act_as_teacher_id`; `400` on a malformed body; `429` once the budget is spent; `422` on a model response that parses to zero words. All present, plus `403` for an admin naming a non-teacher and `403` for an admin naming nobody.
+- [x] Each of those asserts **no outbound `fetch`** was made. Money is spent at the API call; a gate that fires after it is not a gate. (`_shared/testPorts.ts` counts outbound calls; every rejection test asserts zero.)
+- [x] `claim_ai_generation` under concurrency: N parallel claims against a budget of M grant exactly M. `SCN-14`: 20 parallel claims against a budget of 5 granted exactly 5; the same test against a lock-free copy granted 20, which is the evidence the check detects a weakened limiter.
+- [x] `deno check` on both entry points against the real `npm:@supabase/supabase-js@2` types, and a live boot under `denoland/deno` answering `405`/`401` over HTTP with the taxonomy body.
+- [ ] `npm run lint`, `npm run type-check`, `npm test` in the web app. **Not run — must be run in `rubanwd/slay-city` once the files are copied**; this repository has no Next.js tree to run them against.
 - [ ] Manual: draft vocabulary, draft grammar, regenerate a test, auto-generate images for a 20-word set, publish — all through the deployed functions, all unchanged from `main`.
 - [ ] Manual: every error message in EDGE-FUNCTIONS-PLAN.md §5.1 that exists today renders character-identical (unset the secret for `not_configured`; a bad key for `upstream_error`).
 - [ ] Manual: a `vocab_image_cache` hit returns `cached: true`, spends no quota, and makes no OpenRouter call.
@@ -189,7 +231,10 @@ for the key as an acceptance criterion.
 
 ## Checklist before opening this
 
-- [ ] `EDGE-FUNCTIONS-PLAN.md` §4 contracts reviewed by whoever will write the functions
+- [x] `EDGE-FUNCTIONS-PLAN.md` §4 contracts reviewed by whoever will write the functions — `SCN-14` implemented them; the two departures are recorded in `migrations/wp-5.6/README.md`
+- [x] `draft-vocabulary` and `draft-grammar` written, tested and staged (`SCN-14`)
+- [ ] `generate-image` written — **the one blocker on this PR being complete.** Until it lands, `src/features/admin/openRouterImage.ts` keeps its `process.env.OPENROUTER_API_KEY` read and the Vercel variable cannot be deleted
+- [ ] The `AGENTS.md` amendment applied, wording copied verbatim from §2.2
 - [ ] Budgets in §6.4 confirmed against real teacher usage, not assumed
 - [ ] The admin `generate-image` question above answered (a) or (b)
 - [ ] `docs/MIGRATIONS-NEEDED.md` §6.1 decided — it is independent of this PR and more urgent

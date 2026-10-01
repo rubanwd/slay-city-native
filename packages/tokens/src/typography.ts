@@ -1,10 +1,9 @@
 /**
  * Type scale, ported from the web's `src/styles/typography.css`.
  *
- * The web sizes are fluid — `clamp(min, <vw>vw, max)` — so each entry keeps all
- * three numbers. `fluidFontSize()` reproduces the clamp from the window width,
- * which is what the web actually renders; `default` is its value at the 390pt
- * design width.
+ * The web sizes are fluid — `clamp(min, <vw>vw, max)`. `fluidFontSize()` below
+ * reproduces the clamp from the window width, which is what the web actually
+ * renders.
  *
  * Note where that lands: every preferred value sits BELOW its minimum at 390
  * (h1 is 7vw = 27.3 < 28), so on a phone the whole scale renders at or just
@@ -14,28 +13,6 @@
  *
  * Values are in points. The web authors them in rem against a 16px root.
  */
-export const fontSize = {
-  display: { min: 40, vw: 10, max: 64, default: 40 },
-  h1: { min: 28, vw: 7, max: 40, default: 28 },
-  h2: { min: 20, vw: 5, max: 28, default: 20 },
-  h3: { min: 16, vw: 4, max: 20, default: 16 },
-  body: { min: 14, vw: 3.5, max: 16, default: 14 },
-  small: { min: 12, vw: 3, max: 14, default: 12 },
-  label: { min: 10, vw: 2.5, max: 12, default: 10 },
-} as const;
-
-export type FontSizeToken = keyof typeof fontSize;
-
-/**
- * The size the web renders for `token` on a window `width` points wide —
- * `clamp(min, width * vw / 100, max)`, exactly as `typography.css` declares it.
- * Pass `useWindowDimensions().width`.
- */
-export function fluidFontSize(token: FontSizeToken, width: number): number {
-  const { min, vw, max } = fontSize[token];
-  return Math.min(max, Math.max(min, (width * vw) / 100));
-}
-
 export const fontWeight = {
   regular: "400",
   medium: "500",

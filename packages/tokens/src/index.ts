@@ -1,8 +1,6 @@
 export { colors, semantic, alpha, withAlpha, type ColorName } from "./colors";
 export {
-  fontSize,
   fluidFontSize,
-  type FontSizeToken,
   fontWeight,
   lineHeight,
   letterSpacingEm,
@@ -10,7 +8,6 @@ export {
   fontFamily,
   fontFamilyByWeight,
   typeScale,
-  fluidFontSize,
   type TextVariant,
 } from "./typography";
 export { radii } from "./radii";
