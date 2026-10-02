@@ -8,6 +8,14 @@ this file tracks whether its gates are actually open, so a standup can answer
 If this file and `ROADMAP.md` ever disagree on an order or a gate, `ROADMAP.md`
 is wrong or this file is stale — fix the drift, don't pick a side silently.
 
+For the `WP-2.3` row specifically, [WP-2.3-RECONCILIATION.md](WP-2.3-RECONCILIATION.md)
+(`SCN-28`) is the flow-by-flow drill-down: which teacher write flows are
+`covered by RPC + test` vs. still open, and a finding this file's gate table
+does not yet carry — `M5`'s vocabulary flow (`WP-5.3`) also depends on
+`WP-5.6` merging, not `WP-2.3` alone. That file recommends adding a `WP-5.6`
+row to §2 below; it hasn't been added here yet, so treat `M5` as gated on both
+PRs until it is.
+
 ## 1. Phase sequence
 
 ```
