@@ -14,7 +14,9 @@
  */
 
 import type { DraftPorts } from "./draftHandler.ts";
+import type { ImagePorts } from "./imageHandler.ts";
 import type { OpenRouterTextResult } from "./openrouter.ts";
+import type { OpenRouterImageResult } from "./openrouterImage.ts";
 import type { ClaimInput, ClaimRow } from "./rateLimit.ts";
 import type { TopicContext } from "./teacherAuth.ts";
 
@@ -66,6 +68,96 @@ export function createFakePorts(options: FakePortOptions = {}): FakePorts {
       return (
         options.openRouter ?? { ok: true as const, content: '{"words":[]}' }
       );
+    },
+
+    log: (entry) => {
+      calls.logs.push(entry);
+    },
+
+    monotonicMs: () => (clock += 5),
+  };
+
+  return { ports, calls };
+}
+
+export interface FakeImagePortOptions {
+  user?: { id: string } | null;
+  roles?: Record<string, string>;
+  ownedTopics?: Record<string, TopicContext>;
+  claim?: ClaimRow | null;
+  configured?: boolean;
+  /** `vocab_image_cache` contents, keyed by normalized word. */
+  cached?: Record<string, string>;
+  openRouter?: OpenRouterImageResult;
+  /** Simulates a Storage upload failure when set. */
+  uploadFailure?: string;
+  /** Simulates `cache_vocab_image` failing — still returns the image. */
+  cacheFailure?: boolean;
+}
+
+export interface FakeImagePorts {
+  ports: ImagePorts;
+  calls: {
+    requestImage: string[];
+    claims: ClaimInput[];
+    uploads: { dataUrl: string; teacherId: string }[];
+    cacheWrites: { wordKey: string; imageUrl: string }[];
+    logs: Record<string, unknown>[];
+  };
+}
+
+/**
+ * Fake {@link ImagePorts} for `generate-image/index.test.ts`, following the
+ * same shape as {@link createFakePorts}: `calls.requestImage` counts outbound
+ * model calls, so every rejection test can assert the number is zero.
+ */
+export function createFakeImagePorts(options: FakeImagePortOptions = {}): FakeImagePorts {
+  const calls: FakeImagePorts["calls"] = {
+    requestImage: [],
+    claims: [],
+    uploads: [],
+    cacheWrites: [],
+    logs: [],
+  };
+  let clock = 0;
+  let uploadCount = 0;
+
+  const ports: ImagePorts = {
+    getUserFromAuthHeader: async () => options.user ?? null,
+
+    getProfileRole: async (userId: string) => options.roles?.[userId] ?? null,
+
+    getOwnedTopic: async (topicId: string, teacherId: string) =>
+      options.ownedTopics?.[`${topicId}|${teacherId}`] ?? null,
+
+    claim: async (input: ClaimInput) => {
+      calls.claims.push(input);
+      return options.claim === undefined
+        ? { allowed: true, retry_after_seconds: 0, remaining_today: 599 }
+        : options.claim;
+    },
+
+    isConfigured: () => options.configured !== false,
+
+    getCachedImageUrl: async (wordKey: string) => options.cached?.[wordKey] ?? null,
+
+    requestImage: async (prompt: string) => {
+      calls.requestImage.push(prompt);
+      return (
+        options.openRouter ?? { ok: true as const, dataUrl: "data:image/png;base64,QQ==" }
+      );
+    },
+
+    uploadImage: async (dataUrl: string, teacherId: string) => {
+      calls.uploads.push({ dataUrl, teacherId });
+      if (options.uploadFailure) return { ok: false, message: options.uploadFailure };
+      uploadCount += 1;
+      return { ok: true, url: `https://cdn.test/content/homework/${teacherId}/${uploadCount}.png` };
+    },
+
+    cacheImage: async (wordKey: string, imageUrl: string) => {
+      calls.cacheWrites.push({ wordKey, imageUrl });
+      return !options.cacheFailure;
     },
 
     log: (entry) => {

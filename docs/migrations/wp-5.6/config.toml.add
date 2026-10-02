@@ -22,3 +22,11 @@ verify_jwt = true
 [functions.draft-grammar]
 enabled = true
 verify_jwt = true
+
+# AI vocabulary image generation (OD-1). Same gates, plus a `vocab_image_cache`
+# read-through before the quota claim, so a cache hit costs neither money nor
+# quota. Reads OPENROUTER_API_KEY, OPENROUTER_IMAGE_MODEL and
+# OPENROUTER_IMAGE_PROVIDER from Supabase Secrets.
+[functions.generate-image]
+enabled = true
+verify_jwt = true

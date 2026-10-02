@@ -1,17 +1,14 @@
-// MOVED from `src/features/teacher/vocabularyPrompt.test.ts` by WP-5.6, with the
-// code it covers. The `buildVocabularyPrompt` and `extractJson` describes arrive
-// here assertion for assertion — if any of them had to change, the prompt or the
-// extractor changed too, and that is a behaviour change hiding inside a move.
-//
-// The `buildWordImagePrompt` describe stays in the web repo: that builder is still
-// used by `generateWordImage`, which is a Server Action until `generate-image` is
-// ported.
+// MOVED from `src/features/teacher/vocabularyPrompt.test.ts`: `buildVocabularyPrompt`
+// and `extractJson` by WP-5.6, `buildWordImagePrompt` by `generate-image`'s
+// implementation. Every describe arrives here assertion for assertion — if any
+// of them had to change, the prompt or the extractor changed too, and that is a
+// behaviour change hiding inside a move.
 
 import { describe, expect, it } from "vitest";
 
 import { extractJson } from "../openrouter.ts";
 
-import { buildVocabularyPrompt } from "./vocabularyPrompt.ts";
+import { buildVocabularyPrompt, buildWordImagePrompt } from "./vocabularyPrompt.ts";
 
 describe("buildVocabularyPrompt", () => {
   it("names the topic and requested count", () => {
@@ -41,6 +38,20 @@ describe("buildVocabularyPrompt", () => {
   it("rounds and floors the word count to at least one", () => {
     expect(buildVocabularyPrompt({ topicTitle: "X", wordCount: 0 })).toContain("exactly 1");
     expect(buildVocabularyPrompt({ topicTitle: "X", wordCount: 3.6 })).toContain("exactly 4");
+  });
+});
+
+describe("buildWordImagePrompt", () => {
+  it("uses the image hint when provided", () => {
+    expect(buildWordImagePrompt("apple", "a shiny red apple")).toContain("a shiny red apple");
+  });
+
+  it("falls back to the word", () => {
+    expect(buildWordImagePrompt("apple")).toContain("apple");
+  });
+
+  it("forbids text in the illustration", () => {
+    expect(buildWordImagePrompt("dog")).toContain("No text");
   });
 });
 

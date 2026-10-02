@@ -12,7 +12,12 @@ import { FunctionsHttpError } from "@supabase/supabase-js";
 
 import { requireTeacher } from "./requireTeacher";
 import { readViewAsTeacherId } from "./viewAs";
-import { clearVocabulary, generateVocabularyDraft, publishVocabulary } from "./vocabularyActions";
+import {
+  clearVocabulary,
+  generateVocabularyDraft,
+  generateWordImage,
+  publishVocabulary,
+} from "./vocabularyActions";
 
 describe("publishVocabulary", () => {
   it("replaces the topic's vocabulary in one publish_homework_vocabulary call, not four direct writes", async () => {
@@ -227,6 +232,133 @@ describe("generateVocabularyDraft", () => {
       topicDescription: null,
       extraInstructions: null,
       wordCount: 4,
+    });
+
+    expect(result).toEqual({
+      ok: false,
+      error: "Could not reach the AI model. Check your connection.",
+    });
+  });
+});
+
+/* ── SCN-18: generateWordImage is now a thin caller ─────────────────────────── */
+
+describe("generateWordImage", () => {
+  it("invokes generate-image and never reads an OpenRouter key", async () => {
+    const { client, invokeCalls } = createMockSupabase({
+      functions: {
+        "generate-image": { data: { image_url: "https://cdn.test/content/homework/t1/1.png", cached: false } },
+      },
+    });
+    vi.mocked(createClient).mockResolvedValue(client as never);
+    vi.mocked(readViewAsTeacherId).mockResolvedValue(null);
+
+    const result = await generateWordImage({
+      topicId: "11111111-1111-4111-8111-111111111111",
+      word: "cow",
+      imagePrompt: "a friendly cartoon cow",
+    });
+
+    expect(result).toEqual({ ok: true, imageUrl: "https://cdn.test/content/homework/t1/1.png" });
+    expect(invokeCalls).toEqual([
+      {
+        name: "generate-image",
+        body: {
+          topic_id: "11111111-1111-4111-8111-111111111111",
+          word: "cow",
+          image_prompt: "a friendly cartoon cow",
+          force_regenerate: false,
+          act_as_teacher_id: null,
+        },
+      },
+    ]);
+    expect(process.env.OPENROUTER_API_KEY).toBeUndefined();
+  });
+
+  it("defaults force_regenerate to false when the input omits it", async () => {
+    const { client, invokeCalls } = createMockSupabase({
+      functions: { "generate-image": { data: { image_url: "https://cdn.test/x.png", cached: true } } },
+    });
+    vi.mocked(createClient).mockResolvedValue(client as never);
+    vi.mocked(readViewAsTeacherId).mockResolvedValue(null);
+
+    await generateWordImage({ topicId: "11111111-1111-4111-8111-111111111111", word: "cow", imagePrompt: null });
+
+    expect((invokeCalls[0].body as { force_regenerate: boolean }).force_regenerate).toBe(false);
+  });
+
+  it("forwards force_regenerate when the teacher asks for a different image", async () => {
+    const { client, invokeCalls } = createMockSupabase({
+      functions: { "generate-image": { data: { image_url: "https://cdn.test/x.png", cached: false } } },
+    });
+    vi.mocked(createClient).mockResolvedValue(client as never);
+    vi.mocked(readViewAsTeacherId).mockResolvedValue(null);
+
+    await generateWordImage({
+      topicId: "11111111-1111-4111-8111-111111111111",
+      word: "cow",
+      imagePrompt: null,
+      forceRegenerate: true,
+    });
+
+    expect((invokeCalls[0].body as { force_regenerate: boolean }).force_regenerate).toBe(true);
+  });
+
+  it("forwards the admin view-as teacher as an explicit field", async () => {
+    const { client, invokeCalls } = createMockSupabase({
+      functions: { "generate-image": { data: { image_url: "https://cdn.test/x.png", cached: false } } },
+    });
+    vi.mocked(createClient).mockResolvedValue(client as never);
+    vi.mocked(readViewAsTeacherId).mockResolvedValue("22222222-2222-4222-8222-222222222222");
+
+    await generateWordImage({ topicId: "11111111-1111-4111-8111-111111111111", word: "cow", imagePrompt: null });
+
+    expect((invokeCalls[0].body as { act_as_teacher_id: string }).act_as_teacher_id).toBe(
+      "22222222-2222-4222-8222-222222222222"
+    );
+  });
+
+  it("surfaces the function's own message, not invoke()'s generic one", async () => {
+    const { client } = createMockSupabase({
+      functions: {
+        "generate-image": {
+          error: new FunctionsHttpError(
+            new Response(
+              JSON.stringify({
+                error: { code: "rate_limited", message: "You've generated a lot recently. Try again in 1 minute." },
+              }),
+              { status: 429, headers: { "Content-Type": "application/json" } }
+            )
+          ),
+        },
+      },
+    });
+    vi.mocked(createClient).mockResolvedValue(client as never);
+    vi.mocked(readViewAsTeacherId).mockResolvedValue(null);
+
+    const result = await generateWordImage({
+      topicId: "11111111-1111-4111-8111-111111111111",
+      word: "cow",
+      imagePrompt: null,
+    });
+
+    expect(result).toEqual({
+      ok: false,
+      error: "You've generated a lot recently. Try again in 1 minute.",
+    });
+  });
+
+  it("degrades to the offline message when the function is unreachable", async () => {
+    const { client } = createMockSupabase({
+      functions: { "generate-image": { error: new Error("fetch failed") } },
+    });
+    vi.mocked(createClient).mockResolvedValue(client as never);
+    vi.mocked(readViewAsTeacherId).mockResolvedValue(null);
+
+    const result = await generateWordImage({
+      topicId: "11111111-1111-4111-8111-111111111111",
+      word: "cow",
+      imagePrompt: null,
     });
 
     expect(result).toEqual({

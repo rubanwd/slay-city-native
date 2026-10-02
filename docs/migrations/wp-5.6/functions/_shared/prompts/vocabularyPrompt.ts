@@ -1,18 +1,23 @@
 /**
- * Pure prompt builder for AI vocabulary generation. Kept framework-free and
+ * Pure prompt builders for AI vocabulary generation. Kept framework-free and
  * unit-tested so the exact instructions sent to OpenRouter are verifiable
  * without a network call.
  *
- * MOVED from `src/features/teacher/vocabularyPrompt.ts` by WP-5.6, with its
- * tests, because the prompt is now built inside the Edge Function and the web's
- * Server Action is a thin caller that never sees it (EDGE-FUNCTIONS-PLAN.md §4.5
- * option (c) — copying it instead would be two divergent copies of a prompt,
- * which is the failure mode `packages/core` exists to prevent one repository
- * over). `buildWordImagePrompt` stays behind in `src/`: `generateWordImage` is
- * still a Server Action until `generate-image` is ported.
+ * `buildVocabularyPrompt` MOVED from `src/features/teacher/vocabularyPrompt.ts`
+ * by WP-5.6, with its tests, because the prompt is now built inside the
+ * Edge Function and the web's Server Action is a thin caller that never sees
+ * it (EDGE-FUNCTIONS-PLAN.md §4.5 option (c) — copying it instead would be two
+ * divergent copies of a prompt, which is the failure mode `packages/core`
+ * exists to prevent one repository over).
  *
- * The builder body is byte-identical to the file it came from — the prompt the
- * model receives must not change, or the drafts teachers get do.
+ * `buildWordImagePrompt` MOVED the same way, by `generate-image`'s
+ * implementation (the ticket this file's header used to say would move it):
+ * `generateWordImage` is now a thin caller too, so `src/`'s copy had nothing
+ * left to call it for.
+ *
+ * Both builder bodies are byte-identical to the files they came from — the
+ * prompt the model receives must not change, or the drafts/images teachers get
+ * do.
  */
 
 export interface VocabularyPromptInput {
@@ -65,4 +70,18 @@ export function buildVocabularyPrompt(input: VocabularyPromptInput): string {
   );
 
   return lines.join("\n");
+}
+
+/**
+ * Builds the image-model prompt for a single word's flashcard illustration —
+ * a clean, bright, single-subject picture with no text (mirrors the location
+ * icon style used elsewhere in the app).
+ */
+export function buildWordImagePrompt(word: string, imageHint?: string | null): string {
+  const subject = clean(imageHint) || clean(word);
+  return [
+    `A bright, friendly flat-illustration of: ${subject}.`,
+    `Single clear subject, centered, simple solid background, bold cartoon style for a children's English-learning app.`,
+    `No text, no letters, no words in the image.`,
+  ].join(" ");
 }

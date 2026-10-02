@@ -1,7 +1,7 @@
 /**
- * The `draft-vocabulary` / `draft-grammar` wire contract, as the *callers* see
- * it. Framework-free: no `"use server"`, no Supabase import, no React — this is a
- * shape both front ends have to agree on.
+ * The `draft-vocabulary` / `draft-grammar` / `generate-image` wire contract,
+ * as the *callers* see it. Framework-free: no `"use server"`, no Supabase
+ * import, no React — this is a shape both front ends have to agree on.
  *
  * The function side of the same contract lives in
  * `supabase/functions/_shared/` (`response.ts` for the taxonomy,
@@ -31,6 +31,24 @@ export interface DraftGrammarRequest {
   point_count: number;
   task_count: number;
   act_as_teacher_id: string | null;
+}
+
+export interface GenerateImageRequest {
+  topic_id: string;
+  word: string;
+  image_prompt: string | null;
+  force_regenerate: boolean;
+  act_as_teacher_id: string | null;
+}
+
+/**
+ * The 200 body of `generate-image`. `snake_case`, unlike the drafting
+ * functions' `words`/`points`+`tasks` — this is a thin wire shape, not a
+ * domain object the UI already has a type for.
+ */
+export interface GenerateImageResponse {
+  image_url: string;
+  cached: boolean;
 }
 
 /**

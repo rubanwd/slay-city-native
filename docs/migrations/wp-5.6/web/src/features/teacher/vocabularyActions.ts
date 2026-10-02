@@ -3,22 +3,16 @@
 import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
-import { requestOpenRouterImage } from "@/features/admin/openRouterImage";
-import {
-  buildVocabTest,
-  clampWordCount,
-  normalizeWordKey,
-  type VocabDraftWord,
-} from "@/features/homework/vocabulary";
+import { buildVocabTest, clampWordCount, type VocabDraftWord } from "@/features/homework/vocabulary";
 import { readFunctionError } from "@/lib/functionError";
 
-import type { DraftVocabularyRequest } from "./aiDrafting";
+import type {
+  DraftVocabularyRequest,
+  GenerateImageRequest,
+  GenerateImageResponse,
+} from "./aiDrafting";
 import { requireTeacher } from "./requireTeacher";
 import { readViewAsTeacherId } from "./viewAs";
-import { buildWordImagePrompt } from "./vocabularyPrompt";
-
-/** Public storage bucket for content imagery (mirrors uploadContentImage). */
-const CONTENT_BUCKET = "content";
 
 const MAX_TASK_COUNT = 20;
 
@@ -159,95 +153,54 @@ export interface GenerateImageInput {
   forceRegenerate?: boolean;
 }
 
-/** Decodes a `data:` image URL into raw bytes for a server-side storage upload. */
-function decodeDataUrl(dataUrl: string): { bytes: Buffer; contentType: string; ext: string } | null {
-  const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([\s\S]+)$/.exec(dataUrl);
-  if (!match) return null;
-  const contentType = match[1];
-  const ext = contentType === "image/jpeg" ? "jpg" : contentType === "image/webp" ? "webp" : "png";
-  return { bytes: Buffer.from(match[2], "base64"), contentType, ext };
-}
-
 /**
- * Uploads a generated image (as a data URL) to the public `content/homework`
- * folder from the server and returns its public URL. Uses the request-scoped
- * client so storage RLS sees the teacher/admin caller — same folder and trust
- * level as {@link uploadContentImage} on the client.
+ * Returns a flashcard illustration URL for one word.
  *
- * WP-2.3 out of scope (operation W-04): a Storage object upload cannot run
- * inside a Postgres function, so this stays a direct `storage.upload()` call.
- * It moves server-side behind the OD-1 `generate-image` Edge Function in
- * WP-5.6 instead of gaining an RPC here.
- */
-async function uploadWordImage(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  dataUrl: string
-): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
-  const decoded = decodeDataUrl(dataUrl);
-  if (!decoded) return { ok: false, error: "The generated image was unreadable. Try again." };
-
-  const path = `homework/${crypto.randomUUID()}.${decoded.ext}`;
-  const { error } = await supabase.storage
-    .from(CONTENT_BUCKET)
-    .upload(path, decoded.bytes, { contentType: decoded.contentType, upsert: false });
-  if (error) return { ok: false, error: error.message };
-
-  const { data } = supabase.storage.from(CONTENT_BUCKET).getPublicUrl(path);
-  return { ok: true, url: data.publicUrl };
-}
-
-/**
- * Returns a flashcard illustration URL for one word. Reads through the shared
- * `vocab_image_cache` first (unless `forceRegenerate`): a cache hit reuses an
- * already-generated image for free, which is the whole cost optimisation —
- * common vocabulary words are only ever generated once. On a miss it generates
- * with the shared image model and provider tier from `openRouterImage.ts`
- * (Gemini's flash image model on the half-price flex tier — cheaper and faster
- * in practice than gpt-5-image-mini, which billed higher and was slow, and it
- * renders clean kid-friendly illustrations), uploads to shared storage, and
+ * WP-5.6 (`OD-1`): this is now a thin caller of the `generate-image` Edge
+ * Function, the same move `generateVocabularyDraft` made. `OPENROUTER_API_KEY`
+ * is no longer read here — it lives in Supabase Secrets. The function reads
+ * through `vocab_image_cache` before spending anything, generates with the
+ * shared image model and provider tier `openRouterImage.ts` used to configure
+ * directly (Gemini's flash image model on the half-price flex tier), uploads
+ * to Storage under the caller's own `homework/<teacherId>/` folder, and
  * records the URL in the cache for every future topic that uses the word.
- * Returns a public storage URL (not a data URL), so the client sets it straight
- * onto the word with no publish-time upload.
+ * `requireTopicAccess()` is gone from this path for the same reason it left
+ * `generateVocabularyDraft`: it was never a real gate, and the function
+ * re-checks role *and* ownership in SQL before any outbound request.
+ * `normalizeWordKey` is gone from this file entirely — the function computes
+ * its own cache key server-side (`supabase/functions/_shared/wordKey.ts`),
+ * since the client no longer touches `vocab_image_cache` at all.
  */
 export async function generateWordImage(input: GenerateImageInput): Promise<GenerateImageResult> {
   const supabase = await createClient();
-  const access = await requireTopicAccess(supabase, input.topicId);
-  if (!access.ok) return { ok: false, error: access.error };
+  const actAsTeacherId = await readViewAsTeacherId();
 
-  const word = String(input.word ?? "").trim();
-  if (!word) return { ok: false, error: "Give the word before generating an image." };
+  const body: GenerateImageRequest = {
+    topic_id: input.topicId,
+    word: input.word,
+    image_prompt: input.imagePrompt,
+    force_regenerate: input.forceRegenerate ?? false,
+    act_as_teacher_id: actAsTeacherId,
+  };
 
-  const key = normalizeWordKey(word);
+  const { data, error } = await supabase.functions.invoke<GenerateImageResponse>(
+    "generate-image",
+    { body }
+  );
 
-  // Read-through cache — reuse a generated image unless a fresh one is asked for.
-  if (!input.forceRegenerate && key) {
-    const { data: cached } = await supabase
-      .from("vocab_image_cache")
-      .select("image_url")
-      .eq("word_key", key)
-      .maybeSingle();
-    if (cached?.image_url) return { ok: true, imageUrl: cached.image_url };
+  if (error) {
+    const { message } = await readFunctionError(error);
+    return { ok: false, error: message };
   }
 
-  const result = await requestOpenRouterImage(buildWordImagePrompt(word, input.imagePrompt));
-  if (!result.ok) return { ok: false, error: result.error };
-
-  const upload = await uploadWordImage(supabase, result.dataUrl);
-  if (!upload.ok) return { ok: false, error: upload.error };
-
-  // Populate/refresh the shared library through `cache_vocab_image`
-  // (WP-2.3 W-05) instead of a direct `vocab_image_cache` upsert. Still
-  // non-fatal — the teacher still gets their image; the next request just
-  // regenerates.
-  if (key) {
-    const { error: cacheErr } = await supabase.rpc("cache_vocab_image", {
-      p_word_key: key,
-      p_image_url: upload.url,
-    });
-    if (cacheErr) console.warn("cache_vocab_image failed:", cacheErr.message);
+  const imageUrl = data?.image_url;
+  if (!imageUrl) {
+    // The function already returns a taxonomy error for every failure mode;
+    // this covers a malformed 200, which should be impossible.
+    return { ok: false, error: "The model did not return an image. Try regenerating." };
   }
 
-  return { ok: true, imageUrl: upload.url };
+  return { ok: true, imageUrl };
 }
 
 /* ── Publish (replace the topic's whole vocabulary set + rebuild its test) ──── */
