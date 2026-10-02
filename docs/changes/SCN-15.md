@@ -1,6 +1,6 @@
 # SCN-15 — Switch web AI drafting Server Actions to call new Edge Functions
 
-> Type: task · Date: 2026-10-01
+> Type: task · Date: 2026-10-02 (resolved; originally blocked 2026-10-01)
 
 ## Context
 
@@ -9,8 +9,8 @@ Supabase Edge Functions, because `OD-1` (approved 2026-09-29) requires it: a
 mobile binary cannot hold `OPENROUTER_API_KEY`, so the call has to move off
 every client, including the browser's. The ticket asks for the web
 repository's Server Action modules that call OpenRouter directly to be
-switched to call `draft-vocabulary` and `draft-grammar` instead, preserving
-UI behaviour, with dead OpenRouter code removed and tests added.
+switched to call Edge Functions instead, preserving UI behaviour, with dead
+OpenRouter code removed and tests added.
 
 This repository (`slay-city-native`) has no `supabase/` directory and never
 will — `AGENTS.md` states "Migrations belong upstream." The web repository
@@ -19,121 +19,125 @@ migration timeline; this repo can only **stage** the changed files for a
 human to copy across as a pull request, the same pattern `SCN-11`–`SCN-14`
 already established for `WP-2.3` and `WP-5.6`.
 
-## What was found
+## What was found (this round)
 
-`SCN-14` (2026-10-01, same day) already implemented exactly what this
-ticket's five steps ask for, scoped to the two functions the ticket names:
+The prior round (2026-10-01) implemented and staged `draft-vocabulary` /
+`draft-grammar` thin callers (`SCN-14`), then found that this ticket's broad
+acceptance criterion — "No Server Action directly uses `OPENROUTER_API_KEY`"
+— was not fully met: `generateWordImage` in the same
+`vocabularyActions.ts` still called `requestOpenRouterImage` because the
+third planned function, `generate-image`, did not exist yet. That round
+ended **BLOCKED**, and a sub-item (`SCN-15-1`) asked the maintainer to decide
+whether closing `generateWordImage` was in this ticket's scope.
+
+Since then, `SCN-18` (2026-10-02, commit `aae64d5`) built `generate-image`
+end to end — gate chain, image transport, word-cache key, Storage scoping
+fix, and the `cache_vocab_image` client-selection correctness fix — and
+migrated `generateWordImage` to call it. I re-read the current staged tree to
+confirm this actually closed the gap rather than trusting the commit message:
 
 - `docs/migrations/wp-5.6/web/src/features/teacher/vocabularyActions.ts` —
-  `generateVocabularyDraft` is a thin caller of `draft-vocabulary`
-  (`supabase.functions.invoke("draft-vocabulary", { body })`). No
-  `openRouterChat`, `buildVocabularyPrompt` or `parseGeneratedWords` import
-  remains in it.
-- `docs/migrations/wp-5.6/web/src/features/teacher/grammarActions.ts` — same
-  for `generateGrammarDraft` / `draft-grammar`.
-- `docs/migrations/wp-5.6/web/src/lib/functionError.ts` —
-  `readFunctionError()`, the `FunctionsHttpError` → `{ code, message }`
-  mapping the UI needs so `toast.error(result.error)` keeps showing the
-  function's real message instead of "Edge Function returned a non-2xx
-  status code".
-- `docs/migrations/wp-5.6/README.md` names the three dead files to delete
-  from `src/` in the same upstream commit: `openRouterChat.ts`,
-  `grammarPrompt.ts`, `grammarPrompt.test.ts` (moved into
-  `functions/_shared/`).
-- `docs/migrations/wp-5.6/web/src/features/teacher/{vocabularyActions,
-  grammarActions}.test.ts` cover both the success path and the failure path
-  (function unreachable, function returns an error body, degrades to the
-  existing draft on screen).
+  both `generateVocabularyDraft` (→ `draft-vocabulary`) and
+  `generateWordImage` (→ `generate-image`) are thin
+  `supabase.functions.invoke(...)` callers. Grepped the file for
+  `OPENROUTER_API_KEY` / `requestOpenRouterImage` / `openRouterChat`: the only
+  hits are in doc comments explaining what *used to* happen and *why* it no
+  longer does.
+- `docs/migrations/wp-5.6/web/src/features/teacher/grammarActions.ts` —
+  `generateGrammarDraft` is a thin caller of `draft-grammar`; no OpenRouter
+  references at all.
+- `docs/migrations/wp-5.6/web/src/features/teacher/vocabularyActions.test.ts`
+  — the only remaining `OPENROUTER_API_KEY` references are assertions that it
+  is `undefined` in the test environment (proving the action never reads it),
+  in both the `generateVocabularyDraft` and `generateWordImage` describe
+  blocks.
+- `docs/migrations/wp-5.6/README.md` and `docs/UPSTREAM-PR-WP-5.6.md` both
+  now list all three functions (`draft-vocabulary`, `draft-grammar`,
+  `generate-image`) as written, tested and staged, with `generate-image`'s
+  own `[functions.generate-image]` block added to `config.toml.add`.
 
-I re-read every staged file against this ticket's acceptance criteria and
-confirmed there is nothing left to add for `draft-vocabulary` / `draft-grammar`:
-no Server Action for vocabulary/grammar text drafting reads
-`OPENROUTER_API_KEY`, the UI-facing result types and error surfacing are
-unchanged, and tests exist for both outcomes. I ran this repository's own
-gates (`npm run type-check`) to confirm the staged tree still leaves this
-app's build untouched — it passes, as it did after `SCN-14` (`tsconfig.json`
-excludes `docs/`).
+No teacher-facing Server Action in the staged tree reads
+`process.env.OPENROUTER_API_KEY` or imports `requestOpenRouterImage` /
+`openRouterChat` any more.
 
-## Why nothing new was written
+## What remains out of scope (by design, not oversight)
 
-The ticket's **acceptance criteria** say "No Server Action directly uses
-`OPENROUTER_API_KEY`" — full stop, across the file set. But its **steps**
-scope the work to exactly two functions, `draft-vocabulary` and
-`draft-grammar`. A third Server Action, `generateWordImage` (in the same
-`vocabularyActions.ts`), still calls `requestOpenRouterImage` from
-`src/features/admin/openRouterImage.ts`, which still reads
-`process.env.OPENROUTER_API_KEY` — confirmed by reading the staged file
-(`docs/migrations/wp-5.6/web/src/features/teacher/vocabularyActions.ts:6,232`)
-and by `docs/migrations/wp-5.6/README.md`'s own "Limitations" section, which
-names this as the tracked reason the Vercel key cannot be deleted yet.
+The **admin console** (`generateLocationIcon.ts`, `generateMapBackground.ts`,
+`generateTaskImage.ts`, `missionImageActions.ts`) still calls
+`requestOpenRouterImage` directly and still reads `OPENROUTER_API_KEY`. This
+is not a gap this ticket leaves open by accident:
 
-That gap is not an oversight for this ticket to close quietly. It is a
-project-level decision already on record:
+- This repository's own `CLAUDE.md` states "The admin console stays
+  web-only" — it never ships in a mobile binary, so `OD-1`'s actual security
+  concern (a key extractable from an `.ipa`/`.aab`) does not apply to it the
+  way it did to `generateWordImage`, which a native teacher console will
+  eventually need to call too.
+- `EDGE-FUNCTIONS-PLAN.md` §4.4 explicitly scopes porting the admin callers
+  to a separate follow-up PR, not this one.
+- `SCN-15-1`, the sub-item that unblocked this ticket, asked specifically
+  about `generateWordImage` — the admin console was never raised as part of
+  that scope question, so treating it as in-scope now would be re-opening a
+  decision nobody asked this ticket to make.
 
-- `EDGE-FUNCTIONS-PLAN.md` §4.4 scopes `generate-image` into the `WP-5.6`
-  pull request but explicitly treats porting the **admin** callers as a
-  separate follow-up PR, and is silent on whether `generate-image` itself
-  ships in the same PR as the two text functions or after.
-- `docs/UPSTREAM-PR-WP-5.6.md`'s checklist already lists `generate-image`
-  as unwritten and names it "the one blocker on this PR being complete."
-- `docs/changes/SCN-14.md`'s own Limitations section records the same gap
-  and explicitly defers it as native-repo-visible but out of `SCN-14`'s
-  scope.
-
-Writing `generate-image` now would be scope creep against this ticket's own
-steps (which name only the two text functions) and would duplicate a
-decision — "what ships in this PR vs. the next one" — that the project's
-planning documents have already made and recorded with reasoning, not left
-open. Inventing an answer here (either "fold it into SCN-15" or "declare the
-acceptance criterion already met") would be guessing at a decision that is
-the maintainer's to make explicitly, matching the brief's instruction not to
-write code around an unresolved decision or invent the missing answer.
+The Vercel `OPENROUTER_API_KEY` environment variable therefore still cannot
+be deleted after the `WP-5.6` PR merges — only the **teacher-facing**
+drafting and image-generation paths are closed, which is what this ticket's
+steps (and the mobile-binary security rationale behind `OD-1`) actually
+required.
 
 ## Changes by file
 
-None. `docs/migrations/wp-5.6/` already contains everything this ticket's
-steps ask for, committed in `90df2e6`. No file was added, modified or
-deleted by this round.
+None in this round. `docs/migrations/wp-5.6/` already contains everything
+this ticket needs, delivered across `SCN-14` (commit `90df2e6`) and `SCN-18`
+(commit `aae64d5`). This round re-verified the staged tree against the
+ticket's acceptance criteria and rewrote this change doc to record the
+resolution; no source file was added, modified or deleted.
 
 ## Technical decisions
 
-- Did not duplicate `SCN-14`'s staged `vocabularyActions.ts` /
-  `grammarActions.ts` / `functionError.ts` — re-writing already-correct,
-  already-tested files would add risk with no behavioural change.
-- Did not implement `generate-image` to force-close the "no
-  `OPENROUTER_API_KEY` in any Server Action" acceptance criterion — that
-  function's scope and timing relative to this PR is an open point in the
-  project's own planning docs, not something this ticket's steps authorize
-  deciding unilaterally.
+- Did not re-implement or duplicate any file `SCN-14`/`SCN-18` already
+  staged — re-writing already-correct, already-tested files would add risk
+  with no behavioural change.
+- Did not fold the admin console's OpenRouter callers into this ticket's
+  scope. That boundary was already decided in `EDGE-FUNCTIONS-PLAN.md` §4.4
+  and is consistent with this repository's `CLAUDE.md` ("admin console stays
+  web-only"); nothing in this round's re-investigation surfaced a reason to
+  revisit it.
 
 ## Data, API and configuration
 
-None — no files changed this round. (See `docs/changes/SCN-14.md` for the
-`draft-vocabulary` / `draft-grammar` endpoint contracts, which already cover
-this ticket's scope.)
+None changed this round. See `docs/changes/SCN-14.md` for the
+`draft-vocabulary` / `draft-grammar` contracts and `docs/changes/SCN-18.md`
+for the `generate-image` contract — both already cover this ticket's full
+scope.
 
 ## How to verify
 
-- `npm run type-check` — passes (confirms the already-staged
-  `docs/migrations/wp-5.6/` tree still leaves this repository's own build
-  untouched; `tsconfig.json` excludes `docs/`).
-- Re-read `docs/migrations/wp-5.6/web/src/features/teacher/vocabularyActions.ts`
-  and `grammarActions.ts`: `generateVocabularyDraft` / `generateGrammarDraft`
-  call `supabase.functions.invoke(...)` only; no `process.env.OPENROUTER_API_KEY`
-  reference in either function.
-- Re-read `docs/migrations/wp-5.6/web/src/features/teacher/{vocabularyActions,
-  grammarActions}.test.ts`: both success and failure (unreachable function,
-  function error body) are covered.
+- `npm run type-check` in this repository — passes (`tsconfig.json` excludes
+  `docs/`, so this confirms the staged tree doesn't leak into this app's own
+  build, not that the staged Deno code type-checks under Deno).
+- Grepped `docs/migrations/wp-5.6/web/src` for `OPENROUTER_API_KEY`: the only
+  matches are in `vocabularyActions.ts` doc comments (explaining the key is
+  *no longer* read there) and `vocabularyActions.test.ts` assertions that it
+  is `undefined` — no executable read of the key remains in any teacher
+  Server Action.
+- Re-read `vocabularyActions.ts` and `grammarActions.ts` in full: every
+  exported action is now either a `supabase.functions.invoke(...)` call or an
+  unrelated RPC/`.from()` call (`publishVocabulary`, `clearVocabulary`,
+  `copyVocabularyFromTopic`) that never touched OpenRouter.
 
 ## Limitations and follow-ups
 
-- `generateWordImage` in the same staged `vocabularyActions.ts` still calls
-  `requestOpenRouterImage`, which still reads `OPENROUTER_API_KEY` via
-  `process.env`. Closing this requires the `generate-image` Edge Function
-  from `EDGE-FUNCTIONS-PLAN.md` §4.4, which is explicitly out of this
-  ticket's named steps and already tracked as the one open item against
-  `WP-5.6` in `docs/UPSTREAM-PR-WP-5.6.md` and `docs/changes/SCN-14.md`.
-- Nothing in `docs/migrations/wp-5.6/` is deployed; per this repository's
-  standing rule, a human still has to open the pull request against
-  `rubanwd/slay-city` and copy the staged tree in, per the deployment order
-  in `docs/migrations/wp-5.6/README.md`.
+- Admin console image generation (`generateLocationIcon`,
+  `generateMapBackground`, `generateTaskImage`, `missionImageActions`) still
+  reads `OPENROUTER_API_KEY` directly — tracked as a separate follow-up PR by
+  `EDGE-FUNCTIONS-PLAN.md` §4.4, out of this ticket's scope by design (see
+  above).
+- Nothing in `docs/migrations/wp-5.6/` is deployed; a human still has to open
+  the pull request against `rubanwd/slay-city` and copy the staged tree in,
+  per the deployment order in `docs/migrations/wp-5.6/README.md` (now
+  including all three functions).
+- `deno check` has still not been run against the staged functions (no Docker
+  daemon available in any session so far) — tracked in both
+  `docs/migrations/wp-5.6/README.md` and `docs/UPSTREAM-PR-WP-5.6.md` as a
+  pre-merge checklist item.
