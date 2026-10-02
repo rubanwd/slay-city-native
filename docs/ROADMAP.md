@@ -38,6 +38,10 @@ WP-7.1 (dev accounts) ─── start at M0, needed by M7
 OD-2 answered ─────────── needed by M2   (OD-1 answered 2026-09-29 ✅, OD-2 answered 2026-09-30 ✅)
 ```
 
+Live status on every gate above — owner, evidence, unblock criteria, target
+date — is tracked in [dependency-gates.md](dependency-gates.md). Update that
+file, not this diagram, when a gate's status changes.
+
 Two things must start earlier than their phase:
 
 - **WP-7.1 — Apple and Google developer accounts.** Apple's organisation
