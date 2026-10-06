@@ -1,6 +1,6 @@
 # SCN-52 — Verify Foundations exit criteria and record the results
 
-> Type: task · Date: 2026-10-07
+> Type: task · Date: 2026-10-07 (updated 2026-10-07 after SCN-52-1)
 
 ## Context
 
@@ -60,19 +60,35 @@ install, rather than inspecting config files and inferring the outcome:
 Wrote all five results, with the exact command output backing each one, to
 `docs/foundations-exit-report.md`.
 
+**Re-verification (2026-10-07, after SCN-52-1):** SCN-52-1 (commit `2a04a77`)
+resolved the drift found in step 3 above by resyncing the 7 flagged files
+against upstream commit `beba39d` and regenerating
+`packages/core/.upstream.json`. Re-ran the full checklist against that
+state: `npm run lint` (0 problems), `npm run type-check` (0 errors),
+`npm test` (263/263 across 28 files), `npm run upstream:fetch` (upstream
+still at `beba39d` — no further upstream movement since SCN-52-1), and
+`npm run drift:check`, which now reports `✓ 48 tracked files in sync`. Also
+re-ran `npx expo export --platform web` (exit 0, clean `git status`
+afterward) and re-confirmed the `supabase/`-absence and `upstream/`-isolation
+checks, both unchanged. Updated `docs/foundations-exit-report.md` in place to
+record criterion 2 as passing, superseding the original failing result for
+that row while keeping the rest of the report's findings as originally
+recorded. Criterion 5 remains an open manual check — unchanged, see below.
+
 ## Changes by file
 
-- `docs/foundations-exit-report.md` — new. The exit-criteria checklist: one
-  row per P3 exit clause (pass/fail/manual-check), followed by a section per
-  criterion with the command run and its output, and — for the one failing
-  criterion — a concrete next step (resolve each of the 7 drifted files per
-  `docs/SYNC.md` §4, update their hashes in `packages/core/.upstream.json`)
-  rather than a fix applied in this ticket.
-- `docs/changes/SCN-52.md` — new. This file.
+- `docs/foundations-exit-report.md` — new, then modified after SCN-52-1. The
+  exit-criteria checklist: one row per P3 exit clause, followed by a section
+  per criterion with the command run and its output. Originally recorded
+  criterion 2 (drift) as failing with a next step pointing at a follow-up
+  ticket; after SCN-52-1 landed, re-ran every command and updated criterion
+  2 to pass with the new `✓ 48 tracked files in sync` output, leaving
+  criteria 1/3/4 (already passing) and criterion 5 (manual check) as-is.
+- `docs/changes/SCN-52.md` — new, then modified. This file.
 
-No source, config, or dependency files were changed — this ticket is
-verification-only, and its own scope note says not to fix whatever the
-checks turn up.
+No source, config, or dependency files were changed by this ticket itself —
+it is verification-only. (The drift fix that made criterion 2 pass was done
+separately in SCN-52-1, commit `2a04a77`.)
 
 ## Technical decisions
 
@@ -104,25 +120,27 @@ None. No schema, dependency, or environment changes.
 
 ## How to verify
 
-- Re-run the six commands listed at the end of
+- Re-run the commands listed at the end of
   `docs/foundations-exit-report.md` (`npm install`, `npm run lint`,
   `npm run type-check`, `npm test`, `npm run upstream:fetch`,
   `npm run drift:check`, `npx expo export --platform web`) and compare
-  against the output recorded there.
-- `git status --short` after the export shows only
-  `docs/foundations-exit-report.md` as untracked — confirms `dist/` and
-  `upstream/` stayed out of the tree.
+  against the output recorded there — `npm run drift:check` should now
+  print `✓ 48 tracked files in sync`.
+- `git status --short` after the export shows a clean tree (only the
+  modified report/change-summary files from this ticket) — confirms `dist/`
+  and `upstream/` stayed out of the tree.
 
 ## Limitations and follow-ups
 
-- **Drift must be resolved before P3 can be called fully closed.** A
-  follow-up ticket should sync the 7 drifted files listed in
-  `docs/foundations-exit-report.md` §2 against upstream commit `beba39d` (or
-  whatever upstream head is current when that ticket runs), including
-  re-checking the `roleRouting.ts` adaptation note.
-- **Criterion 5 (zero commits in `rubanwd/slay-city`) is an open manual
-  check** for the maintainer — see `docs/foundations-exit-report.md` §5 for
-  the suggested verification command.
+- **Criterion 2 is resolved.** The drift found in the first pass of this
+  report was fixed by SCN-52-1 (commit `2a04a77`); this ticket's
+  re-verification confirms `npm run drift:check` now passes. No further
+  follow-up needed for that criterion.
+- **Criterion 5 (zero commits in `rubanwd/slay-city`) is still an open
+  manual check** for the maintainer — see `docs/foundations-exit-report.md`
+  §5 for the suggested verification command. This is the one remaining
+  blocker on calling P3 fully closed, and it cannot be resolved by an agent
+  working inside this repository.
 - `npm ci`'s `EPERM` on this Windows machine was not root-caused (likely an
   antivirus or indexing process holding a lock on a native `.node` file under
   `node_modules`); worth a look if CI ever needs to reproduce a Windows build

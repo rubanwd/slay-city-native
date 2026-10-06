@@ -1,6 +1,6 @@
 # Foundations (P3) exit report
 
-> Verification run: 2026-10-07. Ticket: SCN-52.
+> Verification run: 2026-10-07. Ticket: SCN-52 (re-verified after SCN-52-1).
 
 P3's exit line, from [docs/ROADMAP.md](ROADMAP.md#p3---foundations):
 
@@ -9,28 +9,25 @@ P3's exit line, from [docs/ROADMAP.md](ROADMAP.md#p3---foundations):
 > commits from this work.
 
 This report checks each clause against a real run, not against what the code
-is supposed to do. One clause fails (see §2) — it is recorded here as a
-finding with a concrete next step, not silently fixed, per this ticket's
-scope.
+is supposed to do.
+
+**Update (2026-10-07):** the first pass of this report (below, superseded)
+found criterion 2 failing — 7 of 48 tracked files had drifted from upstream.
+That was handed off as follow-up ticket **SCN-52-1**, which resolved the
+drift (commit `2a04a77`). This report re-runs the full checklist against the
+post-fix state. All automatically-verifiable criteria now pass.
 
 ## Summary
 
 | # | Criterion | Result | Evidence |
 | - | --- | --- | --- |
 | 1 | `lint`, `type-check`, `test` pass | ✅ Pass | §1 |
-| 2 | Drift check reports every tracked file in sync | ❌ **Fail** | §2 |
+| 2 | Drift check reports every tracked file in sync | ✅ Pass | §2 |
 | 3 | A bare Expo app builds/exports | ✅ Pass | §3 |
 | 4 | No `supabase/migrations/`; `upstream/` gitignored and tool-excluded | ✅ Pass | §4 |
 | 5 | `rubanwd/slay-city` has zero commits from this work | ⚠️ Manual check required | §5 |
 
 ## 1. `lint`, `type-check`, `test`
-
-Install: `npm ci` failed on this Windows machine with `EPERM` while deleting
-`node_modules/react-native-css-interop/node_modules/lightningcss-win32-x64-msvc/lightningcss.win32-x64-msvc.node`
-(a native binary, repeatable across two attempts — a locked file on this
-machine, not a repository problem). Used `npm install` instead, which does not
-require removing `node_modules` first; it completed cleanly (840 added, 64
-changed, 906 audited).
 
 ```
 > npm run lint
@@ -45,16 +42,21 @@ changed, 906 audited).
 > vitest run
  Test Files  28 passed (28)
       Tests  263 passed (263)
-   Duration  2.01s
+   Duration  1.57s
 ```
 
-The one line printed during the test run —
-`upstream checkout not found: ...\scn-50-cli-nERI2w\does-not-exist` — is
+The line printed during the test run —
+`upstream checkout not found: ...\scn-50-cli-HOeEft\does-not-exist` — is
 `scripts/check-upstream-drift.test.mjs` exercising its own missing-checkout
-error path on purpose, not a failure (confirmed: exit summary is 28/28 files,
-263/263 tests, no non-zero exit).
+error path on purpose, not a failure (exit summary is 28/28 files, 263/263
+tests, no non-zero exit).
 
-**Result: pass.** All three commands are green on a fresh `npm install`.
+(`npm ci` still fails with `EPERM` on a locked `lightningcss` native binary on
+this Windows machine — a local environment quirk, not a repo problem; see
+`npm-ci-eperm-locked-on-this-machine` project memory. `npm install` works and
+was used instead.)
+
+**Result: pass.**
 
 ## 2. Drift check — tracked files in sync
 
@@ -64,37 +66,18 @@ cloning https://github.com/rubanwd/slay-city.git (current upstream head)
 upstream ready at ./upstream (beba39d)
 
 > npm run drift:check
-packages\core\.upstream.json (https://github.com/rubanwd/slay-city):
-✗ 7 of 48 tracked files drifted
-  packages/core/src/types/database.ts
-  packages/core/src/types/index.ts
-  packages/core/src/features/auth/roleRouting.ts [adapted — needs judgement]
-  packages/core/src/features/i18n/messages.ts
-  packages/core/src/features/i18n/messages/en.ts
-  packages/core/src/features/i18n/messages/ru.ts
-  packages/core/src/features/i18n/messages/uk.ts
+✓ 48 tracked files in sync
+  https://github.com/rubanwd/slay-city — last synced from beba39da099685c1a8af39364e997e265c0642ca on 2026-10-06T21:14:59.973Z
 ```
 
-`packages/core/.upstream.json` records `syncedFrom: 21b4d87c` (2026-09-17).
-Current upstream head is `beba39d` (2026-10-04, "feat(placement): show which
-answer was tapped before moving on (#112)"). Upstream moved 7 of the 48
-tracked files' content since the last sync, including one file already marked
-`adapted: true` (`roleRouting.ts`) whose existing note says the adaptation
-only concerns two functions outside this file — that note has not been
-re-checked against the `beba39d` diff.
+Upstream head is still `beba39d` (same commit the original report measured
+drift against). `packages/core/.upstream.json` now records
+`syncedFrom: beba39da...` matching that head exactly — SCN-52-1 (commit
+`2a04a77`, 2026-10-06) pulled in the 7 files that had drifted (`types/database.ts`,
+`types/index.ts`, `features/auth/roleRouting.ts`, and the four i18n message
+files) and updated their recorded hashes.
 
-**Result: fail, as of this run.** This is the mechanism working as designed —
-WP-0.5 exists precisely to turn silent drift into a visible, actionable
-list — not a defect in the drift script or CI job (SCN-50, SCN-51). But the
-exit criterion is "every tracked file in sync," and today it is not.
-
-**Next step (not done here, out of scope for this ticket):** resolve each of
-the 7 files per `docs/SYNC.md` §4 — diff against
-`upstream/src/types/database.ts` etc., copy or hand-apply the change, run
-`npm test`, and update the corresponding `sha256` (and, for `roleRouting.ts`,
-re-confirm the adaptation note still holds) in
-`packages/core/.upstream.json`. Until that lands, the nightly `drift` job
-(SCN-51) will report this same failure.
+**Result: pass.** All 48 tracked files report in sync as of this run.
 
 ## 3. Bare Expo app builds/exports
 
@@ -116,24 +99,21 @@ phase.
 
 ## 4. No `supabase/migrations/`; `upstream/` isolated
 
-- `find . -maxdepth 1 -iname supabase` — no match. `git log --all -- supabase`
-  — no history. There is no `supabase/` directory and never has been, matching
-  `CLAUDE.md`'s "there is no `supabase/` directory here on purpose."
+- No `supabase/` directory exists at the repo root, and `git log --all --
+  supabase` returns no history — matching `CLAUDE.md`'s "there is no
+  `supabase/` directory here on purpose."
 - `.gitignore` — `upstream/` is ignored, with a comment explaining why a
   snapshot is never committed.
 - `tsconfig.json` — `"exclude": ["node_modules", "upstream", "docs"]`.
 - `eslint.config.js` — top-level `{ ignores: ["node_modules/", ".expo/",
   "upstream/", "dist/", "android/", "ios/", "docs/"] }`, plus a
   `no-restricted-imports` rule on `app/**` and `src/**` banning `upstream/*`
-  and `../upstream/*` imports outright (belt-and-suspenders against someone
-  importing from it even if the ignore were ever narrowed).
+  and `../upstream/*` imports outright.
 - `vitest.config.mts` — `test.include: ["packages/**/*.test.ts",
   "scripts/**/*.test.mjs"]`; `upstream/` is excluded by construction, not by
   an explicit ignore pattern.
 
-**Result: pass.** (This duplicates part of what SCN-46 already verified for
-WP-0.1 specifically; re-checked here directly rather than trusted, since this
-ticket's exit criterion names it independently.)
+**Result: pass.**
 
 ## 5. `rubanwd/slay-city` has zero commits from this work
 
@@ -144,8 +124,8 @@ audit for *authorship intent* (a legitimate upstream PR from the sync
 workflow would look identical, in a diff, to an accidental one).
 
 **Result: flagged as a manual check for the maintainer.** Suggested check:
-`git -C upstream log --oneline --since=2026-09-17` (the last
-`packages/core` sync date) against the author list, confirming nothing
+`git -C upstream log --oneline --since=2026-09-17` (the last `packages/core`
+sync date prior to SCN-52-1) against the author list, confirming nothing
 authored by this project's agents/branches landed there outside the normal
 `docs/SYNC.md` §4 pull-from-upstream workflow.
 
