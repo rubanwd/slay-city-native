@@ -8,6 +8,7 @@ on:
     # Nightly, so drift introduced by an upstream merge surfaces the next morning
     # rather than at the next pull request — which could be weeks away.
     - cron: "0 4 * * *"
+  workflow_dispatch:
 
 jobs:
   check:
@@ -26,22 +27,45 @@ jobs:
       - run: npm run type-check
       - run: npm test
 
-  upstream-drift:
+  drift:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check out the upstream web app
-        uses: actions/checkout@v4
-        with:
-          repository: rubanwd/slay-city
-          path: upstream
-          token: ${{ secrets.UPSTREAM_READ_TOKEN }}
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
-      # No npm ci — the drift check has no dependencies beyond Node itself, so it
-      # still reports on a morning when the install step is broken.
-      - run: node scripts/check-upstream-drift.mjs --upstream ./upstream
+      - run: npm ci
+
+      # rubanwd/slay-city is public — a plain clone, no checkout token needed.
+      - run: npm run upstream:fetch
+
+      - name: Check upstream drift
+        id: drift
+        run: npm run drift:check > drift-output.txt 2>&1
+        continue-on-error: true
+
+      - name: Publish drift summary
+        if: always()
+        run: |
+          {
+            echo "## Upstream drift check"
+            echo
+            if [ "${{ steps.drift.outcome }}" = "success" ]; then
+              echo "✅ All tracked files are in sync with upstream."
+            else
+              echo "❌ Drift detected — a tracked file no longer matches upstream."
+            fi
+            echo
+            echo '```'
+            cat drift-output.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail the job if drift was found
+        if: steps.drift.outcome == 'failure'
+        run: |
+          echo "Upstream drift detected — see the step summary for details, or docs/SYNC.md section 4 to resolve it."
+          exit 1

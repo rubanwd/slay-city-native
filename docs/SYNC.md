@@ -35,9 +35,11 @@ copies.
 maps each local file to its upstream path and the SHA-256 of the upstream content at
 the moment it was copied.
 
-**CI fails when upstream moves.** Nightly, and on every pull request, the drift check
-compares recorded hashes against upstream's current content. A mismatch is a failing
-build with a list of files, not a silent divergence.
+**CI fails when upstream moves.** Nightly, on every pull request, and on demand via
+`workflow_dispatch`, the `drift` job in `.github/workflows/ci.yml` compares recorded
+hashes against upstream's current content. A mismatch is a failing build with a list
+of files in the job's summary, not a silent divergence. `rubanwd/slay-city` is public,
+so the job needs no checkout token or other secret.
 
 ## 3. The manifest
 
@@ -78,8 +80,8 @@ as possible; an adapted file is a small monorepo's worth of maintenance in one p
 git clone --depth 1 https://github.com/rubanwd/slay-city /tmp/upstream
 node scripts/check-upstream-drift.mjs --upstream /tmp/upstream
 
-# CI: actions/checkout the web repo into ./upstream, then
-node scripts/check-upstream-drift.mjs --upstream ./upstream
+# CI (.github/workflows/ci.yml's `drift` job): npm run upstream:fetch, then
+npm run drift:check
 
 # local convenience: fetches ./upstream's current head on first run
 npm run drift:check
@@ -98,10 +100,10 @@ the person reading a red build knows immediately whether this is a copy-paste or
 judgement call. Every `packages/*/.upstream.json` manifest is checked, not just
 `packages/core`'s, so another tracked copy added later needs no changes here.
 
-With an explicit `--upstream <path>` (the CI form above), a missing checkout is an
-error — CI's `actions/checkout` step already manages it, and silently falling back
-to a network clone there would make the check non-deterministic. Without it, a
-missing `./upstream` is fetched automatically.
+With an explicit `--upstream <path>` (a manually managed checkout, e.g. one a CI step
+populated via `actions/checkout`), a missing checkout is an error — silently falling
+back to a network clone there would make the check non-deterministic. Without it, as
+in CI's `drift` job and local use, a missing `./upstream` is fetched automatically.
 
 ### Resolving drift
 
