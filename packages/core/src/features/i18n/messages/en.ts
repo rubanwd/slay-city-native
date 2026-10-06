@@ -57,6 +57,12 @@ export const en: Messages = {
     studyTimeHint: "Counted only while a mission or homework module is open.",
     weekdayInitials: ["M", "T", "W", "T", "F", "S", "S"],
 
+    placementTitle: "Level Test",
+    placementHint: "Grammar and vocabulary, from Beginner to Upper Intermediate. A level counts as passed at 60%.",
+    placementEmpty: "Not taken yet. Your student can take the test from their profile.",
+    placementScore: (correct, total) => `${correct} of ${total} answers right`,
+    placementTaken: (date) => `Taken ${date}`,
+
     missionsCompleted: "Missions Completed",
     tasksCompleted: "Tasks Completed",
     currentStreak: "Current Streak",
@@ -161,6 +167,12 @@ export const en: Messages = {
       levelSwitching: "Switching level…",
       levelOnlyOne: "More levels unlock as new districts are added to the city.",
       levelComingSoon: (levels) => `Coming soon: ${levels}.`,
+
+      placementTitle: "Level test",
+      placementIntro: "Not sure which level fits you? Take a quick test and find out.",
+      placementStart: "Take the test",
+      placementRetake: "Take it again",
+      placementLast: (level, correct, total) => `Last result: ${level} (${correct}/${total})`,
 
       logOut: "Log Out",
       loggingOut: "Logging out…",

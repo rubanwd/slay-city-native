@@ -60,6 +60,13 @@ export interface Messages {
     studyTimeHint: string;
     weekdayInitials: readonly [string, string, string, string, string, string, string];
 
+    /** The student's latest English placement-test result. */
+    placementTitle: string;
+    placementHint: string;
+    placementEmpty: string;
+    placementScore: (correct: number, total: number) => string;
+    placementTaken: (date: string) => string;
+
     missionsCompleted: string;
     tasksCompleted: string;
     currentStreak: string;
@@ -155,6 +162,14 @@ export interface Messages {
       /** Shown when there is no other level with content to switch to. */
       levelOnlyOne: string;
       levelComingSoon: (levels: string) => string;
+
+      /** The placement-test card: "What's my level?" and the latest result. */
+      placementTitle: string;
+      placementIntro: string;
+      placementStart: string;
+      placementRetake: string;
+      /** "Last result: Elementary (28/40)" — the level name is never translated. */
+      placementLast: (level: string, correct: number, total: number) => string;
 
       logOut: string;
       loggingOut: string;

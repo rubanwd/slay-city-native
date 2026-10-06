@@ -57,6 +57,12 @@ export const ru: Messages = {
     studyTimeHint: "Считается только пока открыта миссия или домашнее задание.",
     weekdayInitials: ["П", "В", "С", "Ч", "П", "С", "В"],
 
+    placementTitle: "Тест на уровень",
+    placementHint: "Грамматика и лексика от Beginner до Upper Intermediate. Уровень засчитывается от 60%.",
+    placementEmpty: "Тест ещё не пройден. Ученик может пройти его в своём профиле.",
+    placementScore: (correct, total) => `${correct} из ${total} правильных ответов`,
+    placementTaken: (date) => `Пройден ${date}`,
+
     missionsCompleted: "Пройдено миссий",
     tasksCompleted: "Выполнено заданий",
     currentStreak: "Текущая серия",
@@ -161,6 +167,12 @@ export const ru: Messages = {
       levelSwitching: "Меняем уровень…",
       levelOnlyOne: "Новые уровни откроются, когда в городе появятся новые районы.",
       levelComingSoon: (levels) => `Скоро: ${levels}.`,
+
+      placementTitle: "Тест на уровень",
+      placementIntro: "Не знаешь, какой уровень тебе подходит? Пройди короткий тест и узнай.",
+      placementStart: "Пройти тест",
+      placementRetake: "Пройти ещё раз",
+      placementLast: (level, correct, total) => `Последний результат: ${level} (${correct}/${total})`,
 
       logOut: "Выйти",
       loggingOut: "Выходим…",

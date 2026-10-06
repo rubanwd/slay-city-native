@@ -1,18 +1,18 @@
 {
   "upstream": "https://github.com/rubanwd/slay-city",
-  "syncedAt": "2026-09-17T15:14:07Z",
-  "syncedFrom": "21b4d87c880185f58ff85a5b32c1a88b50877741",
+  "syncedAt": "2026-10-06T21:14:59.973Z",
+  "syncedFrom": "beba39da099685c1a8af39364e997e265c0642ca",
   "files": [
     {
       "local": "packages/core/src/types/database.ts",
       "upstream": "src/types/database.ts",
-      "sha256": "a9ba5bb16ee6bb965ea8fe0ddca2a70b1e7e07942ee4f6e09b9ef763ffc75e42",
+      "sha256": "872a13f84666a936c349cceb6f97389fda407e79d507a5fd9e8b4e44af415592",
       "adapted": false
     },
     {
       "local": "packages/core/src/types/index.ts",
       "upstream": "src/types/index.ts",
-      "sha256": "117664686eead3d57c2ae9595842831bc34263dca6025c965254ea98885e9d92",
+      "sha256": "7f113738eb39ef5d029eb0f468a508a3498293ae84dcf416277823f9f5079772",
       "adapted": false
     },
     {
@@ -78,7 +78,7 @@
     {
       "local": "packages/core/src/features/auth/roleRouting.ts",
       "upstream": "src/features/auth/roleRouting.ts",
-      "sha256": "fda2f26ca43937f80d168432384e983300fc8a84183cf9a42810daa05abd93ea",
+      "sha256": "1c0d60f9b6b6abb558ba1cf20d8fce671358c3f7d208abef63a203bafe086e57",
       "adapted": true,
       "note": "roleHome() only; ensureRoleProfile/resolveHomePath take a Supabase client and belong in packages/data. A drift alert touching only those two functions does not affect this file."
     },
@@ -235,7 +235,7 @@
     {
       "local": "packages/core/src/features/i18n/messages.ts",
       "upstream": "src/features/i18n/messages.ts",
-      "sha256": "16e23f2e039532de25f29b3261577a6266b96180a0bacfcdd77bfb6f0df0db15",
+      "sha256": "85ca42e7ba634512d56f841815e29372efe058b9bc59e7346206c1434e27806e",
       "adapted": false
     },
     {
@@ -253,19 +253,19 @@
     {
       "local": "packages/core/src/features/i18n/messages/en.ts",
       "upstream": "src/features/i18n/messages/en.ts",
-      "sha256": "371fcd360eed3cd261bdb9748935b15b27c483a8d0b9cfec994fc5ee0a3a9235",
+      "sha256": "7c07effdf33323711735e19c39522c0bae36a0a55027f972fe76574e37cfd2a6",
       "adapted": false
     },
     {
       "local": "packages/core/src/features/i18n/messages/ru.ts",
       "upstream": "src/features/i18n/messages/ru.ts",
-      "sha256": "73f4ab3d344a5146933368aef0ba17522efa72abd7bce98d2076f68b079457a2",
+      "sha256": "28f788a7bc8195469c6cf2eccb7e69646bd8fd988534b3432603be9b6d97aedf",
       "adapted": false
     },
     {
       "local": "packages/core/src/features/i18n/messages/uk.ts",
       "upstream": "src/features/i18n/messages/uk.ts",
-      "sha256": "0864622cb69c6dd633dd0615eb2d7b4f9356a31059a89efe89ecf37cfb635c09",
+      "sha256": "a166b7436b75a86816b760a8fc9b7ba18d3e6eade55bbae6427f7fe3576d08ba",
       "adapted": false
     },
     {

@@ -64,3 +64,6 @@ export type FeedbackReportInsert = Tables["feedback_reports"]["Insert"];
 export type AiContentDraft = Tables["ai_content_drafts"]["Row"];
 export type AiContentDraftInsert = Tables["ai_content_drafts"]["Insert"];
 export type AiContentDraftUpdate = Tables["ai_content_drafts"]["Update"];
+
+export type PlacementTestQuestion = Tables["placement_test_questions"]["Row"];
+export type PlacementTestAttempt = Tables["placement_test_attempts"]["Row"];

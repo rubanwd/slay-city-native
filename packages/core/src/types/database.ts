@@ -772,6 +772,80 @@ export type Database = {
           },
         ]
       }
+      placement_test_attempts: {
+        Row: {
+          created_at: string
+          id: string
+          level_scores: Json
+          profile_id: string
+          recommended_level: Database["public"]["Enums"]["knowledge_level"]
+          total_correct: number
+          total_questions: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          level_scores: Json
+          profile_id: string
+          recommended_level: Database["public"]["Enums"]["knowledge_level"]
+          total_correct: number
+          total_questions: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          level_scores?: Json
+          profile_id?: string
+          recommended_level?: Database["public"]["Enums"]["knowledge_level"]
+          total_correct?: number
+          total_questions?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "placement_test_attempts_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      placement_test_questions: {
+        Row: {
+          correct_index: number
+          created_at: string
+          id: string
+          is_published: boolean
+          level: Database["public"]["Enums"]["knowledge_level"]
+          options: string[]
+          order_index: number
+          prompt: string
+          updated_at: string
+        }
+        Insert: {
+          correct_index: number
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          level: Database["public"]["Enums"]["knowledge_level"]
+          options: string[]
+          order_index?: number
+          prompt: string
+          updated_at?: string
+        }
+        Update: {
+          correct_index?: number
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          level?: Database["public"]["Enums"]["knowledge_level"]
+          options?: string[]
+          order_index?: number
+          prompt?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age: number | null
@@ -1284,6 +1358,16 @@ export type Database = {
         }[]
       }
       equip_wardrobe_item: { Args: { p_item_id: string }; Returns: undefined }
+      get_placement_test: {
+        Args: never
+        Returns: {
+          id: string
+          level: Database["public"]["Enums"]["knowledge_level"]
+          options: string[]
+          order_index: number
+          prompt: string
+        }[]
+      }
       list_feedback_reports: {
         Args: never
         Returns: {
@@ -1299,6 +1383,7 @@ export type Database = {
         }[]
       }
       mark_feedback_read: { Args: never; Returns: number }
+      submit_placement_test: { Args: { p_answers: Json }; Returns: Json }
       unread_feedback_count: { Args: never; Returns: number }
       get_topic_messages: {
         Args: { p_topic_id: string }
