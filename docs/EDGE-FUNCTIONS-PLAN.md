@@ -30,7 +30,7 @@ apps invoke. See `R9` in [RISKS.md](RISKS.md).
 | **Decision** | Move OpenRouter calls out of Next.js Server Actions into Supabase Edge Functions. Option **(a)**. |
 | **Status** | **APPROVED** — 2026-09-29 |
 | **Rationale** | **API key cannot ship in a mobile binary.** |
-| **Blocks released** | `M4`, `M5`, `WP-5.6` |
+| **Blocks released** | `P7`, `P8`, `WP-5.6` |
 
 ### 2.1 The locked rule this changes
 

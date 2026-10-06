@@ -17,7 +17,7 @@
 | **Status** | **APPROVED** — 2026-09-30 |
 | **Rationale** | App Store Review Guideline 4.8 makes this a hard requirement for any iOS app that offers a third-party social login, not a stylistic choice. |
 | **Rejected alternative** | (b) Hide Google on iOS, email/password only there. Rejected because an account created with Google on the web — which is `signInWithGoogle`, already live in `src/features/auth/actions.ts` — could then never sign in from an iPhone. That trades one App Store risk for a support/retention problem the web app does not have today. |
-| **Blocks released** | `M2`, `M7` |
+| **Blocks released** | `P5`, `P10` |
 
 ## 2. Why this is not optional
 
@@ -95,13 +95,13 @@ recorded in **this** repository's own `AGENTS.md` only, next to the existing
 
 | Blocks | Why |
 | --- | --- |
-| **`M2` — Auth & session** | `ROADMAP.md`'s dependency graph: *"OD-2 answered ─── needed by M2."* `WP-2.5` (social sign-in) lists `OD-2` as a dependency and cannot be scoped — client library, entitlement, credential flow — until the decision is made. It is now unblocked. |
-| **`M7` — Store readiness** | An iOS submission with Google sign-in and no Apple equivalent fails App Store review on Guideline 4.8. `WP-7.2` (EAS Build and Submit) cannot produce a submittable build without `WP-2.5` having shipped Apple sign-in first. |
+| **`P5` — Auth & session** | `ROADMAP.md`'s dependency graph: *"OD-2 answered ─── needed by P5."* `WP-2.5` (social sign-in) lists `OD-2` as a dependency and cannot be scoped — client library, entitlement, credential flow — until the decision is made. It is now unblocked. |
+| **`P10` — Store readiness** | An iOS submission with Google sign-in and no Apple equivalent fails App Store review on Guideline 4.8. `WP-7.2` (EAS Build and Submit) cannot produce a submittable build without `WP-2.5` having shipped Apple sign-in first. |
 
 `ROADMAP.md`'s dependency graph line becomes:
 
 ```
-OD-2 answered ─────────── needed by M2   (OD-1 answered 2026-09-29 ✅, OD-2 answered 2026-09-30 ✅)
+OD-2 answered ─────────── needed by P5   (OD-1 answered 2026-09-29 ✅, OD-2 answered 2026-09-30 ✅)
 ```
 
 ## 6. What this document does not cover

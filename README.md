@@ -41,14 +41,14 @@ different XP than the browser for the same mission. The contract is in
 | [docs/SYNC.md](docs/SYNC.md) | The shared-logic contract — read before touching `packages/core` |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Layout, layer rules, backend boundary, auth |
 | [docs/MIGRATION-MAP.md](docs/MIGRATION-MAP.md) | Where every file from the web app ends up |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | Phases M0–M8 and their exit criteria |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Phases P3–P11 and their exit criteria |
 | [docs/WORK-PACKAGES.md](docs/WORK-PACKAGES.md) | 54 tasks with acceptance criteria |
 | [docs/RISKS.md](docs/RISKS.md) | Store review, kids privacy, drift |
 | [AGENTS.md](AGENTS.md) | Operating manual — read before writing code |
 
 ## Status
 
-**M0 — Foundations.** `WP-0.1` complete: Expo Router, NativeWind and the upstream
+**P3 — Foundations.** `WP-0.1` complete: Expo Router, NativeWind and the upstream
 reference mechanism are in place and the app bundles for both platforms.
 `WP-0.2`–`WP-0.5` are next: populate `packages/core` and `packages/data`, and wire
 the drift check into CI.

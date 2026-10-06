@@ -3,7 +3,7 @@
 Two repositories, one product. This document is the price of that choice and the
 plan for keeping it bounded.
 
-Read it before M0. `WP-0.5` implements it.
+Read it before P3. `WP-0.5` implements it.
 
 ---
 

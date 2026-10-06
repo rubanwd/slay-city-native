@@ -18,7 +18,7 @@ its dependencies, and acceptance criteria written as checks that either pass or 
 
 ---
 
-# M0 — Foundations
+# P3 — Foundations
 
 ### WP-0.1 · Repository bootstrap and snapshot
 `0.5d` · deps: none
@@ -90,7 +90,7 @@ takes `db: SupabaseClient<Database>` first.
   names it.
 - `AC5` [SYNC.md](SYNC.md) is committed and linked from the repository README.
 
-# M1 — Mobile shell
+# P4 — Mobile shell
 
 ### WP-1.1 · Expo scaffold
 `1d` · deps: WP-0.4
@@ -142,7 +142,7 @@ per-role tab layouts.
 
 ---
 
-# M2 — Auth & session
+# P5 — Auth & session
 
 ### WP-2.1 · Supabase client
 `1d` · deps: WP-1.1
@@ -158,7 +158,7 @@ per-role tab layouts.
 - `AC1` Login, register, forgot-password and reset-password all work against the live project. `AC2` Error copy matches the web's. `AC3` Keyboard never covers the active field. `AC4` Password fields use secure entry and no autocorrect.
 
 ### WP-2.3 · Teacher/parent RLS audit 🔴
-`1.5d` · deps: none — **start in M0, gates all of M5** · **lands as a PR against `rubanwd/slay-city`**
+`1.5d` · deps: none — **start in P3, gates all of P8** · **lands as a PR against `rubanwd/slay-city`**
 
 For each of the 32 direct table writes in migration map §2 Category B, determine
 whether RLS alone authorises it. Where it does not, add a `SECURITY DEFINER` RPC
@@ -188,7 +188,7 @@ that re-checks the caller's role in SQL.
 
 ---
 
-# M3 — Student core loop
+# P6 — Student core loop
 
 ### WP-3.1 · City map
 `2d` · deps: WP-2.6
@@ -232,7 +232,7 @@ that re-checks the caller's role in SQL.
 
 ---
 
-# M4 — Student surround
+# P7 — Student surround
 
 | ID | Package | Est. | Key acceptance criteria |
 | --- | --- | --- | --- |
@@ -246,7 +246,7 @@ that re-checks the caller's role in SQL.
 
 ---
 
-# M5 — Teacher & parent consoles
+# P8 — Teacher & parent consoles
 
 | ID | Package | Est. | Key acceptance criteria |
 | --- | --- | --- | --- |
@@ -262,7 +262,7 @@ that re-checks the caller's role in SQL.
 
 ---
 
-# M6 — Polish
+# P9 — Polish
 
 | ID | Package | Est. | Key acceptance criteria |
 | --- | --- | --- | --- |
@@ -276,7 +276,7 @@ that re-checks the caller's role in SQL.
 
 ---
 
-# M7 — Store readiness
+# P10 — Store readiness
 
 | ID | Package | Owner | Notes |
 | --- | --- | --- | --- |
@@ -290,7 +290,7 @@ that re-checks the caller's role in SQL.
 
 ---
 
-# M8 — Beta and launch
+# P11 — Beta and launch
 
 `WP-8.1` closed beta · `WP-8.2` fixes · `WP-8.3` submission and review responses ·
 `WP-8.4` staged rollout · `WP-8.5` OTA and crash-monitoring workflow.
