@@ -47,7 +47,8 @@
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "upstream:fetch": "node scripts/fetch-upstream.mjs",
-    "upstream:check": "node scripts/check-upstream-drift.mjs --upstream ./upstream"
+    "upstream:check": "node scripts/check-upstream-drift.mjs --upstream ./upstream",
+    "upstream:manifest": "node scripts/generate-upstream-manifest.mjs --upstream ./upstream"
   },
   "private": true
 }
