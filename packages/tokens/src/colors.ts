@@ -1,13 +1,18 @@
 /**
  * SLAY CITY brand palette — the single source of truth for this repository.
  *
- * These seven values are locked by the web repository's AGENTS.md under "What Not to
- * Change Without Permission". They mirror `src/styles/theme.css` upstream, where
- * they are declared as space-separated RGB channels for Tailwind's alpha modifier.
- * React Native has no CSS variables at runtime, so here they are plain hex.
+ * `neonPink`, `limeGreen`, `cyan`, `purple`, `black` and `white` are the six colours
+ * locked by the web repository's AGENTS.md under "What Not to Change Without
+ * Permission". They mirror `src/styles/theme.css` upstream, where they are declared
+ * as space-separated RGB channels for Tailwind's alpha modifier. React Native has no
+ * CSS variables at runtime, so here they are plain hex.
  *
- * `surface` is not a brand colour — it is the neutral card background the web app
- * writes as a raw `bg-[#1a1a1a]`. Naming it here keeps that hex out of every
+ * `neonOrange` is declared in the same upstream `theme.css` and used for admin-only
+ * accents, but it is not part of the locked six — it can change without the
+ * cross-repo sign-off the other six require.
+ *
+ * `surface` is not a brand colour at all — it is the neutral card background the web
+ * app writes as a raw `bg-[#1a1a1a]`. Naming it here keeps that hex out of every
  * component that needs it.
  *
  * Never write a raw hex value anywhere else in this repository.
@@ -21,6 +26,21 @@ export const colors = {
   black: "#111111",
   white: "#FFFFFF",
   surface: "#1A1A1A",
+} as const;
+
+/**
+ * The exact six locked brand colours, in the order AGENTS.md lists them — distinct
+ * from `colors`, which also carries `neonOrange` (admin-only, unlocked) and `surface`
+ * (not a brand colour). Exists so tests and any future "is this hex allowed" check
+ * can assert against the locked set without `neonOrange` or `surface` drifting in.
+ */
+export const lockedBrandColors = {
+  neonPink: colors.neonPink,
+  limeGreen: colors.limeGreen,
+  cyan: colors.cyan,
+  purple: colors.purple,
+  black: colors.black,
+  white: colors.white,
 } as const;
 
 /** Semantic aliases, matching the upstream `--color-*` semantic layer. */

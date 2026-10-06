@@ -1,6 +1,28 @@
 import { describe, expect, it } from "vitest";
 
-import { colors, withAlpha } from "./colors";
+import { colors, lockedBrandColors, withAlpha } from "./colors";
+
+describe("lockedBrandColors", () => {
+  it("has exactly six brand colours", () => {
+    expect(Object.keys(lockedBrandColors)).toHaveLength(6);
+  });
+
+  it("matches the hex values locked by the web repository's AGENTS.md", () => {
+    expect(lockedBrandColors).toEqual({
+      neonPink: "#FF2D8E",
+      limeGreen: "#9DFF00",
+      cyan: "#00F0FF",
+      purple: "#6A00FF",
+      black: "#111111",
+      white: "#FFFFFF",
+    });
+  });
+
+  it("excludes neonOrange and surface, which are not part of the locked six", () => {
+    expect(lockedBrandColors).not.toHaveProperty("neonOrange");
+    expect(lockedBrandColors).not.toHaveProperty("surface");
+  });
+});
 
 describe("withAlpha", () => {
   it("converts a brand hex to an rgba string at the given opacity", () => {
