@@ -80,13 +80,28 @@ node scripts/check-upstream-drift.mjs --upstream /tmp/upstream
 
 # CI: actions/checkout the web repo into ./upstream, then
 node scripts/check-upstream-drift.mjs --upstream ./upstream
+
+# local convenience: fetches ./upstream's current head on first run
+npm run drift:check
+
+# reproduce a check against the exact commit this repo was seeded from
+npm run drift:check -- --baseline
+
+# machine-readable output
+npm run drift:check -- --json
 ```
 
 Exit codes: `0` in sync · `1` drift detected · `2` manifest or path error.
 
 Output names every drifted file, its upstream path, and whether it is adapted — so
 the person reading a red build knows immediately whether this is a copy-paste or a
-judgement call.
+judgement call. Every `packages/*/.upstream.json` manifest is checked, not just
+`packages/core`'s, so another tracked copy added later needs no changes here.
+
+With an explicit `--upstream <path>` (the CI form above), a missing checkout is an
+error — CI's `actions/checkout` step already manages it, and silently falling back
+to a network clone there would make the check non-deterministic. Without it, a
+missing `./upstream` is fetched automatically.
 
 ### Resolving drift
 

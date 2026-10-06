@@ -48,7 +48,8 @@
     "test": "vitest run",
     "upstream:fetch": "node scripts/fetch-upstream.mjs",
     "upstream:check": "node scripts/check-upstream-drift.mjs --upstream ./upstream",
-    "upstream:manifest": "node scripts/generate-upstream-manifest.mjs --upstream ./upstream"
+    "upstream:manifest": "node scripts/generate-upstream-manifest.mjs --upstream ./upstream",
+    "drift:check": "node scripts/check-upstream-drift.mjs"
   },
   "private": true
 }
