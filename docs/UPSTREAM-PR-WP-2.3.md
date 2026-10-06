@@ -306,7 +306,7 @@ changed, so the boundary returns to precisely what it was.
 
 ### Downstream
 
-Unblocks all of M5 in
+Unblocks all of P8 in
 [rubanwd/slay-city-native](https://github.com/rubanwd/slay-city-native) —
 `WP-5.2` (homework topic authoring), `WP-5.3` (`VocabularyManager`), `WP-5.4`
 (`GrammarManager`) and `WP-5.5` (Q&A messaging) all write through these

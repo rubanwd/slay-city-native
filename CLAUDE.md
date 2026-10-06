@@ -9,7 +9,7 @@ web-only.
 - **[AGENTS.md](AGENTS.md)** — the operating manual. Layer rules, styling,
   security, definition of done. Read it before writing code.
 - **[docs/SYNC.md](docs/SYNC.md)** — read before touching `packages/core`.
-- **[docs/ROADMAP.md](docs/ROADMAP.md)** — phases M0–M8 and where we are.
+- **[docs/ROADMAP.md](docs/ROADMAP.md)** — phases P3–P11 and where we are.
 - **[docs/WORK-PACKAGES.md](docs/WORK-PACKAGES.md)** — the task you are probably
   being asked to do, with its acceptance criteria.
 

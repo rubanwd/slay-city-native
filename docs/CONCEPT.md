@@ -22,7 +22,7 @@ app can be abandoned, paused, or restarted without any trace in production.
 
 **What this costs:** logic that both apps need now exists twice. That cost is real,
 permanent, and addressed head-on in [SYNC.md](SYNC.md) rather than wished away.
-Read that document before starting M0 — it is the price of this decision and the
+Read that document before starting P3 — it is the price of this decision and the
 plan for keeping it bounded.
 
 ## 2. What is being built
@@ -262,13 +262,13 @@ lists under *What Not to Change Without Permission*.
 
 | ID | Decision | Recommendation | Blocks |
 | --- | --- | --- | --- |
-| ~~**OD-1** 🔒~~ | ~~Move OpenRouter calls into Edge Functions~~ | ✅ **APPROVED** 2026-09-29 — the key cannot ship in a binary | ~~M4, WP-5.6~~ released |
-| ~~**OD-2** 🔒~~ | ~~Implement Sign in with Apple~~ | ✅ **APPROVED** 2026-09-30 — Guideline 4.8 requires it wherever Google sign-in exists | ~~M2, M7~~ released |
+| ~~**OD-1** 🔒~~ | ~~Move OpenRouter calls into Edge Functions~~ | ✅ **APPROVED** 2026-09-29 — the key cannot ship in a binary | ~~P7, WP-5.6~~ released |
+| ~~**OD-2** 🔒~~ | ~~Implement Sign in with Apple~~ | ✅ **APPROVED** 2026-09-30 — Guideline 4.8 requires it wherever Google sign-in exists | ~~P5, P10~~ released |
 | **OD-3** | Enter the Apple Kids Category | No — rate 4+; the category bans third-party analytics | WP-7.5 |
 | **OD-4** | Keep Google Analytics on mobile | Keep, unless OD-3 is yes | WP-7.5 |
 | **OD-5** | Offline depth | Read-only cache for v1 | WP-6.4 |
-| **OD-6** | Push notifications in v1 | Defer — `AGENTS.md` has them under Do Not Build Yet | M6 |
-| **OD-7** | Port the signed-out demo | Skip | M4 |
+| **OD-6** | Push notifications in v1 | Defer — `AGENTS.md` has them under Do Not Build Yet | P9 |
+| **OD-7** | Port the signed-out demo | Skip | P7 |
 
 🔒 = changes a locked rule.
 

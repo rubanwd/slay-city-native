@@ -63,7 +63,7 @@ CI fails when upstream changes a tracked file.
 
 This is the cost of not restructuring a live product. The full contract — what is
 tracked, how drift is resolved, and the signals that say the arrangement has stopped
-paying for itself — is in [SYNC.md](SYNC.md). Read it before M0.
+paying for itself — is in [SYNC.md](SYNC.md). Read it before P3.
 
 ### Supabase ownership
 
@@ -253,10 +253,10 @@ Blocking. Each needs an explicit answer before the phase that depends on it star
 
 | ID | Decision | Options | Blocks |
 | --- | --- | --- | --- |
-| ~~**OD-1**~~ | ~~Move OpenRouter calls out of Server Actions into Edge Functions~~ | ✅ **APPROVED (a)** 2026-09-29 — *the API key cannot ship in a mobile binary.* Plan: [EDGE-FUNCTIONS-PLAN.md](EDGE-FUNCTIONS-PLAN.md) | ~~M4~~ released |
-| ~~**OD-2**~~ | ~~Sign in with Apple~~ | ✅ **APPROVED (a)** 2026-09-30 — *Guideline 4.8 makes it mandatory, not optional, wherever Google sign-in exists.* Decision: [OD-2-DECISION.md](OD-2-DECISION.md) | ~~M2, M7~~ released |
-| **OD-3** | Apple Kids Category | (a) Enter it — better discovery, but bans third-party analytics and needs a parental gate. (b) Stay out, rate 4+. **Recommended** — Google Analytics is already wired in via `@next/third-parties` | M7 |
-| **OD-4** | Analytics on mobile | (a) Drop GA on mobile. **Recommended if OD-3(a).** (b) Keep it | M6 |
-| **OD-5** | Offline play depth | (a) Read-only cache of map + profile. **Recommended for v1.** (b) Full offline missions with a sync queue — significant extra work | M6 |
-| **OD-6** | Push notifications | (a) Defer past v1. **Recommended** — `AGENTS.md` lists it under Do Not Build Yet. (b) Ship streak reminders in v1 | M6 |
-| **OD-7** | The signed-out demo (`/demo`) on mobile | (a) Skip — the store listing is the discovery surface. **Recommended.** (b) Port it | M3 |
+| ~~**OD-1**~~ | ~~Move OpenRouter calls out of Server Actions into Edge Functions~~ | ✅ **APPROVED (a)** 2026-09-29 — *the API key cannot ship in a mobile binary.* Plan: [EDGE-FUNCTIONS-PLAN.md](EDGE-FUNCTIONS-PLAN.md) | ~~P7~~ released |
+| ~~**OD-2**~~ | ~~Sign in with Apple~~ | ✅ **APPROVED (a)** 2026-09-30 — *Guideline 4.8 makes it mandatory, not optional, wherever Google sign-in exists.* Decision: [OD-2-DECISION.md](OD-2-DECISION.md) | ~~P5, P10~~ released |
+| **OD-3** | Apple Kids Category | (a) Enter it — better discovery, but bans third-party analytics and needs a parental gate. (b) Stay out, rate 4+. **Recommended** — Google Analytics is already wired in via `@next/third-parties` | P10 |
+| **OD-4** | Analytics on mobile | (a) Drop GA on mobile. **Recommended if OD-3(a).** (b) Keep it | P9 |
+| **OD-5** | Offline play depth | (a) Read-only cache of map + profile. **Recommended for v1.** (b) Full offline missions with a sync queue — significant extra work | P9 |
+| **OD-6** | Push notifications | (a) Defer past v1. **Recommended** — `AGENTS.md` lists it under Do Not Build Yet. (b) Ship streak reminders in v1 | P9 |
+| **OD-7** | The signed-out demo (`/demo`) on mobile | (a) Skip — the store listing is the discovery surface. **Recommended.** (b) Port it | P6 |

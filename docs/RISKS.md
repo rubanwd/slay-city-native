@@ -12,7 +12,7 @@ student could author homework for any group, or post Q&A messages as a teacher.
 
 **Mitigation:** `WP-2.3` — audit every write, wrap what RLS does not cover in a
 `SECURITY DEFINER` RPC that re-checks the role in SQL, and prove it with negative
-tests using a student JWT. Do this in M0/M2, not when M5 starts.
+tests using a student JWT. Do this in P3/P5, not when P8 starts.
 
 **If the audit finds the web app is already exposed** — because RLS was never the
 thing stopping these writes — that is a production incident, not a migration finding.
@@ -191,7 +191,7 @@ immediately after the change.
 
 ---
 
-## Compliance checklist for M7
+## Compliance checklist for P10
 
 - [ ] Privacy policy live, reachable, and specific about what children's data is collected
 - [ ] Terms of service live

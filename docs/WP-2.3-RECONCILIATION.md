@@ -3,7 +3,7 @@
 > `SCN-28`. Answers one question in detail that
 > [dependency-gates.md](dependency-gates.md) answers in one row: *exactly which
 > teacher write flows are protected, by what, and what — if anything — is still
-> missing before `M5` can start?* Read `dependency-gates.md` first for the
+> missing before `P8` can start?* Read `dependency-gates.md` first for the
 > phase-level view; this file is the flow-level drill-down behind its `WP-2.3`
 > row. Where the two disagree, `dependency-gates.md` is the standup-facing
 > summary and this file is the detail it summarizes — update both together.
@@ -19,9 +19,9 @@
 already written and verified in this repository.** Nothing identified by the
 `SCN-6` audit is unimplemented. The entire remaining gap is procedural, not
 technical: the `WP-2.3` pull request against `rubanwd/slay-city` has not been
-opened, so none of this runs anywhere a device talks to. `M5` stays blocked
+opened, so none of this runs anywhere a device talks to. `P8` stays blocked
 until it is merged — unchanged from `dependency-gates.md` §2 — and this file
-adds one precision that table does not carry: **`M5`'s vocabulary flow also
+adds one precision that table does not carry: **`P8`'s vocabulary flow also
 needs `WP-5.6` merged**, not `WP-2.3` alone (see §4).
 
 ## 2. Flow-by-flow coverage
@@ -32,7 +32,7 @@ were verified in this repository (`SCN-13`'s Docker run: 70 `PASS`, 0 `FAIL`,
 0 `SKIP`) — it does **not** mean the boundary is live anywhere, because the
 migration that enforces it (`…0004_revoke_direct_write_grants.sql`) has not
 been applied to any real database. That distinction is what makes the
-"Blocking impact on `M5`" column below non-trivial even for rows marked fully
+"Blocking impact on `P8`" column below non-trivial even for rows marked fully
 covered.
 
 | Flow | Writes (audit ids) | RPC(s) | Regression test | Thin caller (web) | State |
@@ -52,20 +52,20 @@ is the only thing separating every "staged" row from "merged."
 
 ## 3. Risk table
 
-| # | Finding | Severity | State | Exact blocking impact on `M5` |
+| # | Finding | Severity | State | Exact blocking impact on `P8` |
 | --- | --- | --- | --- | --- |
-| R1 | `WP-2.3` PR not opened against `rubanwd/slay-city` | 🔴 Blocking | Staged, verified, not submitted | **Hard block.** No RPC in §2 runs against any real database until this merges. `M5`'s teacher-authoring work packages (`WP-5.2`–`WP-5.5`) cannot start implementation against a live backend before this lands — building against the staged SQL only would mean re-pointing every call site later. |
+| R1 | `WP-2.3` PR not opened against `rubanwd/slay-city` | 🔴 Blocking | Staged, verified, not submitted | **Hard block.** No RPC in §2 runs against any real database until this merges. `P8`'s teacher-authoring work packages (`WP-5.2`–`WP-5.5`) cannot start implementation against a live backend before this lands — building against the staged SQL only would mean re-pointing every call site later. |
 | R2 | `WP-5.6` PR not opened against `rubanwd/slay-city` | 🔴 Blocking (for one flow only) | Staged, verified (`SCN-14`, `SCN-18`), not submitted | **Hard block on the vocabulary-image sub-flow specifically.** `WP-5.3` (`VocabularyManager`) needs `generate-image` live for the Storage write `WP-2.3` deliberately excludes (W-04), and needs `draft-vocabulary`/`draft-grammar` live for the §6.2 paid-generation gate. Not tracked as a distinct row in `dependency-gates.md` today — see §4. |
-| R3 | Finding F1 (`user_stats` self-minting) is live on production **right now**, independent of mobile | 🔴 Live security hole | Fix written (`create_my_profile` + revoke), not deployed | Not an `M5` blocker in the dependency-graph sense — it is a live web bug — but it is the one item `UPSTREAM-PR-WP-2.3.md`'s own checklist flags as needing a maintainer decision before the PR opens at all (`MIGRATIONS-NEEDED.md` §10 step 1). Effectively gates R1. |
+| R3 | Finding F1 (`user_stats` self-minting) is live on production **right now**, independent of mobile | 🔴 Live security hole | Fix written (`create_my_profile` + revoke), not deployed | Not an `P8` blocker in the dependency-graph sense — it is a live web bug — but it is the one item `UPSTREAM-PR-WP-2.3.md`'s own checklist flags as needing a maintainer decision before the PR opens at all (`MIGRATIONS-NEEDED.md` §10 step 1). Effectively gates R1. |
 | R4 | `UPSTREAM-PR-WP-2.3.md` checklist items U-1, U-3, U-4 unresolved | 🟡 Procedural | Open | Each needs a human with production database access, not an agent: U-1 is a live-DB policy/grant diff against the migration timeline assumption, U-3 is a product decision on auditing pre-existing forged `user_stats` rows, U-4 is a one-line confirmation that Q&A moderation-by-owning-teacher is intended. None block writing code; all block *opening* the PR with a clean checklist. |
-| R5 | `profiles.username` has no table-level `CHECK` (§6.4 follow-up) | 🟡 Hardening, deferred on purpose | Deliberately out of scope — validated inside `create_my_profile` instead | **Does not block `M5`.** Once `…0004` revokes direct-write grants, `create_my_profile` is the only path that can insert a profile, and it already validates. A table `CHECK` would only add defense-in-depth against a future direct-insert path being reopened. |
-| R6 | `vocab_image_cache` / `content/homework/` remain teacher-wide, not teacher-scoped (§7.1) | 🟡 Accepted risk, deliberate | Documented, not fixed — explicitly out of scope for `WP-2.3` | **Does not block `M5`.** Blast radius is bounded by admin-vetted teacher accounts, per the audit's own reasoning. Revisit only if the teacher role is ever opened to self-service promotion. |
+| R5 | `profiles.username` has no table-level `CHECK` (§6.4 follow-up) | 🟡 Hardening, deferred on purpose | Deliberately out of scope — validated inside `create_my_profile` instead | **Does not block `P8`.** Once `…0004` revokes direct-write grants, `create_my_profile` is the only path that can insert a profile, and it already validates. A table `CHECK` would only add defense-in-depth against a future direct-insert path being reopened. |
+| R6 | `vocab_image_cache` / `content/homework/` remain teacher-wide, not teacher-scoped (§7.1) | 🟡 Accepted risk, deliberate | Documented, not fixed — explicitly out of scope for `WP-2.3` | **Does not block `P8`.** Blast radius is bounded by admin-vetted teacher accounts, per the audit's own reasoning. Revisit only if the teacher role is ever opened to self-service promotion. |
 | R7 | `homework_topics.order_index` / `note_link_url` / `note_image_url` validation (§7.2) | 🟢 Resolved | **Already fixed** — `create_homework_topic`/`update_homework_topic` enforce `order_index >= 0` and `assert_optional_http_url()` in SQL (`…0001_teacher_authoring_rpcs.sql` lines 111–257) | None. Listed here only so it is not mistakenly re-opened as outstanding — the audit recorded it as a note, not yet as fixed, and the fix landed after the audit was written. |
-| R8 | `ci-database-tests.yml` not merged into the web repo's own CI | 🟡 Procedural | Staged (`SCN-13`), not merged | Does not block `M5` directly — `WP-2.3`'s tests already passed in this repository's own verification run. It does mean a future regression in `rubanwd/slay-city` after merge would not be caught automatically until this job is also merged. |
+| R8 | `ci-database-tests.yml` not merged into the web repo's own CI | 🟡 Procedural | Staged (`SCN-13`), not merged | Does not block `P8` directly — `WP-2.3`'s tests already passed in this repository's own verification run. It does mean a future regression in `rubanwd/slay-city` after merge would not be caught automatically until this job is also merged. |
 
-## 4. The one gap `dependency-gates.md` doesn't carry: `WP-5.6` is a second, implicit `M5` gate
+## 4. The one gap `dependency-gates.md` doesn't carry: `WP-5.6` is a second, implicit `P8` gate
 
-`dependency-gates.md` §2 lists exactly one upstream-PR gate for `M5`:
+`dependency-gates.md` §2 lists exactly one upstream-PR gate for `P8`:
 `WP-2.3`. That is correct for every table-write flow in §2 above. It is
 incomplete for the vocabulary flow specifically: `MIGRATIONS-NEEDED.md` W-04
 and §6.2 both conclude that the Storage upload and the paid-generation
@@ -77,7 +77,7 @@ Functions instead, i.e. `WP-5.6`. `WP-5.6`'s own PR
 `dependency-gates.md`'s gate table.
 
 Practical effect: a maintainer who merges `WP-2.3` alone and reads
-`dependency-gates.md` would reasonably conclude `M5` is unblocked. `WP-5.2`
+`dependency-gates.md` would reasonably conclude `P8` is unblocked. `WP-5.2`
 (topic authoring), `WP-5.4` (`GrammarManager`) and `WP-5.5` (Q&A) would in fact
 be fully safe to build at that point. `WP-5.3` (`VocabularyManager`) would not:
 its image-generation step has no authorization boundary at all until `WP-5.6`
@@ -86,8 +86,8 @@ from spending the teacher's OpenRouter budget, and that check does not exist
 off the Next.js server).
 
 **Recommendation:** add a `WP-5.6` row to `dependency-gates.md` §2, scoped to
-`M5` the same way `WP-2.3` is, so the two-minute phase check in that file's §3
-reflects both dependencies for `M5` instead of one. This document does not
+`P8` the same way `WP-2.3` is, so the two-minute phase check in that file's §3
+reflects both dependencies for `P8` instead of one. This document does not
 make that edit itself — `dependency-gates.md` is `SCN-27`'s deliverable, and
 duplicating its maintenance here would be the drift that file's own header
 warns against.
@@ -112,11 +112,11 @@ see §2 and §3 for what's done. This section is only what remains:
 5. **Open the `WP-5.6` PR** against `rubanwd/slay-city` using
    `UPSTREAM-PR-WP-5.6.md` as the body, in the same pass or immediately after
    — required for `WP-5.3` specifically, per §4. Not currently tracked as a
-   named `M5` gate in `dependency-gates.md`; recommend adding it there (§4).
+   named `P8` gate in `dependency-gates.md`; recommend adding it there (§4).
 6. **Merge `ci-database-tests.yml`** into the web repo's own
    `.github/workflows/ci.yml` (R8) — not blocking, but closes the gap where a
    post-merge regression in `rubanwd/slay-city` would go uncaught.
 
 Everything else in `MIGRATIONS-NEEDED.md` §6–§7 (R5, R6) is either already
-fixed (R7) or a deliberately deferred hardening item with no `M5` dependency,
-and needs no further action to unblock `M5`.
+fixed (R7) or a deliberately deferred hardening item with no `P8` dependency,
+and needs no further action to unblock `P8`.
