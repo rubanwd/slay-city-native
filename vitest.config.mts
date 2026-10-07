@@ -10,7 +10,9 @@ const r = (p: string) => fileURLToPath(new URL(p, import.meta.url));
  * React Native runtime. The suites under packages/core are upstream's own, copied
  * unchanged alongside the logic they cover — they are what makes a blind sync
  * safe, so they must run exactly as they do upstream rather than being adjusted
- * to pass here.
+ * to pass here. `src/lib/**\/*.test.ts` (plain TypeScript, no JSX) runs here too
+ * — e.g. the SecureStore adapter in `secure-storage.ts` — rather than in
+ * `components`, which only collects `.test.tsx`.
  *
  * `components` renders the design-system primitives in `src/` (SCN-56). React
  * Native's own source is Flow-typed and cannot be parsed by vitest, so the
@@ -56,7 +58,7 @@ export default defineConfig({
         resolve: { alias: SHARED_ALIASES },
         test: {
           name: "packages",
-          include: ["packages/**/*.test.ts", "scripts/**/*.test.mjs"],
+          include: ["packages/**/*.test.ts", "scripts/**/*.test.mjs", "src/lib/**/*.test.ts"],
           environment: "node",
         },
       },
