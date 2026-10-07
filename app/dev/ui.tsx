@@ -5,7 +5,7 @@ import { ScrollView, View } from "react-native";
 import { alpha, colors } from "@slay/tokens";
 
 import { AppContainer } from "~/components/layout";
-import { SlayButton, SlayCard, SlayInput, SlayText } from "~/components/ui";
+import { CoinIcon, ShareIcon, SlayButton, SlayCard, SlayInput, SlayText, XpIcon } from "~/components/ui";
 import type { SlayButtonVariant } from "~/components/ui";
 
 /**
@@ -34,6 +34,7 @@ export default function UiShowcaseScreen() {
         <ButtonSection />
         <CardSection />
         <InputSection />
+        <IconSection />
       </ScrollView>
     </AppContainer>
   );
@@ -189,6 +190,37 @@ function InputSection() {
           error="Username must be at least 2 characters."
         />
         <SlayInput label="Username" value="slay_master" success="Username saved." />
+      </View>
+    </View>
+  );
+}
+
+const ICON_SIZES = [16, 24, 32, 48];
+
+function IconSection() {
+  return (
+    <View>
+      <SectionHeading>Icons — size × colour (WP-1.4)</SectionHeading>
+      <View style={{ gap: 20 }}>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 16, alignItems: "center" }}>
+          {ICON_SIZES.map((size) => (
+            <CoinIcon key={size} size={size} />
+          ))}
+        </View>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 16, alignItems: "center" }}>
+          {ICON_SIZES.map((size) => (
+            <XpIcon key={size} size={size} />
+          ))}
+          <XpIcon size={32} color={colors.neonPink} />
+          <XpIcon size={32} color={colors.white} />
+        </View>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 16, alignItems: "center" }}>
+          {ICON_SIZES.map((size) => (
+            <ShareIcon key={size} size={size} />
+          ))}
+          <ShareIcon size={32} color={colors.limeGreen} />
+          <ShareIcon size={32} color={colors.neonPink} />
+        </View>
       </View>
     </View>
   );
