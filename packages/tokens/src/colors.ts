@@ -43,6 +43,38 @@ export const lockedBrandColors = {
   white: colors.white,
 } as const;
 
+/**
+ * Colours that belong to a drawing, not to the brand — the gold of the coin, the
+ * fallback map sky. They are deliberately a separate namespace from `colors`: a
+ * reviewer asking "is this hex allowed?" gets "only if it is painting artwork".
+ *
+ * `coin.rim`, `coin.face` and `coin.starShadow` are `CoinIcon`'s own palette. The
+ * web writes them inline in the SVG; naming them here is what keeps raw hex out of
+ * the ported component.
+ *
+ * `coin.text` is the colour of a coin *number* — the web passes Tailwind's
+ * `text-yellow-300` at every call site (HUD pill, reward card, wardrobe header, map
+ * panel, parent card) and `coin.rain` is `yellow-400`, the gold dots in the reward
+ * rain. Neither is a brand colour, so neither may be used for anything else.
+ *
+ * `map.*` are the fallback sky and skyline of `MapBackground`, shown only for a
+ * district with no art.
+ */
+export const artwork = {
+  coin: {
+    rim: "#E0A11B",
+    face: "#FFCE45",
+    starShadow: "#7BB800",
+    text: "#FDE047",
+    rain: "#FACC15",
+  },
+  map: {
+    skyTop: "#241246",
+    skyMid: "#0A0616",
+    skyline: "#160A2B",
+  },
+} as const;
+
 /** Semantic aliases, matching the upstream `--color-*` semantic layer. */
 export const semantic = {
   background: colors.black,
@@ -69,6 +101,8 @@ export const alpha = {
   white40: "rgba(255, 255, 255, 0.40)",
   white50: "rgba(255, 255, 255, 0.50)",
   white60: "rgba(255, 255, 255, 0.60)",
+  white70: "rgba(255, 255, 255, 0.70)",
+  white80: "rgba(255, 255, 255, 0.80)",
   /** The 10% black overlay `active:brightness-90` approximates on pink/green buttons. */
   black10: "rgba(0, 0, 0, 0.10)",
 } as const;

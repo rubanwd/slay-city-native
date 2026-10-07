@@ -17,6 +17,14 @@ export interface AppContainerProps {
   edges?: readonly Edge[];
   /** Removes the 20pt horizontal gutter. */
   flush?: boolean;
+  /**
+   * The web's `h-dvh overflow-hidden` — for screens that must always fit in one
+   * view (mission, reward, the homework flows). `flex: 1` already pins the height
+   * to the screen natively, so all this adds is the clip: children that overflow
+   * are cut off instead of bleeding past the safe area. Children still own making
+   * their flexible areas shrink (`flex: 1`, `minHeight: 0`).
+   */
+  fixedHeight?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -25,10 +33,20 @@ export interface AppContainerProps {
  * inside. Mirrors the web's `w-full max-w-md mx-auto bg-black text-white px-5`
  * (`src/components/layout/AppContainer.tsx` upstream).
  */
-export function AppContainer({ children, edges = ["top", "bottom"], flush = false, style }: AppContainerProps) {
+export function AppContainer({
+  children,
+  edges = ["top", "bottom"],
+  flush = false,
+  fixedHeight = false,
+  style,
+}: AppContainerProps) {
   return (
     <SafeAreaView edges={edges as Edge[]} style={styles.ground}>
-      <View style={[styles.centerer, !flush && styles.gutter, style]}>{children}</View>
+      <View
+        style={[styles.centerer, !flush && styles.gutter, fixedHeight && styles.fixedHeight, style]}
+      >
+        {children}
+      </View>
     </SafeAreaView>
   );
 }
@@ -46,5 +64,8 @@ const styles = StyleSheet.create({
   },
   gutter: {
     paddingHorizontal: GUTTER,
+  },
+  fixedHeight: {
+    overflow: "hidden",
   },
 });

@@ -1,4 +1,4 @@
-export { colors, lockedBrandColors, semantic, alpha, withAlpha, type ColorName } from "./colors";
+export { colors, lockedBrandColors, semantic, artwork, alpha, withAlpha, type ColorName } from "./colors";
 export {
   fluidFontSize,
   fontWeight,
