@@ -1,4 +1,4 @@
--- Rollback for 20260930000001_teacher_authoring_rpcs.sql
+-- Rollback for 20261008000001_teacher_authoring_rpcs.sql
 --
 -- Safe to run whenever 4/4 is not applied, or has already been rolled back:
 -- the functions are additive, so dropping them only removes the new write

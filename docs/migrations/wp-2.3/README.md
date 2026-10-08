@@ -7,18 +7,23 @@
 > branch and open the pull request described in
 > [UPSTREAM-PR-WP-2.3.md](../../UPSTREAM-PR-WP-2.3.md).
 >
-> Base read at upstream commit `7612da5`. Re-verify before applying — the
-> migration timeline will have moved.
+> Base rebased onto upstream commit `02630a3` on `SCN-61` (2026-10-08), from
+> the `7612da5` the package was originally written against. What that rebase
+> changed, and why, is recorded in
+> [UPSTREAM-PR-WP-2.3.md](../../UPSTREAM-PR-WP-2.3.md) §"Rebase onto `02630a3`".
+> In short: the timestamps moved from `20260930…` to `20261008…` so they still
+> sort after upstream's own `20261001`–`20261004` migrations, and the fifth
+> migration was dropped because upstream resolved `profiles.age` itself.
+> Re-verify before applying — the migration timeline will have moved again.
 
 ## What is here
 
 | File | Applies | Reversible by |
 | --- | --- | --- |
-| `20260930000001_teacher_authoring_rpcs.sql` | 11 functions covering W-01…W-03, W-05…W-17 | `down/…_teacher_authoring_rpcs_down.sql` |
-| `20260930000002_homework_qa_rpcs.sql` | 4 functions covering W-18…W-20, plus the `body` length CHECK | `down/…_homework_qa_rpcs_down.sql` |
-| `20260930000003_onboarding_profile_rpc.sql` | `create_my_profile`, the `user_stats` trigger, the stranded-profile backfill (W-21, W-22) | `down/…_onboarding_profile_rpc_down.sql` |
-| `20260930000004_revoke_direct_write_grants.sql` | removes `authenticated`'s write grants on the eight audited tables | `down/…_revoke_direct_write_grants_down.sql` |
-| `20260930000005_widen_profile_age_range.sql` | widens `profiles.age`'s CHECK from 7–14 to 5–99 (decision recorded on `SCN-11-1`) | `down/…_widen_profile_age_range_down.sql` |
+| `20261008000001_teacher_authoring_rpcs.sql` | 11 functions covering W-01…W-03, W-05…W-17 | `down/…_teacher_authoring_rpcs_down.sql` |
+| `20261008000002_homework_qa_rpcs.sql` | 4 functions covering W-18…W-20, plus the `body` length CHECK | `down/…_homework_qa_rpcs_down.sql` |
+| `20261008000003_onboarding_profile_rpc.sql` | `create_my_profile`, the `user_stats` trigger, the stranded-profile backfill (W-21, W-22) | `down/…_onboarding_profile_rpc_down.sql` |
+| `20261008000004_revoke_direct_write_grants.sql` | removes `authenticated`'s write grants on the eight audited tables | `down/…_revoke_direct_write_grants_down.sql` |
 | `tests/bootstrap.sql` | nothing to the target database — run against a *fresh* one first, see [Verifying](#verifying) | n/a |
 | `tests/fixtures.sql` | nothing — included by `negative-tests.sql`, rolled back with it | n/a |
 | `tests/negative-tests.sql` | nothing — one transaction that ends in `ROLLBACK` | n/a |
@@ -42,13 +47,18 @@ breaks teacher authoring, the Q&A thread and onboarding at once.
 `user_stats` rows, and 4/4 revokes the INSERT grant the parent sign-up path in
 `features/auth/roleRouting.ts` relies on.
 
-5/5 is independent of 1/4–4/4 and of their ordering: it only touches the
-`profiles.age` CHECK, which none of the RPCs re-validate. Apply it whenever.
+There is no 5/5. `SCN-11-1` staged one — a widening of the `profiles.age`
+CHECK — and `SCN-61` dropped it on rebase: upstream shipped the same fix as
+`20261001000001_widen_profile_age_range.sql`, choosing 5–90 where this package
+had chosen 5–99. Re-applying ours would have put the column back out of step
+with `features/onboarding/age.ts`, which is the bug finding F2 described in the
+first place. Nothing in 1/4–4/4 depended on it; none of the RPCs re-validate
+the age range.
 
 ## Rolling back
 
 Every file has a counterpart in `down/`, and they undo in reverse order:
-`005 → 004 → 003 → 002 → 001`. `down/…_revoke_direct_write_grants_down.sql` is the
+`004 → 003 → 002 → 001`. `down/…_revoke_direct_write_grants_down.sql` is the
 one to reach for first in an incident — it restores the old write paths without
 touching a function, and since no RLS policy was ever changed, the boundary
 returns to exactly what it was before this work package.
@@ -79,7 +89,7 @@ timeline — `tests/bootstrap.sql` first (the roles, schemas and `auth`/`storage
 stand-ins a plain `postgres:16-alpine` container doesn't have; see
 [[upstream-schema-replays-on-stock-postgres]] in project memory for how this
 was derived), then every file in the web repository's `supabase/migrations/`
-in order, including 1/4–5/5 above:
+in order, including 1/4–4/4 above:
 
 ```bash
 psql -v ON_ERROR_STOP=1 -f tests/bootstrap.sql
@@ -101,10 +111,11 @@ quiet pass). Section 5a is worth running against production **before** the
 migration too: there it is expected to succeed, and that success is finding
 F1.
 
-Section 11 covers 5/5 — the widened `profiles.age` range — and reads the
-constraint first: if 5/5 is not applied it prints `SKIP 11` and the rest of the
-file still passes, so the two halves of this directory can be verified
-independently.
+Section 11 needs no file from this package. It pins the widened `profiles.age`
+range that upstream's own `20261001000001_widen_profile_age_range.sql` installs
+(5–90, matching `features/onboarding/age.ts`), and reads the constraint first:
+against a timeline older than that migration it prints `SKIP 11` and the rest
+of the file still passes.
 
 ## CI
 

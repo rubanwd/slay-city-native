@@ -378,12 +378,18 @@ and then hits `23514`, surfaced as a raw Postgres constraint message. This is a
 writes that needs an RPC anyway — settle the intended range while writing
 `create_my_profile()` rather than encoding the disagreement into it.
 
-**Decision:** the form's range (5–99) is canonical, because `age` is
-write-only — collected once at onboarding and never read back by any
-age-gated logic — so widening it carries no product risk, while narrowing the
-form to 7–14 would turn away a parent onboarding for their child or an adult
-learner. The column widens to match in
-`docs/migrations/wp-2.3/20260930000005_widen_profile_age_range.sql`.
+**Decision:** the form's range is canonical, because `age` is write-only —
+collected once at onboarding and never read back by any age-gated logic — so
+widening it carries no product risk, while narrowing the form to 7–14 would
+turn away a parent onboarding for their child or an adult learner.
+
+**Resolved upstream, not here.** `SCN-11-1` staged this as a fifth `WP-2.3`
+migration at 5–99. Upstream then fixed the same finding itself in
+`20261001000001_widen_profile_age_range.sql`, choosing **5–90** and extracting
+`MIN_AGE`/`MAX_AGE` into `features/onboarding/age.ts` so the column and the form
+cannot drift apart again. `SCN-61` dropped the staged migration on rebase —
+re-applying it would have re-widened the column past `MAX_AGE` and recreated
+this exact bug in the other direction. Nothing is outstanding on §7.3.
 
 ### 7.4 `publishVocabulary` / `publishGrammar` are not atomic
 

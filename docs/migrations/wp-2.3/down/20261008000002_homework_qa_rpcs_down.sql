@@ -1,4 +1,4 @@
--- Rollback for 20260930000002_homework_qa_rpcs.sql
+-- Rollback for 20261008000002_homework_qa_rpcs.sql
 --
 -- Run 4/4's rollback first if it is applied, or the Q&A thread has no write
 -- path. `can_see_topic` is dropped last because the three functions use it.

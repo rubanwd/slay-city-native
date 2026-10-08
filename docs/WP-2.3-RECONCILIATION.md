@@ -10,8 +10,18 @@
 >
 > Audit base: [MIGRATIONS-NEEDED.md](MIGRATIONS-NEEDED.md) (`SCN-6`, upstream
 > `7612da5`). Engineering base: [UPSTREAM-PR-WP-2.3.md](UPSTREAM-PR-WP-2.3.md)
-> (`SCN-11`–`SCN-13`) and [UPSTREAM-PR-WP-5.6.md](UPSTREAM-PR-WP-5.6.md)
-> (`SCN-14`, `SCN-15`, `SCN-18`).
+> (`SCN-11`–`SCN-13`, rebased onto upstream `02630a3` on `SCN-61`) and
+> [UPSTREAM-PR-WP-5.6.md](UPSTREAM-PR-WP-5.6.md) (`SCN-14`, `SCN-15`,
+> `SCN-18`).
+>
+> **`SCN-61` update (2026-10-08).** §5 items 2, 3 and 4 are now partly or wholly
+> resolved and §1's "the entire remaining gap is procedural" needed one
+> correction: it was procedural *and* stale. Rebasing onto current upstream
+> found three real drifts — the migration timestamps had fallen behind three
+> merged migrations, the fifth migration had been superseded by upstream's own
+> fix, and one thin caller would have reverted an upstream refactor. All three
+> are fixed. U-4 is closed from the schema. U-1 and U-3 still need production
+> access and remain the reason the PR is not open.
 
 ## 1. Bottom line
 
@@ -42,13 +52,21 @@ covered.
 | **Vocabulary image upload** (`generateWordImage` → Storage) | W-04 (V1) | **None by design** — moves to the `generate-image` Edge Function (`WP-5.6`), not a Postgres RPC | N/A in `WP-2.3`'s own suite; covered by `WP-5.6`'s own test package instead | N/A | **Covered, but by a different, also-unmerged package** — see §4 |
 | **Grammar** — publish/clear grammar points | W-12–W-17 (G1–G6) | `publish_homework_grammar`, `clear_homework_grammar` | §2, §6, §7, §8 | Staged, `SCN-12` | **Covered by RPC + test**, staged |
 | **Homework Q&A** — post/read/delete thread messages | W-18–W-20 (Q1–Q3) | `post_topic_message`, `mark_topic_read`, `delete_topic_message` | §3 (student scope), §9 (moderation + self-delete) | Staged, `SCN-12` | **Covered by RPC + test**, staged |
-| **Onboarding** — profile + stats row creation | W-21–W-22 (O1–O2) | `create_my_profile` | §5 (finding F1 regression), §10 (atomic creation), §11 (age range) | Staged, `SCN-12` | **Covered by RPC + test**, staged |
+| **Onboarding** — profile + stats row creation | W-21–W-22 (O1–O2) | `create_my_profile` | §5 (finding F1 regression), §10 (atomic creation), §11 (age range) | Staged, `SCN-12`; rebased onto upstream's `parseAge` on `SCN-61` | **Covered by RPC + test**, staged |
 | **Anonymous caller** (no JWT) across all four RPC "shapes" | — | Same functions; grant-level, not per-function | §0 (4 of 12 functions sampled; reasoning in `SCN-13`'s change summary) | N/A | **Covered by RPC + test**, staged |
 
 Every row with "staged" is identical: the artifact exists and is verified
 against a replayed copy of the migration timeline, and is waiting on a human
 to open `UPSTREAM-PR-WP-2.3.md` as an actual pull request. That single action
 is the only thing separating every "staged" row from "merged."
+
+Since `SCN-61` there is a third artifact per flow, in this repository rather
+than staged for upstream: `packages/data/src/guardedWrites.ts` wraps all twelve
+functions behind the injected client, with `guardedWrites.test.ts` pinning each
+call's function name and argument object. It is exported from `@slay/data` and
+imported by nothing — the functions do not exist in any database yet, so a call
+returns `PGRST202`. `P8`'s screens are what will consume it, which is exactly
+why they stay blocked on R1 below rather than on any missing code here.
 
 ## 3. Risk table
 
@@ -57,7 +75,7 @@ is the only thing separating every "staged" row from "merged."
 | R1 | `WP-2.3` PR not opened against `rubanwd/slay-city` | 🔴 Blocking | Staged, verified, not submitted | **Hard block.** No RPC in §2 runs against any real database until this merges. `P8`'s teacher-authoring work packages (`WP-5.2`–`WP-5.5`) cannot start implementation against a live backend before this lands — building against the staged SQL only would mean re-pointing every call site later. |
 | R2 | `WP-5.6` PR not opened against `rubanwd/slay-city` | 🔴 Blocking (for one flow only) | Staged, verified (`SCN-14`, `SCN-18`), not submitted | **Hard block on the vocabulary-image sub-flow specifically.** `WP-5.3` (`VocabularyManager`) needs `generate-image` live for the Storage write `WP-2.3` deliberately excludes (W-04), and needs `draft-vocabulary`/`draft-grammar` live for the §6.2 paid-generation gate. Not tracked as a distinct row in `dependency-gates.md` today — see §4. |
 | R3 | Finding F1 (`user_stats` self-minting) is live on production **right now**, independent of mobile | 🔴 Live security hole | Fix written (`create_my_profile` + revoke), not deployed | Not an `P8` blocker in the dependency-graph sense — it is a live web bug — but it is the one item `UPSTREAM-PR-WP-2.3.md`'s own checklist flags as needing a maintainer decision before the PR opens at all (`MIGRATIONS-NEEDED.md` §10 step 1). Effectively gates R1. |
-| R4 | `UPSTREAM-PR-WP-2.3.md` checklist items U-1, U-3, U-4 unresolved | 🟡 Procedural | Open | Each needs a human with production database access, not an agent: U-1 is a live-DB policy/grant diff against the migration timeline assumption, U-3 is a product decision on auditing pre-existing forged `user_stats` rows, U-4 is a one-line confirmation that Q&A moderation-by-owning-teacher is intended. None block writing code; all block *opening* the PR with a clean checklist. |
+| R4 | `UPSTREAM-PR-WP-2.3.md` checklist items U-1 and U-3 unresolved | 🟡 Procedural | Open (U-4 closed on `SCN-61`) | Both need a human with production database access, not an agent: U-1 is a live-DB policy/grant diff against the migration timeline assumption, U-3 is a product decision on auditing pre-existing forged `user_stats` rows. Neither blocks writing code; both block *opening* the PR with a clean checklist. **U-4 no longer needs a human:** `20260722000002_homework_qa.sql:45–46` documents the `hw_messages_delete` moderation branch as "light moderation without a separate role check" in the schema itself, so it is intended and is preserved. |
 | R5 | `profiles.username` has no table-level `CHECK` (§6.4 follow-up) | 🟡 Hardening, deferred on purpose | Deliberately out of scope — validated inside `create_my_profile` instead | **Does not block `P8`.** Once `…0004` revokes direct-write grants, `create_my_profile` is the only path that can insert a profile, and it already validates. A table `CHECK` would only add defense-in-depth against a future direct-insert path being reopened. |
 | R6 | `vocab_image_cache` / `content/homework/` remain teacher-wide, not teacher-scoped (§7.1) | 🟡 Accepted risk, deliberate | Documented, not fixed — explicitly out of scope for `WP-2.3` | **Does not block `P8`.** Blast radius is bounded by admin-vetted teacher accounts, per the audit's own reasoning. Revisit only if the teacher role is ever opened to self-service promotion. |
 | R7 | `homework_topics.order_index` / `note_link_url` / `note_image_url` validation (§7.2) | 🟢 Resolved | **Already fixed** — `create_homework_topic`/`update_homework_topic` enforce `order_index >= 0` and `assert_optional_http_url()` in SQL (`…0001_teacher_authoring_rpcs.sql` lines 111–257) | None. Listed here only so it is not mistakenly re-opened as outstanding — the audit recorded it as a note, not yet as fixed, and the fix landed after the audit was written. |
@@ -100,15 +118,18 @@ see §2 and §3 for what's done. This section is only what remains:
 1. **Open the `WP-2.3` PR** against `rubanwd/slay-city` using
    `UPSTREAM-PR-WP-2.3.md` as the body. Human/maintainer action — not
    delegable to an agent (write access to the upstream repo).
-2. **Resolve checklist items U-1, U-3, U-4** before or as part of opening that
+2. **Resolve checklist items U-1 and U-3** before or as part of opening that
    PR (R4 above) — each needs production database access a repo-local agent
-   does not have.
+   does not have. U-4 is closed (`SCN-61`).
 3. **Decide on finding F1** (R3) explicitly, even though the fix already
    exists — `MIGRATIONS-NEEDED.md` §10 step 1 calls this out as the one item
    that should not wait for the rest of the package.
-4. **Renumber the five migration timestamps** to the day the PR is actually
-   opened (`UPSTREAM-PR-WP-2.3.md`'s own checklist, last item) and re-fetch
-   upstream to confirm `7612da5` is still the right base commit.
+4. ~~**Renumber the migration timestamps** and re-fetch upstream.~~ **Done on
+   `SCN-61`:** rebased onto `02630a3`, timestamps moved to `20261008…`, the
+   fifth migration dropped (upstream fixed `profiles.age` itself at 5–90), and
+   the `onboarding/actions.ts` thin caller rebased onto upstream's extracted
+   `parseAge`. Needs doing *again* if another upstream migration merges before
+   the PR opens — that is the recurring cost of leaving this staged.
 5. **Open the `WP-5.6` PR** against `rubanwd/slay-city` using
    `UPSTREAM-PR-WP-5.6.md` as the body, in the same pass or immediately after
    — required for `WP-5.3` specifically, per §4. Not currently tracked as a

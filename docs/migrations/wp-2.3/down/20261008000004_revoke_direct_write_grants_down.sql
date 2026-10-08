@@ -1,4 +1,4 @@
--- Rollback for 20260930000004_revoke_direct_write_grants.sql
+-- Rollback for 20261008000004_revoke_direct_write_grants.sql
 --
 -- Restores every grant to exactly what the migration that created each table
 -- issued, so the pre-WP-2.3 write paths work again. This is the rollback to

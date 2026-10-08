@@ -39,14 +39,19 @@
 --
 -- Additive: no policy dropped, no grant revoked. 4/4 does the lockdown, and
 -- until then the direct inserts keep working. Rollback is
--- `down/20260930000003_onboarding_profile_rpc_down.sql`.
+-- `down/20261008000003_onboarding_profile_rpc_down.sql`.
 --
--- `profiles.age` (finding F2, unknown U-6) — DECIDED, see SCN-11-1. The form's
--- range (5–99) is canonical; `20260930000005_widen_profile_age_range.sql`
--- widens the column's CHECK to match. This function still passes `p_age`
--- through unchanged rather than re-validating the range itself — the column
--- CHECK is the single source of truth for it, so there is nothing for this
--- function to duplicate.
+-- `profiles.age` (finding F2, unknown U-6) — CLOSED UPSTREAM, no longer part
+-- of this package. SCN-11-1 staged a fifth migration here to widen the 7–14
+-- CHECK to the form's range; upstream resolved the same finding itself in
+-- `20261001000001_widen_profile_age_range.sql` (merged before this package was
+-- rebased, see SCN-61) and chose 5–90, with `features/onboarding/age.ts`
+-- holding `MIN_AGE`/`MAX_AGE` to match. The staged migration was dropped
+-- rather than re-applied: re-widening to 99 would put the column back out of
+-- step with the form, which is the exact bug F2 described. This function still
+-- passes `p_age` through unchanged rather than re-validating the range itself —
+-- the column CHECK is the single source of truth for it, so there is nothing
+-- for this function to duplicate.
 
 -- =========================================================================
 -- 1. Every new student/parent profile gets a zeroed stats row
@@ -166,8 +171,8 @@ begin
 
   -- No avatar_url: a player's avatar is their mascot in the equipped wardrobe
   -- item, so there is nothing to pick at signup. `age` is passed through to the
-  -- column's own CHECK — widened to 5–99 by
-  -- `20260930000005_widen_profile_age_range.sql`, see the note at the top of
+  -- column's own CHECK — widened to 5–90 upstream by
+  -- `20261001000001_widen_profile_age_range.sql`, see the note at the top of
   -- this file.
   insert into public.profiles (id, username, age, level, role)
   values (v_uid, v_username, p_age, p_level, 'student');

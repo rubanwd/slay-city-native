@@ -14,7 +14,7 @@
 -- ORDER OF OPERATIONS. Apply this ONLY after the web app that calls the RPCs
 -- is deployed. Applying it against the current web app breaks teacher
 -- authoring, the Q&A thread and onboarding immediately. Rollback is
--- `down/20260930000004_revoke_direct_write_grants_down.sql`, which restores
+-- `down/20261008000004_revoke_direct_write_grants_down.sql`, which restores
 -- every grant exactly as 1/4's base migrations created it, and is safe to run
 -- at any time.
 --
