@@ -38,8 +38,10 @@ the moment it was copied.
 **CI fails when upstream moves.** Nightly, on every pull request, and on demand via
 `workflow_dispatch`, the `drift` job in `.github/workflows/ci.yml` compares recorded
 hashes against upstream's current content. A mismatch is a failing build with a list
-of files in the job's summary, not a silent divergence. `rubanwd/slay-city` is public,
-so the job needs no checkout token or other secret.
+of files in the job's summary, not a silent divergence. `rubanwd/slay-city` is private,
+so the job checks it out with the `UPSTREAM_TOKEN` repository secret: a fine-grained
+personal access token scoped to that one repository with read-only *Contents*
+permission. When the token expires the job fails at the checkout step, not with drift.
 
 ## 3. The manifest
 
