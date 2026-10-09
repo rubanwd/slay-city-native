@@ -18,7 +18,9 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # jsdom 30 / undici 8 need Node ^22.22.2 or >=24.15 — on 20 every
+          # jsdom test worker dies with `markAsUncloneable is not a function`.
+          node-version: 24
           cache: npm
 
       - run: npm ci
@@ -34,13 +36,19 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - run: npm ci
 
-      # rubanwd/slay-city is public — a plain clone, no checkout token needed.
-      - run: npm run upstream:fetch
+      # rubanwd/slay-city is private, so the plain clone in upstream:fetch has no
+      # credentials here. UPSTREAM_TOKEN is a fine-grained PAT with read-only
+      # Contents access to that one repository (docs/SYNC.md section 2).
+      - uses: actions/checkout@v4
+        with:
+          repository: rubanwd/slay-city
+          path: upstream
+          token: ${{ secrets.UPSTREAM_TOKEN }}
 
       - name: Check upstream drift
         id: drift
