@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SLAY CITY Native Primitives</title>
+<!--
+  DESIGN REFERENCE FOR SCN-56 (WP-1.3) — Section, Grid, ScrollScreen, ProgressBar, CurrencyAmount, StreakBadge.
+  Extends design/SCN-5/index.html, which already covers tokens, type, SlayButton, SlayCard and AppContainer.
+
+  For the implementing agent:
+  1. The machine-readable spec is the JSON in <script id="slay-primitives-spec"> below. Every value is from
+     rubanwd/slay-city @ beba39d.
+  2. Read spec.decisions FIRST — twelve of them adjust the SCN-56 prompt. Above all: SlayButton, SlayCard and
+     AppContainer already exist (D1); the icons are not ported yet (D2); coin colours go into an artwork token (D3).
+-->
+<script type="application/json" id="slay-primitives-spec">
+{
+  "name": "SLAY CITY Native — primitives reference (SCN-56 / WP-1.3)",
+  "extends": "design/SCN-5/index.html — tokens, type scale, SlayButton, SlayCard, AppContainer",
+  "source": {
+    "repo": "rubanwd/slay-city",
+    "commit": "beba39d",
+    "files": [
+      "src/components/layout/Section.tsx",
+      "src/components/layout/Grid.tsx",
+      "src/components/layout/ScrollScreen.tsx",
+      "src/components/layout/bottomNavClearance.ts",
+      "src/components/ui/ProgressBar.tsx",
+      "src/components/ui/CurrencyAmount.tsx",
+      "src/components/ui/CoinIcon.tsx",
+      "src/components/ui/XpIcon.tsx",
+      "src/components/ui/StreakBadge.tsx"
+    ]
+  },
+  "theme": "dark only",
+  "units": "points (web px 1:1)",
+  "decisions": [
+    {
+      "id": "D1",
+      "topic": "Scope",
+      "promptSays": "Nine primitives: SlayButton, SlayCard, Section, Grid, AppContainer, ScrollScreen, ProgressBar, CurrencyAmount, StreakBadge.",
+      "doInstead": "SlayButton, SlayCard and AppContainer ALREADY EXIST (SCN-5, src/components/). Do not rebuild them — check them against design/SCN-5/index.html and fix only gaps. Build the other six.",
+      "why": "Rebuilding would duplicate SCN-5 and risk drifting from its approved reference."
+    },
+    {
+      "id": "D2",
+      "topic": "Icons",
+      "promptSays": "CurrencyAmount and StreakBadge use the icons already ported.",
+      "doInstead": "They are NOT ported. `npx expo install react-native-svg`, then add src/components/ui/CoinIcon.tsx and XpIcon.tsx from the exact paths in spec.icons.",
+      "why": "react-native-svg is not in package.json and no icon component exists in src/."
+    },
+    {
+      "id": "D3",
+      "topic": "Coin colours",
+      "promptSays": "Use only the brand colors; nothing hard-coded outside the tokens.",
+      "doInstead": "Add an `artwork.coin` namespace to packages/tokens — rim #E0A11B, face #FFCE45, starShadow #7BB800 — and use it only in CoinIcon. The star itself is lime-green from the brand palette.",
+      "why": "The coin is an illustration drawn with gold that the UI palette does not have. Naming the values keeps them out of components without pretending they are brand colours."
+    },
+    {
+      "id": "D4",
+      "topic": "Palette size",
+      "promptSays": "six brand colors",
+      "doInstead": "Seven tokens plus the `surface` neutral (#1A1A1A), as in SCN-5.",
+      "why": "AGENTS.md lists seven, including neon-orange."
+    },
+    {
+      "id": "D5",
+      "topic": "StreakBadge gradient",
+      "promptSays": "(not mentioned)",
+      "doInstead": "`npx expo install expo-linear-gradient` — the badge fill is a left-to-right purple→cyan gradient.",
+      "why": "Not in package.json; NativeWind cannot express a gradient fill."
+    },
+    {
+      "id": "D6",
+      "topic": "Unused on the web",
+      "promptSays": "(not mentioned)",
+      "doInstead": "Grid and StreakBadge are used on NO web screen (StreakBadge appears only in its Storybook .mdx). Build them faithfully but keep them small; do not spend effort on the hover-only tooltip.",
+      "why": "Measured: 0 screen usages of each in rubanwd/slay-city."
+    },
+    {
+      "id": "D7",
+      "topic": "Grid widths",
+      "promptSays": "(not mentioned)",
+      "doInstead": "Compute each cell's width from the ACTUAL gap: (containerWidth − gap × (cols − 1)) / cols. Support only the equal-columns behaviour; the web's `grid` flag and flex mode then render the same.",
+      "why": "The web's flex mode hardcodes widths for the md gap (calc(50% − 0.375rem)); any other gap wraps or leaves space. A web bug, not a design."
+    },
+    {
+      "id": "D8",
+      "topic": "ScrollScreen on native",
+      "promptSays": "Handle safe areas in ScrollScreen and AppContainer.",
+      "doInstead": "ScrollView filling the screen; bottom content padding = tab bar height + bottom inset (useBottomTabBarHeight), not the web's fixed 150px. The web's --screen-top-offset (the admin view-as banner) becomes a topOffset prop. A `footer` stays pinned below the scroll area.",
+      "why": "On the web the nav is a fixed overlay, so content needs a fixed clearance. A native tab bar reports its own height."
+    },
+    {
+      "id": "D9",
+      "topic": "ProgressBar identity",
+      "promptSays": "(not mentioned)",
+      "doInstead": "This is src/components/ui/ProgressBar (labels, glow, animated fill). The mission header bar is a DIFFERENT component, features/mission/ProgressBar — out of scope, do not merge them.",
+      "why": "The web keeps both; only the placement test uses the ui one today."
+    },
+    {
+      "id": "D10",
+      "topic": "ProgressBar animation",
+      "promptSays": "(not mentioned)",
+      "doInstead": "Animate with Reanimated on the UI thread: 600ms, easing bezier(0.4, 0, 0.2, 1), from 0 on mount when `animate` (default true). Prefer scaleX with transformOrigin 'left' over animating width.",
+      "why": "The web animates `width`; AGENTS.md here forbids animating layout properties when a transform works."
+    },
+    {
+      "id": "D11",
+      "topic": "Coin text colour",
+      "promptSays": "(not mentioned)",
+      "doInstead": "CoinAmount's number INHERITS the surrounding text colour; only the icon is gold. XpAmount's number is cyan.",
+      "why": "The web component's comment says coins default to gold, but its classes set no colour. Code wins over the comment."
+    },
+    {
+      "id": "D12",
+      "topic": "StreakBadge tooltip",
+      "promptSays": "(not mentioned)",
+      "doInstead": "Tap toggles the tooltip; it auto-hides after 3s or on the next tap. Web shows it on hover/focus only.",
+      "why": "There is no hover on a phone. Derived for native — marked as such."
+    }
+  ],
+  "newDependencies": [
+    "react-native-svg",
+    "expo-linear-gradient"
+  ],
+  "newTokens": {
+    "artwork.coin": {
+      "rim": "#E0A11B",
+      "face": "#FFCE45",
+      "starShadow": "#7BB800"
+    }
+  },
+  "webUsage": {
+    "Section": 12,
+    "ScrollScreen": 3,
+    "ui/ProgressBar": 1,
+    "CoinAmount": 4,
+    "XpAmount": 5,
+    "Grid": 0,
+    "StreakBadge": "0 (Storybook only)"
+  },
+  "components": {
+    "Section": {
+      "file": "src/components/layout/Section.tsx",
+      "props": {
+        "pt": "spacing",
+        "pb": "spacing",
+        "py": "spacing (default md)",
+        "title": "string"
+      },
+      "spacing": {
+        "none": 0,
+        "xs": 8,
+        "sm": 16,
+        "md": 24,
+        "lg": 32,
+        "xl": 48
+      },
+      "gap": 12,
+      "title": {
+        "style": "label (10pt, 700, uppercase, letterSpacing 1.2)",
+        "color": "rgba(255,255,255,0.50)"
+      },
+      "rule": "paddingTop = pt ?? py; paddingBottom = pb ?? py",
+      "source": "flex flex-col gap-3; py default md"
+    },
+    "Grid": {
+      "file": "src/components/layout/Grid.tsx",
+      "props": {
+        "cols": "1|2|3|4 (default 2)",
+        "gap": "none|xs|sm|md|lg (default md)"
+      },
+      "gap": {
+        "none": 0,
+        "xs": 4,
+        "sm": 8,
+        "md": 12,
+        "lg": 16
+      },
+      "cellWidth": "(containerWidth - gap*(cols-1)) / cols",
+      "wrap": true
+    },
+    "ScrollScreen": {
+      "file": "src/components/layout/ScrollScreen.tsx",
+      "props": {
+        "footer": "node, pinned below the scroll area",
+        "topOffset": "number (native replacement for --screen-top-offset)"
+      },
+      "background": "#111111",
+      "text": "#FFFFFF",
+      "contentBottomPadding": "tabBarHeight + insets.bottom (web: 150px + safe-area-inset-bottom)",
+      "overscroll": "contained (web overscroll-contain)"
+    },
+    "ProgressBar": {
+      "file": "src/components/ui/ProgressBar.tsx",
+      "props": {
+        "value": "0–100, clamped",
+        "variant": "green|pink|cyan (default green)",
+        "height": "number (default 10)",
+        "label": "node",
+        "labelRight": "node",
+        "animate": "boolean (default true)"
+      },
+      "track": {
+        "background": "rgba(255,255,255,0.10)",
+        "radius": "full",
+        "height": 10
+      },
+      "fill": {
+        "green": {
+          "color": "#9DFF00",
+          "glow": "0 0 8px 2px rgba(157,255,0,0.5)",
+          "glowOnlyWhenValueAbove0": true
+        },
+        "pink": {
+          "color": "#FF2D8E",
+          "glow": "0 0 8px 2px rgba(255,45,142,0.5)",
+          "glowOnlyWhenValueAbove0": true
+        },
+        "cyan": {
+          "color": "#00F0FF",
+          "glow": "0 0 8px 2px rgba(0,240,255,0.5)",
+          "glowOnlyWhenValueAbove0": true
+        }
+      },
+      "animation": {
+        "durationMs": 600,
+        "easing": "bezier(0.4, 0, 0.2, 1)",
+        "fromZeroOnMount": true
+      },
+      "labels": {
+        "gapToTrack": 6,
+        "rowGap": 8,
+        "left": {
+          "style": "label, weight 700",
+          "color": "rgba(255,255,255,0.50)"
+        },
+        "right": {
+          "style": "small (12pt), weight 600, right-aligned",
+          "color": "rgba(255,255,255,0.70)"
+        }
+      },
+      "a11y": "accessibilityRole progressbar, accessibilityValue {min 0, max 100, now}"
+    },
+    "CurrencyAmount": {
+      "file": "src/components/ui/CurrencyAmount.tsx",
+      "exports": [
+        "CoinAmount",
+        "XpAmount"
+      ],
+      "props": {
+        "value": "number | string (preformatted, e.g. '+30')",
+        "label": "string → accessibilityLabel"
+      },
+      "layout": {
+        "direction": "row",
+        "align": "center",
+        "gap": 4,
+        "fontWeight": 700,
+        "noWrap": true,
+        "fontVariant": [
+          "tabular-nums"
+        ]
+      },
+      "iconSize": "equals the text's fontSize (web 1em)",
+      "color": {
+        "CoinAmount": "inherits",
+        "XpAmount": "#00F0FF"
+      }
+    },
+    "StreakBadge": {
+      "file": "src/components/ui/StreakBadge.tsx",
+      "props": {
+        "count": "number",
+        "size": "sm|md|lg (default md)",
+        "tooltip": "string"
+      },
+      "sizes": {
+        "sm": {
+          "height": 28,
+          "paddingHorizontal": 10,
+          "gap": 4,
+          "radius": 12,
+          "iconSize": 16,
+          "countSize": 14,
+          "countWeight": 900,
+          "source": "h-7 px-2.5 gap-1 rounded-xl · icon text-base · count text-sm font-black"
+        },
+        "md": {
+          "height": 40,
+          "paddingHorizontal": 16,
+          "gap": 6,
+          "radius": 16,
+          "iconSize": 20,
+          "countSize": 16,
+          "countWeight": 900,
+          "source": "h-10 px-4 gap-1.5 rounded-2xl · icon text-xl · count text-base font-black"
+        },
+        "lg": {
+          "height": 56,
+          "paddingHorizontal": 20,
+          "gap": 8,
+          "radius": 16,
+          "iconSize": 24,
+          "countSize": 20,
+          "countWeight": 900,
+          "source": "h-14 px-5 gap-2 rounded-2xl · icon text-2xl · count text-xl font-black"
+        }
+      },
+      "fill": "linear gradient left→right #6A00FF → #00F0FF",
+      "text": "#FFFFFF",
+      "icon": "🔥 (native emoji)",
+      "shadow": "inset 0 1px 0 rgba(255,255,255,0.15), 0 0 12px 2px rgba(106,0,255,0.35)",
+      "pressedShadow": "inset 0 1px 0 rgba(255,255,255,0.20), 0 0 20px 4px rgba(0,240,255,0.35)",
+      "countUp": {
+        "durationMs": 600,
+        "easing": "easeOutCubic",
+        "from": "previous count"
+      },
+      "tooltip": {
+        "width": 224,
+        "background": "#1A1A1A",
+        "border": "1pt rgba(255,255,255,0.10)",
+        "radius": 12,
+        "paddingH": 12,
+        "paddingV": 8,
+        "text": "small, rgba(255,255,255,0.80), centred, lineHeight 1.25",
+        "position": "above, 8pt gap, centred, 4pt arrow",
+        "motionMs": 150,
+        "defaultText": "${count}-day streak! Log in and complete at least one mission every day to keep it going."
+      },
+      "a11y": "accessibilityLabel '${count} day streak'"
+    }
+  },
+  "icons": {
+    "CoinIcon": {
+      "viewBox": "0 0 24 24",
+      "shapes": [
+        {
+          "circle": {
+            "cx": 12,
+            "cy": 12,
+            "r": 11,
+            "fill": "artwork.coin.rim #E0A11B"
+          }
+        },
+        {
+          "circle": {
+            "cx": 12,
+            "cy": 12,
+            "r": 9.2,
+            "fill": "artwork.coin.face #FFCE45"
+          }
+        },
+        {
+          "circle": {
+            "cx": 12,
+            "cy": 12,
+            "r": 8.2,
+            "fill": "none",
+            "stroke": "artwork.coin.rim #E0A11B",
+            "strokeWidth": 0.9,
+            "opacity": 0.7
+          }
+        },
+        {
+          "path": {
+            "d": "M12 6.7l1.35 3.44 3.69.22-2.85 2.35.94 3.58L12 14.3l-3.12 1.99.94-3.58-2.85-2.35 3.69-.22z",
+            "fill": "artwork.coin.starShadow #7BB800",
+            "opacity": 0.35,
+            "translateY": 0.5
+          }
+        },
+        {
+          "path": {
+            "d": "M12 6.7l1.35 3.44 3.69.22-2.85 2.35.94 3.58L12 14.3l-3.12 1.99.94-3.58-2.85-2.35 3.69-.22z",
+            "fill": "lime-green #9DFF00"
+          }
+        },
+        {
+          "path": {
+            "d": "M6.4 8.2a7.2 7.2 0 0 1 4.1-3.4",
+            "fill": "none",
+            "stroke": "#FFFFFF",
+            "strokeOpacity": 0.55,
+            "strokeWidth": 1.3,
+            "strokeLinecap": "round"
+          }
+        }
+      ],
+      "source": "src/components/ui/CoinIcon.tsx"
+    },
+    "XpIcon": {
+      "viewBox": "0 0 24 24",
+      "path": "M13.2 2L4 13.4h5.4L8.4 22 20 9.6h-5.9z",
+      "fill": "currentColor",
+      "source": "src/components/ui/XpIcon.tsx"
+    }
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root { --ground:#111111; --surface:#1A1A1A; --line:rgba(255,255,255,.10); --line-2:rgba(255,255,255,.16);
+  --ink:#FFFFFF; --ink-2:rgba(255,255,255,.62); --ink-3:rgba(255,255,255,.42); --orange:#FF8A00; --lime:#9DFF00; --pink:#FF2D8E;
+  --font:"Nunito",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace; }
+* { box-sizing:border-box; }
+html, body { background:var(--ground); }
+body { margin:0; color:var(--ink); font-family:var(--font); font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased; }
+.wrap { max-width:1040px; margin:0 auto; padding-inline:20px; padding-block:0 72px; }
+code { font-family:var(--mono); font-size:12px; background:rgba(255,255,255,.07); padding:1px 5px; border-radius:4px; white-space:nowrap; }
+header.top { padding-block:48px 28px; border-bottom:1px solid var(--line); }
+.eyebrow { font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); margin:0 0 14px; }
+.eyebrow b { color:var(--pink); font-weight:500; }
+h1 { font-size:clamp(30px,6vw,44px); font-weight:900; line-height:1.05; letter-spacing:-.02em; margin:0 0 14px; }
+h1 em { font-style:normal; color:var(--pink); }
+.lede { max-width:64ch; color:var(--ink-2); margin:0; } .lede strong { color:var(--ink); }
+section { padding-block:40px; border-bottom:1px solid var(--line); }
+h2 { font-size:24px; font-weight:800; margin:0 0 6px; }
+.src { font-family:var(--mono); font-size:11.5px; color:var(--ink-3); margin:0 0 22px; } .src b { color:var(--ink-2); font-weight:500; }
+p.note { max-width:68ch; color:var(--ink-2); margin:14px 0 0; font-size:14px; }
+.cap { font-family:var(--mono); font-size:11px; color:var(--ink-3); margin:8px 0 0; }
+.decs { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:12px; }
+.dec { background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--orange); border-radius:0 12px 12px 0; padding:16px 18px; }
+.dec p { margin:0; } .dec-id { font-family:var(--mono); font-size:11.5px; color:var(--orange); margin-bottom:10px !important; }
+.dec-prompt, .dec-do { font-size:13.5px; margin-bottom:8px !important; }
+.dec-prompt { color:var(--ink-3); text-decoration:line-through; text-decoration-color:rgba(255,255,255,.25); }
+.dec-prompt span, .dec-do span { display:block; font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; margin-bottom:2px; }
+.dec-do { font-weight:600; } .dec-do span { color:var(--lime); font-weight:400; } .dec-why { font-size:13px; color:var(--ink-2); }
+.two { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:24px; align-items:start; }
+.frame { background:#111111; border:1px dashed var(--line-2); border-radius:12px; padding:0 20px 14px; }
+.frame > div:first-child { padding-top:14px; }
+/* Section — label = .text-label text-white/50 uppercase tracking-widest */
+.lbl { margin:0; font-size:10px; font-weight:700; line-height:1.25; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.5); }
+.blk { height:56px; border-radius:16px; background:#1A1A1A; border:1px solid rgba(255,255,255,.15); } .blk.short { height:36px; }
+.sp-row { display:flex; align-items:center; gap:10px; font-size:13px; padding:3px 0; }
+.sp-bar { display:inline-block; height:10px; background:rgba(255,45,142,.5); border-radius:2px; }
+.cell { height:56px; border-radius:16px; background:#1A1A1A; border:1px solid rgba(0,240,255,.4); }
+/* ProgressBar — track bg-white/10 rounded-full h 10; fill glow 0 0 8px 2px */
+.pbs { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:22px 28px; }
+.pb { display:flex; flex-direction:column; gap:6px; }
+.pb-hd { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.pb-r { font-size:12px; font-weight:600; color:rgba(255,255,255,.7); }
+.pb-track { height:10px; border-radius:999px; background:rgba(255,255,255,.10); overflow:hidden; }
+.pb-fill { height:100%; border-radius:999px; }
+/* CurrencyAmount — inline-flex gap-1 font-bold tabular-nums, icon 1em */
+.cur-row { display:flex; flex-wrap:wrap; align-items:center; gap:10px 22px; padding:8px 0; }
+.amt { display:inline-flex; align-items:center; gap:4px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.amt.xp { color:#00F0FF; }
+/* StreakBadge — gradient purple→cyan, glow */
+.sbs { display:flex; flex-wrap:wrap; gap:22px; align-items:flex-end; }
+.sbs figure { margin:0; display:grid; gap:8px; justify-items:start; }
+.sbs figcaption { font-family:var(--mono); font-size:11px; color:var(--ink-3); }
+.sb { display:inline-flex; align-items:center; color:#FFFFFF; background:linear-gradient(90deg,#6A00FF,#00F0FF);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.15), 0 0 12px 2px rgba(106,0,255,.35); }
+.sb.pressed { box-shadow:inset 0 1px 0 rgba(255,255,255,.2), 0 0 20px 4px rgba(0,240,255,.35); }
+.tipwrap { margin-top:22px; }
+.tip { position:relative; width:224px; max-width:100%; padding:8px 12px; border-radius:12px; background:#1A1A1A; border:1px solid rgba(255,255,255,.10);
+  font-size:12px; line-height:1.25; color:rgba(255,255,255,.8); text-align:center; }
+.tip i { position:absolute; top:100%; left:50%; transform:translateX(-50%); border:4px solid transparent; border-top-color:rgba(255,255,255,.10); }
+/* ScrollScreen diagram */
+.phone { position:relative; width:195px; height:422px; border-radius:28px; background:#111111; border:1px solid var(--line-2); overflow:hidden; flex-shrink:0; }
+.ph-scroll { position:absolute; top:29.5px; left:0; right:0; bottom:42px; overflow:hidden; padding:6px 10px; display:grid; gap:7px; align-content:start; }
+.ph-scroll i { display:block; height:26px; border-radius:8px; background:#1A1A1A; border:1px solid rgba(255,255,255,.12); }
+.ph-pad { height:30px; background:repeating-linear-gradient(135deg,rgba(255,45,142,.18) 0 4px,transparent 4px 8px); border-radius:4px; }
+.ph-tab { position:absolute; left:0; right:0; bottom:0; height:42px; background:#1A1A1A; border-top:1px solid var(--line); }
+.legend { display:grid; gap:10px; font-size:13.5px; color:var(--ink-2); max-width:46ch; } .legend b { color:var(--ink); }
+.phone-wrap { display:flex; flex-wrap:wrap; gap:28px; align-items:flex-start; }
+@media (prefers-reduced-motion: reduce) { * { transition:none !important; animation:none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <p class="eyebrow">Design reference · <b>SCN-56</b> · WP-1.3 · slay-city-native</p>
+  <h1>SLAY CITY Native <em>primitives</em></h1>
+  <p class="lede">The six primitives <strong>design/SCN-5</strong> does not cover — Section, Grid, ScrollScreen, ProgressBar,
+  CurrencyAmount, StreakBadge — taken from <strong>rubanwd/slay-city@beba39d</strong>. Tokens, type scale, SlayButton, SlayCard
+  and AppContainer are in design/SCN-5/index.html and are not repeated. Machine-readable values:
+  <code>&lt;script id="slay-primitives-spec"&gt;</code> at the top of this file.</p>
+</header>
+
+<section><h2>Before you implement</h2>
+  <p class="src">Twelve places where the SCN-56 prompt and the code disagree, or where the prompt is silent.</p>
+  <div class="decs"><article class="dec"><p class="dec-id">D1 · Scope</p>
+      <p class="dec-prompt"><span>Prompt says</span>Nine primitives: SlayButton, SlayCard, Section, Grid, AppContainer, ScrollScreen, ProgressBar, CurrencyAmount, StreakBadge.</p><p class="dec-do"><span>Do instead</span>SlayButton, SlayCard and AppContainer ALREADY EXIST (SCN-5, src/components/). Do not rebuild them — check them against design/SCN-5/index.html and fix only gaps. Build the other six.</p>
+      <p class="dec-why">Rebuilding would duplicate SCN-5 and risk drifting from its approved reference.</p></article><article class="dec"><p class="dec-id">D2 · Icons</p>
+      <p class="dec-prompt"><span>Prompt says</span>CurrencyAmount and StreakBadge use the icons already ported.</p><p class="dec-do"><span>Do instead</span>They are NOT ported. `npx expo install react-native-svg`, then add src/components/ui/CoinIcon.tsx and XpIcon.tsx from the exact paths in spec.icons.</p>
+      <p class="dec-why">react-native-svg is not in package.json and no icon component exists in src/.</p></article><article class="dec"><p class="dec-id">D3 · Coin colours</p>
+      <p class="dec-prompt"><span>Prompt says</span>Use only the brand colors; nothing hard-coded outside the tokens.</p><p class="dec-do"><span>Do instead</span>Add an `artwork.coin` namespace to packages/tokens — rim #E0A11B, face #FFCE45, starShadow #7BB800 — and use it only in CoinIcon. The star itself is lime-green from the brand palette.</p>
+      <p class="dec-why">The coin is an illustration drawn with gold that the UI palette does not have. Naming the values keeps them out of components without pretending they are brand colours.</p></article><article class="dec"><p class="dec-id">D4 · Palette size</p>
+      <p class="dec-prompt"><span>Prompt says</span>six brand colors</p><p class="dec-do"><span>Do instead</span>Seven tokens plus the `surface` neutral (#1A1A1A), as in SCN-5.</p>
+      <p class="dec-why">AGENTS.md lists seven, including neon-orange.</p></article><article class="dec"><p class="dec-id">D5 · StreakBadge gradient</p>
+      <p class="dec-prompt"><span>Prompt says</span>(not mentioned)</p><p class="dec-do"><span>Do instead</span>`npx expo install expo-linear-gradient` — the badge fill is a left-to-right purple→cyan gradient.</p>
+      <p class="dec-why">Not in package.json; NativeWind cannot express a gradient fill.</p></article><article class="dec"><p class="dec-id">D6 · Unused on the web</p>
+      <p class="dec-prompt"><span>Prompt says</span>(not mentioned)</p><p class="dec-do"><span>Do instead</span>Grid and StreakBadge are used on NO web screen (StreakBadge appears only in its Storybook .mdx). Build them faithfully but keep them small; do not spend effort on the hover-only tooltip.</p>
+      <p class="dec-why">Measured: 0 screen usages of each in rubanwd/slay-city.</p></article><article class="dec"><p class="dec-id">D7 · Grid widths</p>
+      <p class="dec-prompt"><span>Prompt says</span>(not mentioned)</p><p class="dec-do"><span>Do instead</span>Compute each cell&#x27;s width from the ACTUAL gap: (containerWidth − gap × (cols − 1)) / cols. Support only the equal-columns behaviour; the web&#x27;s `grid` flag and flex mode then render the same.</p>
+      <p class="dec-why">The web&#x27;s flex mode hardcodes widths for the md gap (calc(50% − 0.375rem)); any other gap wraps or leaves space. A web bug, not a design.</p></article><article class="dec"><p class="dec-id">D8 · ScrollScreen on native</p>
+      <p class="dec-prompt"><span>Prompt says</span>Handle safe areas in ScrollScreen and AppContainer.</p><p class="dec-do"><span>Do instead</span>ScrollView filling the screen; bottom content padding = tab bar height + bottom inset (useBottomTabBarHeight), not the web&#x27;s fixed 150px. The web&#x27;s --screen-top-offset (the admin view-as banner) becomes a topOffset prop. A `footer` stays pinned below the scroll area.</p>
+      <p class="dec-why">On the web the nav is a fixed overlay, so content needs a fixed clearance. A native tab bar reports its own height.</p></article><article class="dec"><p class="dec-id">D9 · ProgressBar identity</p>
+      <p class="dec-prompt"><span>Prompt says</span>(not mentioned)</p><p class="dec-do"><span>Do instead</span>This is src/components/ui/ProgressBar (labels, glow, animated fill). The mission header bar is a DIFFERENT component, features/mission/ProgressBar — out of scope, do not merge them.</p>
+      <p class="dec-why">The web keeps both; only the placement test uses the ui one today.</p></article><article class="dec"><p class="dec-id">D10 · ProgressBar animation</p>
+      <p class="dec-prompt"><span>Prompt says</span>(not mentioned)</p><p class="dec-do"><span>Do instead</span>Animate with Reanimated on the UI thread: 600ms, easing bezier(0.4, 0, 0.2, 1), from 0 on mount when `animate` (default true). Prefer scaleX with transformOrigin &#x27;left&#x27; over animating width.</p>
+      <p class="dec-why">The web animates `width`; AGENTS.md here forbids animating layout properties when a transform works.</p></article><article class="dec"><p class="dec-id">D11 · Coin text colour</p>
+      <p class="dec-prompt"><span>Prompt says</span>(not mentioned)</p><p class="dec-do"><span>Do instead</span>CoinAmount&#x27;s number INHERITS the surrounding text colour; only the icon is gold. XpAmount&#x27;s number is cyan.</p>
+      <p class="dec-why">The web component&#x27;s comment says coins default to gold, but its classes set no colour. Code wins over the comment.</p></article><article class="dec"><p class="dec-id">D12 · StreakBadge tooltip</p>
+      <p class="dec-prompt"><span>Prompt says</span>(not mentioned)</p><p class="dec-do"><span>Do instead</span>Tap toggles the tooltip; it auto-hides after 3s or on the next tap. Web shows it on hover/focus only.</p>
+      <p class="dec-why">There is no hover on a phone. Derived for native — marked as such.</p></article></div></section>
+
+<section><h2>Section</h2>
+  <p class="src"><b>web</b> src/components/layout/Section.tsx → <b>native</b> src/components/layout/Section.tsx · 12 web screens</p>
+  <div class="two"><div class="frame"><div style="padding-block:24px;display:flex;flex-direction:column;gap:12px">
+      <p class="lbl">Your progress</p><div class="blk"></div><div class="blk short"></div></div>
+      <p class="cap">Section title="Your progress" (py md = 24, gap 12)</p></div>
+      <div><p class="cap">pt / pb / py scale</p><div class="sp-row"><span class="sp-bar" style="width:1px"></span><code>none</code> 0</div><div class="sp-row"><span class="sp-bar" style="width:8px"></span><code>xs</code> 8</div><div class="sp-row"><span class="sp-bar" style="width:16px"></span><code>sm</code> 16</div><div class="sp-row"><span class="sp-bar" style="width:24px"></span><code>md</code> 24</div><div class="sp-row"><span class="sp-bar" style="width:32px"></span><code>lg</code> 32</div><div class="sp-row"><span class="sp-bar" style="width:48px"></span><code>xl</code> 48</div></div></div></section>
+
+<section><h2>Grid</h2>
+  <p class="src"><b>web</b> src/components/layout/Grid.tsx → <b>native</b> src/components/layout/Grid.tsx · 0 web screens (D6)</p>
+  <div class="two"><div class="frame"><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div><p class="cap">cols=2 gap=md (12)</p></div><div class="frame"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div><p class="cap">cols=3 gap=md (12)</p></div></div><p class="note">gap scale: <code>none</code> 0 · <code>xs</code> 4 · <code>sm</code> 8 · <code>md</code> 12 · <code>lg</code> 16. Cell width = (W − gap × (cols − 1)) / cols (D7).</p></section>
+
+<section><h2>ScrollScreen</h2>
+  <p class="src"><b>web</b> src/components/layout/ScrollScreen.tsx → <b>native</b> src/components/layout/ScrollScreen.tsx · 3 web screens</p>
+  <div class="phone-wrap"><div class="phone"><div class="ph-scroll"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><div class="ph-pad"></div></div><div class="ph-tab"></div></div>
+  <div class="legend"><div><b>Ground</b> #111111; the content scrolls in its own ScrollView, not the screen.</div>
+  <div><b>Pink hatch</b> — bottom content padding = tab bar height + bottom inset, so the last row clears the tab bar (D8).</div>
+  <div><b>footer</b> renders pinned below the scroll area.</div>
+  <div><b>topOffset</b> shortens the screen when something is stacked above it (the admin "viewing as" banner on the web).</div></div></div></section>
+
+<section><h2>ProgressBar</h2>
+  <p class="src"><b>web</b> src/components/ui/ProgressBar.tsx → <b>native</b> src/components/ui/ProgressBar.tsx · not the mission header bar (D9)</p>
+  <div class="pbs"><div class="pb"><div class="pb-hd"><span class="lbl">Level 3</span><span class="pb-r">450 / 1000 XP</span></div>
+          <div class="pb-track"><div class="pb-fill" style="width:45%;background:#9DFF00;box-shadow:0 0 8px 2px rgba(157,255,0,0.5)"></div></div>
+          <p class="cap">variant=<code>green</code></p></div><div class="pb"><div class="pb-hd"><span class="lbl">Level 3</span><span class="pb-r">450 / 1000 XP</span></div>
+          <div class="pb-track"><div class="pb-fill" style="width:45%;background:#FF2D8E;box-shadow:0 0 8px 2px rgba(255,45,142,0.5)"></div></div>
+          <p class="cap">variant=<code>pink</code></p></div><div class="pb"><div class="pb-hd"><span class="lbl">Level 3</span><span class="pb-r">450 / 1000 XP</span></div>
+          <div class="pb-track"><div class="pb-fill" style="width:45%;background:#00F0FF;box-shadow:0 0 8px 2px rgba(0,240,255,0.5)"></div></div>
+          <p class="cap">variant=<code>cyan</code></p></div><div class="pb"><div class="pb-track"><div class="pb-fill" style="width:0"></div></div>
+      <p class="cap">value=0 — no glow</p></div><div class="pb"><div class="pb-track" style="height:8px"><div class="pb-fill" style="width:80%;background:#9DFF00;box-shadow:0 0 8px 2px rgba(157,255,0,.5)"></div></div>
+      <p class="cap">height=8, no labels</p></div></div>
+  <p class="note">Fill animates from 0 on mount over 600ms, easing bezier(0.4, 0, 0.2, 1) (D10). The glow is drawn only when value &gt; 0.</p></section>
+
+<section><h2>CurrencyAmount · CoinIcon · XpIcon</h2>
+  <p class="src"><b>web</b> src/components/ui/CurrencyAmount.tsx, CoinIcon.tsx, XpIcon.tsx → <b>native</b> same paths · needs react-native-svg (D2)</p>
+  <div class="cur-row"><span class="amt" style="font-size:12px"><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#E0A11B"/><circle cx="12" cy="12" r="9.2" fill="#FFCE45"/><circle cx="12" cy="12" r="8.2" fill="none" stroke="#E0A11B" stroke-width=".9" opacity=".7"/><path d="M12 6.7l1.35 3.44 3.69.22-2.85 2.35.94 3.58L12 14.3l-3.12 1.99.94-3.58-2.85-2.35 3.69-.22z" fill="#7BB800" opacity=".35" transform="translate(0,.5)"/><path d="M12 6.7l1.35 3.44 3.69.22-2.85 2.35.94 3.58L12 14.3l-3.12 1.99.94-3.58-2.85-2.35 3.69-.22z" fill="#9DFF00"/><path d="M6.4 8.2a7.2 7.2 0 0 1 4.1-3.4" fill="none" stroke="#FFFFFF" stroke-opacity=".55" stroke-width="1.3" stroke-linecap="round"/></svg><span>1 250</span></span>
+          <span class="amt xp" style="font-size:12px"><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M13.2 2L4 13.4h5.4L8.4 22 20 9.6h-5.9z" fill="currentColor"/></svg><span>+30</span></span>
+          <span class="cap">12pt text → 12pt icon</span></div><div class="cur-row"><span class="amt" style="font-size:16px"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#E0A11B"/><circle cx="12" cy="12" r="9.2" fill="#FFCE45"/><circle cx="12" cy="12" r="8.2" fill="none" stroke="#E0A11B" stroke-width=".9" opacity=".7"/><path d="M12 6.7l1.35 3.44 3.69.22-2.85 2.35.94 3.58L12 14.3l-3.12 1.99.94-3.58-2.85-2.35 3.69-.22z" fill="#7BB800" opacity=".35" transform="translate(0,.5)"/><path d="M12 6.7l1.35 3.44 3.69.22-2.85 2.35.94 3.58L12 14.3l-3.12 1.99.94-3.58-2.85-2.35 3.69-.22z" fill="#9DFF00"/><path d="M6.4 8.2a7.2 7.2 0 0 1 4.1-3.4" fill="none" stroke="#FFFFFF" stroke-opacity=".55" stroke-width="1.3" stroke-linecap="round"/></svg><span>1 250</span></span>
+          <span class="amt xp" style="font-size:16px"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M13.2 2L4 13.4h5.4L8.4 22 20 9.6h-5.9z" fill="currentColor"/></svg><span>+30</span></span>
+          <span class="cap">16pt text → 16pt icon</span></div><div class="cur-row"><span class="amt" style="font-size:22px"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#E0A11B"/><circle cx="12" cy="12" r="9.2" fill="#FFCE45"/><circle cx="12" cy="12" r="8.2" fill="none" stroke="#E0A11B" stroke-width=".9" opacity=".7"/><path d="M12 6.7l1.35 3.44 3.69.22-2.85 2.35.94 3.58L12 14.3l-3.12 1.99.94-3.58-2.85-2.35 3.69-.22z" fill="#7BB800" opacity=".35" transform="translate(0,.5)"/><path d="M12 6.7l1.35 3.44 3.69.22-2.85 2.35.94 3.58L12 14.3l-3.12 1.99.94-3.58-2.85-2.35 3.69-.22z" fill="#9DFF00"/><path d="M6.4 8.2a7.2 7.2 0 0 1 4.1-3.4" fill="none" stroke="#FFFFFF" stroke-opacity=".55" stroke-width="1.3" stroke-linecap="round"/></svg><span>1 250</span></span>
+          <span class="amt xp" style="font-size:22px"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M13.2 2L4 13.4h5.4L8.4 22 20 9.6h-5.9z" fill="currentColor"/></svg><span>+30</span></span>
+          <span class="cap">22pt text → 22pt icon</span></div><div class="cur-row"><span class="amt" style="font-size:16px;color:#9DFF00"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#E0A11B"/><circle cx="12" cy="12" r="9.2" fill="#FFCE45"/><circle cx="12" cy="12" r="8.2" fill="none" stroke="#E0A11B" stroke-width=".9" opacity=".7"/><path d="M12 6.7l1.35 3.44 3.69.22-2.85 2.35.94 3.58L12 14.3l-3.12 1.99.94-3.58-2.85-2.35 3.69-.22z" fill="#7BB800" opacity=".35" transform="translate(0,.5)"/><path d="M12 6.7l1.35 3.44 3.69.22-2.85 2.35.94 3.58L12 14.3l-3.12 1.99.94-3.58-2.85-2.35 3.69-.22z" fill="#9DFF00"/><path d="M6.4 8.2a7.2 7.2 0 0 1 4.1-3.4" fill="none" stroke="#FFFFFF" stroke-opacity=".55" stroke-width="1.3" stroke-linecap="round"/></svg><span>49</span></span>
+      <span class="cap">CoinAmount inherits the parent colour (here lime) — D11</span></div>
+  <p class="note">The icon is always the text's own size. Coin artwork colours are named in <code>artwork.coin</code> (D3); the star is brand lime.
+  Exact SVG geometry is in <code>spec.icons</code>.</p></section>
+
+<section><h2>StreakBadge</h2>
+  <p class="src"><b>web</b> src/components/ui/StreakBadge.tsx → <b>native</b> src/components/ui/StreakBadge.tsx · needs expo-linear-gradient (D5) · 0 web screens (D6)</p>
+  <div class="sbs"><figure><span class="sb" style="height:28px;padding:0 10px;gap:4px;border-radius:12px">
+          <span style="font-size:16px">🔥</span><span style="font-size:14px;font-weight:900">7</span></span>
+          <figcaption><code>sm</code> h 28 · px 10 · r 12</figcaption></figure><figure><span class="sb" style="height:40px;padding:0 16px;gap:6px;border-radius:16px">
+          <span style="font-size:20px">🔥</span><span style="font-size:16px;font-weight:900">7</span></span>
+          <figcaption><code>md</code> h 40 · px 16 · r 16</figcaption></figure><figure><span class="sb" style="height:56px;padding:0 20px;gap:8px;border-radius:16px">
+          <span style="font-size:24px">🔥</span><span style="font-size:20px;font-weight:900">7</span></span>
+          <figcaption><code>lg</code> h 56 · px 20 · r 16</figcaption></figure><figure><span class="sb pressed" style="height:40px;padding:0 16px;gap:6px;border-radius:16px">
+      <span style="font-size:20px">🔥</span><span style="font-size:16px;font-weight:900">7</span></span><figcaption>md pressed</figcaption></figure></div><div class="tipwrap"><div class="tip">7-day streak! Log in and complete at least one mission every day to keep it going.<i></i></div><p class="cap">tooltip — tap to toggle on native (D12)</p></div>
+  <p class="note">The count animates from its previous value over 600ms, ease-out cubic. Respect reduced motion.</p></section>
+</div>
+</body>
+</html>
