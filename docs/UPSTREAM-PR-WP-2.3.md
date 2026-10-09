@@ -1,6 +1,22 @@
-# Upstream PR placeholder — `WP-2.3` teacher-write RPC migrations
+# Upstream PR — `WP-2.3` teacher-write RPC migrations
 
-> **Status: NOT OPENED.** This is a staged pull-request description for
+> **Status: additive half OPENED, not merged —
+> [rubanwd/slay-city#115](https://github.com/rubanwd/slay-city/pull/115)**
+> (2026-10-09, `SCN-61`). It carries migrations 1/4–3/4, the five thin
+> callers, the regenerated `src/types/database.ts` entries and the 1/4–3/4
+> rollbacks (upstream keeps those in `supabase/rollbacks/wp-2.3/`, outside
+> `migrations/`, so `db push` never applies them). Migration 4/4 and
+> `ci-database-tests.yml` are the second PR, still to open — see
+> [Deployment](#deployment--this-must-ship-as-two-pull-requests). Two things
+> changed on the way in: the optional RPC arguments are passed as
+> `?? undefined` rather than `null` (the regenerated types make them
+> `string | undefined`; every one is `default null` in SQL, so the database
+> sees the same `NULL`), and the PR documents a one-to-two-minute deploy
+> window in which onboarding and teacher writes can fail while Vercel and
+> `migrate` land in either order.
+>
+> What follows is the staged description as it was written before opening.
+> This is a staged pull-request description for
 > [rubanwd/slay-city](https://github.com/rubanwd/slay-city), written by
 > `SCN-11`. Unlike [UPSTREAM-PR-WP-5.6.md](UPSTREAM-PR-WP-5.6.md), the SQL it
 > describes **is written** and lives in
@@ -453,5 +469,5 @@ run.
 - [x] Upstream re-fetched and the base commit re-read — `SCN-61`: `7612da5` → `02630a3`, nine commits. See [Rebase onto `02630a3`](#rebase-onto-02630a3).
 - [x] Native-side wrappers written — `SCN-61`: `packages/data/src/guardedWrites.ts` in `rubanwd/slay-city-native`, unused until this merges.
 - [ ] **Live database compared against the migration timeline (U-1).** Needs production database access, which no agent in the native repository has. The reading in [Evidence](#evidence-what-rls-does-and-does-not-stop) is from `supabase/migrations/` at `02630a3` and is only as good as the assumption that production matches the replayed timeline. Confirm with: `select * from pg_policies where tablename in ('homework_topics','homework_vocab_words','homework_vocab_tasks','homework_grammar_points','homework_grammar_tasks','vocab_image_cache','homework_topic_messages','homework_topic_reads','profiles','user_stats');` and `select grantee, privilege_type from information_schema.role_table_grants where table_name = 'user_stats';`
-- [ ] **Split into PR #1 (additive) and PR #2 (the revoke)** — see [Deployment](#deployment--this-must-ship-as-two-pull-requests). Found on `SCN-61`: upstream's `migrate` job auto-applies migrations on every push to `main`, so a single PR cannot stage 4/4 behind a production verification pass.
+- [x] **Split into PR #1 (additive) and PR #2 (the revoke)** — PR #1 opened as [rubanwd/slay-city#115](https://github.com/rubanwd/slay-city/pull/115) on `SCN-61`. — see [Deployment](#deployment--this-must-ship-as-two-pull-requests). Found on `SCN-61`: upstream's `migrate` job auto-applies migrations on every push to `main`, so a single PR cannot stage 4/4 behind a production verification pass.
 - [ ] **Forged `user_stats` values audited (U-3) and a clean-up decided.** A product call on what counts as an implausible `xp`/`coins`, and it needs the production data to make. The migration backfills only *missing* rows and never touches an existing one, so opening this PR does not depend on the answer — but `MIGRATIONS-NEEDED.md` §10 step 1 asks for finding F1 to be decided explicitly rather than merged silently, because it is live today.
