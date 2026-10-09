@@ -12,6 +12,18 @@
 > thin-caller pass is not done" (see `docs/changes/SCN-11.md`, *Limitations*).
 > `WP-2.3` `AC5` — "the web's behaviour is unchanged; its actions now call the
 > new RPCs" — is not met until this lands next to the SQL.
+>
+> **Rebased onto upstream `02630a3` on `SCN-61`.** `onboarding/actions.ts` had
+> gone stale: upstream extracted the age validation into
+> `features/onboarding/age.ts` (`parseAge`, `MIN_AGE`, `MAX_AGE`) and this copy
+> still carried its own inline constants, so pasting it over `main` would have
+> silently reverted that refactor and reintroduced a second source of truth for
+> the range. It now imports `parseAge` like `main` does. The other four files
+> needed no change — each still exports exactly the names upstream's version
+> exports. Every `import` in all five was re-resolved against `02630a3`: all
+> twelve first-party modules they reach for still exist, and so does every
+> named symbol they pull out of them. Re-check both if upstream moves again
+> before the PR opens.
 
 ## What is here
 

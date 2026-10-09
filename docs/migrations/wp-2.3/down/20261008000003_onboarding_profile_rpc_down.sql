@@ -1,4 +1,4 @@
--- Rollback for 20260930000003_onboarding_profile_rpc.sql
+-- Rollback for 20261008000003_onboarding_profile_rpc.sql
 --
 -- Run 4/4's rollback first if it is applied: without the trigger AND without
 -- the INSERT grant on `user_stats`, a new student or parent profile gets no

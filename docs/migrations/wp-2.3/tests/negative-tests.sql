@@ -11,14 +11,15 @@
 --
 --   1. Stand up a database with the migration timeline applied: the bootstrap
 --      in `bootstrap.sql`, then every file in `upstream/supabase/migrations/`
---      in order, then the five files in `docs/migrations/wp-2.3/` in order.
+--      in order, then the four files in `docs/migrations/wp-2.3/` in order.
 --      See `../README.md` and [[upstream-schema-replays-on-stock-postgres]]
 --      for how that replays unmodified against a plain `postgres:16-alpine`
---      container. Sections 4 and 5 need 4/4 (the revokes) and section 11
---      needs 5/5 (the widened age range); everything else passes without
---      them, printing `SKIP` for the parts that need a migration you have not
---      applied, except the two revoke sections, which fail outright without
---      4/4.
+--      container. Sections 4 and 5 need 4/4 (the revokes); everything else
+--      passes without them, printing `SKIP` for the parts that need a
+--      migration you have not applied, except the two revoke sections, which
+--      fail outright without 4/4. Section 11 needs no file from this package
+--      at all — it pins upstream's own
+--      `20261001000001_widen_profile_age_range.sql`.
 --   2. Run `psql -v ON_ERROR_STOP=1 -f negative-tests.sql`. It pulls in
 --      `fixtures.sql` itself (via `\ir`, resolved relative to this file, not
 --      the caller's working directory) — `fixtures.sql` creates the rows this
@@ -936,12 +937,20 @@ end;
 $$;
 
 -- =========================================================================
--- 11. `profiles.age` accepts the onboarding form's whole range — needs 5/5
+-- 11. `profiles.age` accepts the onboarding form's whole range
 --
--- Migration 5/5 widened `profiles_age_check` from 7–14 to 5–99, the range
--- `features/onboarding/actions.ts` has validated and displayed since commit
--- `32247f5` (finding F2, decided on SCN-11-1). Before it, ages 5, 6 and 15–99
--- passed the form and then failed the insert with a raw 23514.
+-- Upstream's `20261001000001_widen_profile_age_range.sql` widened
+-- `profiles_age_check` from 7–14 to 5–90, the range
+-- `features/onboarding/age.ts` exports as `MIN_AGE`/`MAX_AGE` and the form
+-- displays (finding F2). Before it, ages 5, 6 and 15–90 passed the form and
+-- then failed the insert with a raw 23514.
+--
+-- SCN-11-1 staged a fifth migration in this package to make the same fix at
+-- 5–99; SCN-61 dropped it when the rebase onto upstream `02630a3` found the
+-- constraint already widened. This section survives the drop because the
+-- property it asserts is still the one the onboarding flow depends on — it
+-- now guards upstream's choice of bounds against a future narrowing rather
+-- than proving this package's own migration landed.
 --
 -- `create_my_profile` deliberately does not re-check the range — the column
 -- constraint is the single place it is expressed, so that the two cannot
@@ -974,8 +983,8 @@ begin
     raise exception 'FAIL 11a: public.profiles has no profiles_age_check constraint';
   end if;
 
-  if v_def !~ '\m5\M' or v_def !~ '\m99\M' then
-    raise notice 'SKIP 11: migration 5/5 is not applied — the constraint is still %', v_def;
+  if v_def !~ '\m5\M' or v_def !~ '\m90\M' then
+    raise notice 'SKIP 11: 20261001000001_widen_profile_age_range.sql is not applied — the constraint is still %', v_def;
     return;
   end if;
   raise notice 'PASS 11a: profiles_age_check is the widened range — %', v_def;
@@ -989,12 +998,12 @@ begin
   end if;
   raise notice 'PASS 11b: age 5, the form''s lower bound, is accepted';
 
-  update public.profiles set age = 99 where id = v_student;
+  update public.profiles set age = 90 where id = v_student;
   select age into v_age from public.profiles where id = v_student;
-  if v_age is distinct from 99::smallint then
-    raise exception 'FAIL 11c: age 99 was not stored — read back %', v_age;
+  if v_age is distinct from 90::smallint then
+    raise exception 'FAIL 11c: age 90 was not stored — read back %', v_age;
   end if;
-  raise notice 'PASS 11c: age 99, the form''s upper bound, is accepted';
+  raise notice 'PASS 11c: age 90, the form''s upper bound, is accepted';
 
   update public.profiles set age = null where id = v_student;
   select age into v_age from public.profiles where id = v_student;
@@ -1011,10 +1020,10 @@ begin
   end;
 
   begin
-    update public.profiles set age = 100 where id = v_student;
-    raise exception 'FAIL 11f: age 100 was accepted — the range was widened too far';
+    update public.profiles set age = 91 where id = v_student;
+    raise exception 'FAIL 11f: age 91 was accepted — the range was widened past MAX_AGE';
   exception when check_violation then
-    raise notice 'PASS 11f: age 100 is still rejected with 23514';
+    raise notice 'PASS 11f: age 91, one past the form''s upper bound, is rejected with 23514';
   end;
 
   update public.profiles set age = v_original where id = v_student;

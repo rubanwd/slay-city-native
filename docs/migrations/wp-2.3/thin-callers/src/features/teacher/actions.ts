@@ -44,7 +44,7 @@ function revalidateGroup(groupId: string): void {
 /* ── Homework topics ───────────────────────────────────────────────────────── */
 //
 // WP-2.3: these three writes now go through the `SECURITY DEFINER` RPCs added
-// by `docs/migrations/wp-2.3/20260930000001_teacher_authoring_rpcs.sql`
+// by `docs/migrations/wp-2.3/20261008000001_teacher_authoring_rpcs.sql`
 // (`create_homework_topic`, `update_homework_topic`, `delete_homework_topic`)
 // instead of a direct `.from("homework_topics")` write. `requireTeacher()`
 // stays as the fast, friendly pre-check it always was — it is a read, not a

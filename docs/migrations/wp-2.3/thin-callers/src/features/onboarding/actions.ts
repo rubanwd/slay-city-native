@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 
 import { isKnowledgeLevel, knowledgeLevelLabel } from "@/features/levels/levels";
 import { getAvailableLevels } from "@/features/levels/queries";
+import { parseAge } from "./age";
 import { checkUsername, usernameProblemMessage } from "@/features/profile/username";
 import { createClient } from "@/lib/supabase/server";
 
@@ -12,9 +13,6 @@ export type OnboardingState = {
   /** Present when the action failed — shown to the user. */
   error?: string;
 };
-
-const MIN_AGE = 5;
-const MAX_AGE = 99;
 
 /**
  * WP-2.3 W-21+W-22: the two direct inserts (`profiles`, then `user_stats`)
@@ -34,7 +32,6 @@ export async function createProfile(
   _prevState: OnboardingState,
   formData: FormData
 ): Promise<OnboardingState> {
-  const ageRaw = String(formData.get("age") ?? "").trim();
   const levelRaw = String(formData.get("level") ?? "").trim();
 
   // Any alphabet, up to 32 characters — players type their real first name
@@ -45,13 +42,11 @@ export async function createProfile(
   }
   const username = usernameCheck.username;
 
-  let age: number | null = null;
-  if (ageRaw) {
-    age = Number(ageRaw);
-    if (!Number.isInteger(age) || age < MIN_AGE || age > MAX_AGE) {
-      return { error: `Age must be between ${MIN_AGE} and ${MAX_AGE}.` };
-    }
+  const ageCheck = parseAge(String(formData.get("age") ?? ""));
+  if (!ageCheck.ok) {
+    return { error: ageCheck.error };
   }
+  const age = ageCheck.age;
 
   const supabase = await createClient();
   const {

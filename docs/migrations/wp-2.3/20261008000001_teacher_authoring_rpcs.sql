@@ -18,7 +18,7 @@
 -- and every existing direct write keeps working. The lockdown (revoking the
 -- table grants that let a client bypass these functions) is migration 4/4, so
 -- it can be applied only after the web app has been deployed against the RPCs.
--- Rollback for this file is `down/20260930000001_teacher_authoring_rpcs_down.sql`.
+-- Rollback for this file is `down/20261008000001_teacher_authoring_rpcs_down.sql`.
 --
 -- Authorization model, unchanged from the policies it mirrors:
 --

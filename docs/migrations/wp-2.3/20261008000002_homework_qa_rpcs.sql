@@ -21,7 +21,7 @@
 --     client, RPC or not.
 --
 -- Additive: no policy dropped, no grant revoked. Migration 4/4 does the
--- lockdown. Rollback is `down/20260930000002_homework_qa_rpcs_down.sql`.
+-- lockdown. Rollback is `down/20261008000002_homework_qa_rpcs_down.sql`.
 --
 -- Realtime keeps working unchanged: these functions INSERT and DELETE on
 -- `homework_topic_messages`, which is in the `supabase_realtime` publication,

@@ -15,11 +15,14 @@
  * See docs/SYNC.md §6.
  *
  * Covers the Category A thin-wrapper actions and the read-only queries.ts
- * files from docs/MIGRATION-MAP.md §2 — not the Category B direct-write files
- * (need new RPCs, see docs/MIGRATIONS-NEEDED.md) and not Category C
- * (OpenRouter, see docs/EDGE-FUNCTIONS-PLAN.md). Admin-only reads
- * (`list_feedback_reports`, `unread_feedback_count`, `mark_feedback_read`) are
- * also out of scope — the admin console stays web-only, per AGENTS.md.
+ * files from docs/MIGRATION-MAP.md §2, plus — in guardedWrites.ts, and not
+ * callable yet — the Category B teacher/Q&A/onboarding writes that WP-2.3's
+ * unmerged RPCs will carry (docs/MIGRATIONS-NEEDED.md,
+ * docs/UPSTREAM-PR-WP-2.3.md). Not Category C (OpenRouter, see
+ * docs/EDGE-FUNCTIONS-PLAN.md). Admin-only reads (`list_feedback_reports`,
+ * `unread_feedback_count`, `mark_feedback_read`) are out of scope — the admin
+ * console stays web-only, per AGENTS.md — and so are the admin-only
+ * `placement_test_questions` writes upstream added in `02630a3`.
  */
 
 export * from "./mission";
@@ -31,3 +34,4 @@ export * from "./profile";
 export * from "./feedback";
 export * from "./map";
 export * from "./parent";
+export * from "./guardedWrites";
