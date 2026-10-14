@@ -32,7 +32,9 @@
           "resizeMode": "contain",
           "backgroundColor": "#111111"
         }
-      ]
+      ],
+      "expo-web-browser",
+      "expo-apple-authentication"
     ],
     "experiments": {
       "typedRoutes": true,

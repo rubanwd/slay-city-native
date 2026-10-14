@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { changeMyUsername } from "./profile";
+import { changeMyUsername, getMyRole } from "./profile";
 
 describe("changeMyUsername", () => {
   it("rejects an invalid username without touching the database", async () => {
@@ -44,5 +44,45 @@ describe("changeMyUsername", () => {
     } as never;
 
     expect(await changeMyUsername(db, "Ann")).toEqual({ ok: false, problem: "taken" });
+  });
+});
+
+describe("getMyRole", () => {
+  it("returns null when signed out, without querying profiles", async () => {
+    const from = vi.fn();
+    const db = {
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: null } }) },
+      from,
+    } as never;
+
+    expect(await getMyRole(db)).toBeNull();
+    expect(from).not.toHaveBeenCalled();
+  });
+
+  it("returns the caller's role from profiles", async () => {
+    const maybeSingle = vi.fn().mockResolvedValue({ data: { role: "teacher" } });
+    const eq = vi.fn().mockReturnValue({ maybeSingle });
+    const select = vi.fn().mockReturnValue({ eq });
+    const from = vi.fn().mockReturnValue({ select });
+    const db = {
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: "u1" } } }) },
+      from,
+    } as never;
+
+    expect(await getMyRole(db)).toBe("teacher");
+    expect(from).toHaveBeenCalledWith("profiles");
+    expect(select).toHaveBeenCalledWith("role");
+    expect(eq).toHaveBeenCalledWith("id", "u1");
+  });
+
+  it("returns null when there is no profile row yet", async () => {
+    const maybeSingle = vi.fn().mockResolvedValue({ data: null });
+    const from = vi.fn().mockReturnValue({ select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ maybeSingle }) }) });
+    const db = {
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: "u1" } } }) },
+      from,
+    } as never;
+
+    expect(await getMyRole(db)).toBeNull();
   });
 });

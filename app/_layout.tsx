@@ -8,7 +8,7 @@ import {
   useFonts,
 } from "@expo-google-fonts/nunito";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import { Stack, useRouter, useSegments, type Href } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
@@ -17,7 +17,9 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { colors } from "@slay/tokens";
 
-import { SessionProvider } from "~/hooks/useSession";
+import { resolveRedirect } from "~/features/auth/routeGuard";
+import { SessionProvider, useSession } from "~/hooks/useSession";
+import { useMyRole } from "~/hooks/useMyRole";
 import { queryClient } from "~/lib/query-client";
 import { supabase } from "~/lib/supabase";
 
@@ -38,10 +40,11 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
  * burning a refresh on a backgrounded app and lets a long background period
  * resolve with a single refresh on return rather than a stale, expired token.
  *
- * The audio adapter and the role-based route guard land here in later phases
- * (WP-1.2, WP-6.2). For now it establishes the one thing the whole app depends
- * on: a dark ground that never flashes white, which the web repository's
- * AGENTS.md requires by default.
+ * `RouteGuard` below is WP-2.6's role-based route guard. It needs `useSession`
+ * (from `SessionProvider`) and `useSegments`/`useRouter` (from the router
+ * context `<Stack>` establishes for its own children), so it is a child of
+ * both rather than logic inlined here. The audio adapter lands in a later
+ * phase (WP-6.2).
  */
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -52,12 +55,6 @@ export default function RootLayout() {
     Nunito_800ExtraBold,
     Nunito_900Black,
   });
-
-  useEffect(() => {
-    if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync().catch(() => {});
-    }
-  }, [fontsLoaded, fontError]);
 
   useEffect(() => {
     function handleAppStateChange(state: AppStateStatus) {
@@ -81,14 +78,47 @@ export default function RootLayout() {
       <SessionProvider>
         <SafeAreaProvider>
           <StatusBar style="light" />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.black },
-            }}
-          />
+          <RouteGuard />
         </SafeAreaProvider>
       </SessionProvider>
     </QueryClientProvider>
+  );
+}
+
+/**
+ * Decides, on every segment/session/role change, whether the current route is
+ * one its role is allowed to be on (WP-2.6) — never duplicating `roleHome()`'s
+ * rule (`~/features/auth/routeGuard`'s `resolveRedirect`), only acting on it.
+ * Keeps the splash screen up (AC: no auth flash) until the session is known
+ * and, if signed in, the profile role has loaded too.
+ */
+function RouteGuard() {
+  const { session, isLoading: sessionLoading } = useSession();
+  const role = useMyRole();
+  const segments = useSegments();
+  const router = useRouter();
+
+  const target = resolveRedirect(segments, sessionLoading ? undefined : session, role);
+  const ready = !sessionLoading && (session === null || role !== undefined);
+
+  useEffect(() => {
+    if (target) {
+      router.replace(target as Href);
+    }
+  }, [target, router]);
+
+  useEffect(() => {
+    if (ready) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [ready]);
+
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: colors.black },
+      }}
+    />
   );
 }

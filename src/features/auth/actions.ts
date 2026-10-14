@@ -142,6 +142,11 @@ export async function updatePassword(password: string): Promise<AuthState> {
   return error ? { error: error.message } : {};
 }
 
+/** Sign the current user out. The session listener handles the rest (WP-2.1). */
+export async function signOut(): Promise<void> {
+  await supabase.auth.signOut();
+}
+
 export async function resetPasswordFormAction(password: string, confirmPassword: string): Promise<AuthState> {
   if (!password) {
     return { error: "Enter a new password." };

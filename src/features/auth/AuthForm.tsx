@@ -8,6 +8,7 @@ import { AppContainer } from "~/components/layout";
 import { SlayButton, SlayInput, SlayPressable, SlayText } from "~/components/ui";
 
 import { loginFormAction, registerFormAction, type SignupRole } from "./actions";
+import { OAuthButtons } from "./OAuthButtons";
 
 export interface AuthFormProps {
   mode: "login" | "register";
@@ -18,6 +19,7 @@ const COPY = {
     titleLead: "Log ",
     titleAccent: "In",
     submit: "Log In",
+    google: "Continue with Google",
     switchText: "New to Slay City?",
     switchHref: "/register" as const,
     switchCta: "Create an account",
@@ -26,6 +28,7 @@ const COPY = {
     titleLead: "Sign ",
     titleAccent: "Up",
     submit: "Create Account",
+    google: "Sign up with Google",
     switchText: "Already have an account?",
     switchHref: "/login" as const,
     switchCta: "Log in",
@@ -40,9 +43,9 @@ const ROLE_OPTIONS: { value: SignupRole; label: string }[] = [
 /**
  * Shared login/register screen body (`src/features/auth/AuthForm.tsx` upstream).
  * Mode and copy names match it 1:1 for side-by-side review; `@react-dom`'s
- * `useFormStatus`/`useActionState` become plain `useState`, and the Google
- * button + "or" divider are left out — WP-2.5 adds the OAuth buttons where the
- * comment below marks the slot.
+ * `useFormStatus`/`useActionState` become plain `useState`. The "or" divider
+ * and Google button are `OAuthButtons` (WP-2.5); Apple joins them there too,
+ * on iOS, once `APPLE_SIGN_IN_ENABLED` is on (OD-2).
  */
 export function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter();
@@ -68,7 +71,15 @@ export function AuthForm({ mode }: AuthFormProps) {
       : await loginFormAction(email, password);
 
     setPending(false);
+    applyResult(result);
+  };
 
+  // Shared by the password submit and both OAuth buttons.
+  const applyResult = (result: { error?: string; message?: string; cancelled?: boolean }) => {
+    if (result.cancelled) {
+      // AC2/AC5: back out of the Google or Apple screen leaves everything as-is — no toast, no navigation.
+      return;
+    }
     if (result.error) {
       setError(result.error);
       return;
@@ -77,10 +88,14 @@ export function AuthForm({ mode }: AuthFormProps) {
       setMessage(result.message);
       return;
     }
-
     // Interim target until WP-2.6's role-based route guard lands — see
     // app/(auth)/callback.tsx and app/index.tsx, which use the same stand-in.
     router.replace("/");
+  };
+
+  const handleOAuthStart = () => {
+    setError(undefined);
+    setMessage(undefined);
   };
 
   return (
@@ -216,7 +231,12 @@ export function AuthForm({ mode }: AuthFormProps) {
             {copy.submit}
           </SlayButton>
 
-          {/* WP-2.5 adds the Google/Apple sign-in buttons here. */}
+          <OAuthButtons
+            googleLabel={copy.google}
+            disabled={pending}
+            onStart={handleOAuthStart}
+            onResult={applyResult}
+          />
 
           <View style={styles.switchRow}>
             <SlayText variant="small" color={alpha.white50}>

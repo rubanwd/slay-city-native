@@ -1,10 +1,26 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@slay/core/types";
+import type { Database, UserRole } from "@slay/core/types";
 import { checkUsername, type UsernameProblem } from "@slay/core";
 
 export type ChangeUsernameResult =
   | { ok: true; username: string }
   | { ok: false; problem: UsernameProblem };
+
+/**
+ * The signed-in user's role, straight from `profiles` — never from client
+ * metadata, which is user-writable (WP-2.6). `null` covers both "signed out"
+ * and "no profile row yet"; `roleHome()` (`@slay/core`) treats both the same
+ * way, falling back to the student home.
+ */
+export async function getMyRole(db: SupabaseClient<Database>): Promise<UserRole | null> {
+  const {
+    data: { user },
+  } = await db.auth.getUser();
+  if (!user) return null;
+
+  const { data } = await db.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  return data?.role ?? null;
+}
 
 /**
  * Renames the signed-in user. The player picks their name at signup, when

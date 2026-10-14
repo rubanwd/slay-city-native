@@ -9,9 +9,20 @@ const actionsMock = vi.hoisted(() => ({
   registerFormAction: vi.fn(),
 }));
 
+const oauthMock = vi.hoisted(() => ({
+  signInWithGoogle: vi.fn(),
+  signInWithApple: vi.fn(),
+}));
+
 const replaceMock = vi.hoisted(() => vi.fn());
 
 vi.mock("./actions", () => actionsMock);
+
+// OAuthButtons (WP-2.5) calls into `./oauth`, which itself reaches the real
+// Supabase client; mocking the feature-level module keeps these tests about
+// AuthForm's own cancel/error/navigate wiring (see oauth.test.tsx for the
+// actual sign-in logic).
+vi.mock("./oauth", () => oauthMock);
 
 vi.mock("expo-router", () => ({
   Link: ({ href, children }: { href: string; children: ReactNode }) => <a href={String(href)}>{children}</a>,
@@ -24,6 +35,7 @@ describe("AuthForm · login", () => {
 
     expect(screen.getByText("In").closest("div")?.textContent).toBe("Log In");
     expect(screen.getByRole("button", { name: "Log In" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Continue with Google" })).toBeTruthy();
     expect(screen.queryByText("Confirm Password")).toBeNull();
     expect(screen.queryByText("I am a")).toBeNull();
 
@@ -55,6 +67,36 @@ describe("AuthForm · login", () => {
 
     await waitFor(() => expect(replaceMock).toHaveBeenCalledWith("/"));
   });
+
+  it("shows no error and does not navigate when Google sign-in is cancelled (AC2)", async () => {
+    oauthMock.signInWithGoogle.mockResolvedValueOnce({ cancelled: true });
+    render(<AuthForm mode="login" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Continue with Google" }));
+
+    await waitFor(() => expect(oauthMock.signInWithGoogle).toHaveBeenCalled());
+    expect(replaceMock).not.toHaveBeenCalled();
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  it("shows the error returned by a failed Google sign-in and does not navigate", async () => {
+    oauthMock.signInWithGoogle.mockResolvedValueOnce({ error: "Could not complete Google sign-in." });
+    render(<AuthForm mode="login" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Continue with Google" }));
+
+    await waitFor(() => expect(screen.getByText("Could not complete Google sign-in.")).toBeTruthy());
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+
+  it("navigates to the interim role home when Google sign-in succeeds", async () => {
+    oauthMock.signInWithGoogle.mockResolvedValueOnce({});
+    render(<AuthForm mode="login" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Continue with Google" }));
+
+    await waitFor(() => expect(replaceMock).toHaveBeenCalledWith("/"));
+  });
 });
 
 describe("AuthForm · register", () => {
@@ -63,6 +105,7 @@ describe("AuthForm · register", () => {
 
     expect(screen.getByText("Up").closest("div")?.textContent).toBe("Sign Up");
     expect(screen.getByRole("button", { name: "Create Account" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Sign up with Google" })).toBeTruthy();
     expect(screen.getByText("Confirm Password")).toBeTruthy();
     expect(screen.getByText("I am a")).toBeTruthy();
     expect(screen.queryByText("Forgot password?")).toBeNull();

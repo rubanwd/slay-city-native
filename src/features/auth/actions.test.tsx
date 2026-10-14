@@ -5,6 +5,7 @@ import {
   loginFormAction,
   registerFormAction,
   resetPasswordFormAction,
+  signOut,
   signUp,
 } from "./actions";
 
@@ -13,6 +14,7 @@ const supabaseAuthMock = vi.hoisted(() => ({
   signUp: vi.fn(),
   resetPasswordForEmail: vi.fn(),
   updateUser: vi.fn(),
+  signOut: vi.fn(),
 }));
 
 vi.mock("~/lib/supabase", () => ({ supabase: { auth: supabaseAuthMock } }));
@@ -180,5 +182,15 @@ describe("resetPasswordFormAction", () => {
 
     expect(supabaseAuthMock.updateUser).toHaveBeenCalledWith({ password: "password1" });
     expect(result).toEqual({});
+  });
+});
+
+describe("signOut", () => {
+  it("calls supabase.auth.signOut", async () => {
+    supabaseAuthMock.signOut.mockResolvedValueOnce({ error: null });
+
+    await signOut();
+
+    expect(supabaseAuthMock.signOut).toHaveBeenCalled();
   });
 });
