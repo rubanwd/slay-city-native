@@ -53,6 +53,9 @@ export const SlayInput = forwardRef<TextInput, SlayInputProps>(function SlayInpu
       ) : null}
       <TextInput
         ref={ref}
+        // The visible label is a sibling Text, which a screen reader does not
+        // associate with the field — name the field after it unless told otherwise.
+        accessibilityLabel={label}
         editable={editable}
         selectionColor={colors.neonPink}
         placeholderTextColor={alpha.white40}

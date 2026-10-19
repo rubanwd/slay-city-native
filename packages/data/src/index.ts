@@ -14,6 +14,9 @@
  * Not tracked in the sync manifest: signatures differ from upstream by design.
  * See docs/SYNC.md §6.
  *
+ * Also holds the email/password auth calls (auth.ts), the native counterpart
+ * of upstream's `features/auth/actions.ts`.
+ *
  * Covers the Category A thin-wrapper actions and the read-only queries.ts
  * files from docs/MIGRATION-MAP.md §2, plus — in guardedWrites.ts, and not
  * callable yet — the Category B teacher/Q&A/onboarding writes that WP-2.3's
@@ -35,3 +38,4 @@ export * from "./feedback";
 export * from "./map";
 export * from "./parent";
 export * from "./guardedWrites";
+export * from "./auth";

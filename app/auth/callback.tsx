@@ -27,10 +27,9 @@ import { supabase } from "~/lib/supabase";
  * The `url` event is still subscribed to for a second link arriving while this
  * screen stays mounted.
  *
- * `/` is the interim "role home" and "back to login" target: WP-2.6's
- * role-based route guard (which `roleHome()` in `@slay/core` is written for)
- * and WP-2.2's sign-in screen have not landed yet, and `/` is already the
- * documented stand-in entry point until they do (see app/index.tsx).
+ * `/` is the interim "role home": WP-2.6's role-based route guard (which
+ * `roleHome()` in `@slay/core` is written for) has not landed yet, and `/` is
+ * the documented stand-in entry point until it does (see app/index.tsx).
  */
 export default function AuthCallbackScreen() {
   const router = useRouter();
@@ -90,7 +89,7 @@ export default function AuthCallbackScreen() {
         }
       }
 
-      router.replace(recovery ? "/(auth)/reset-password" : "/");
+      router.replace(recovery ? "/auth/reset-password" : "/");
     },
     [router],
   );
@@ -111,7 +110,7 @@ export default function AuthCallbackScreen() {
           <SlayText variant="body" color={alpha.white60} style={styles.centerText}>
             {errorMessage}
           </SlayText>
-          <SlayButton onPress={() => router.replace("/")}>Back to login</SlayButton>
+          <SlayButton onPress={() => router.replace("/auth/login")}>Back to login</SlayButton>
         </Section>
       </AppContainer>
     );

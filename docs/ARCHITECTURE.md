@@ -10,7 +10,7 @@ repository, seeded with a snapshot of the current code. The reasoning is in
 slay-city-native/
 ├── app/                      # Expo Router — routes only, thin
 │   ├── _layout.tsx           # session, fonts, audio, splash, route guard
-│   └── (auth)/ (student)/ (teacher)/ (parent)/
+│   └── auth/ (student)/ (teacher)/ (parent)/
 ├── src/
 │   ├── components/ui/        # design-system primitives
 │   ├── components/layout/

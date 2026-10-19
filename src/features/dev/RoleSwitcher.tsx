@@ -39,6 +39,14 @@ export function RoleSwitcher() {
           </SlayText>
         </Section>
 
+        <Section title="Auth" py="sm">
+          <Link href="/auth/login">
+            <SlayText variant="bodyStrong" color={colors.limeGreen}>
+              Log in / Sign up
+            </SlayText>
+          </Link>
+        </Section>
+
         <Section title="Role groups" py="sm">
           {ROLE_LINKS.map((link) => (
             <Link key={link.role} href={link.href}>
