@@ -1,3 +1,4 @@
+import { SignOutButton } from "~/features/auth";
 import { RoutePlaceholder } from "~/features/dev";
 
 export default function ProfilePlaceholder() {
@@ -10,6 +11,8 @@ export default function ProfilePlaceholder() {
         { label: "Wardrobe", href: "/wardrobe" },
         { label: "Homework", href: "/homework" },
       ]}
-    />
+    >
+      <SignOutButton />
+    </RoutePlaceholder>
   );
 }

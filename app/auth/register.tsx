@@ -1,14 +1,10 @@
-import { useRouter } from "expo-router";
-
 import { AuthForm, AuthScreen } from "~/features/auth";
 
-/** A signed-in user goes to `/` until WP-2.6's role guard takes over. */
+/** Once signed in, the route guard moves the user on to their role's home. */
 export default function RegisterScreen() {
-  const router = useRouter();
-
   return (
     <AuthScreen>
-      <AuthForm mode="register" onSignedIn={() => router.replace("/")} />
+      <AuthForm mode="register" />
     </AuthScreen>
   );
 }

@@ -27,9 +27,8 @@ import { supabase } from "~/lib/supabase";
  * The `url` event is still subscribed to for a second link arriving while this
  * screen stays mounted.
  *
- * `/` is the interim "role home": WP-2.6's role-based route guard (which
- * `roleHome()` in `@slay/core` is written for) has not landed yet, and `/` is
- * the documented stand-in entry point until it does (see app/index.tsx).
+ * After any other link it goes to `/`, and the route guard takes the user on
+ * to their role's home — or onboarding, for a first sign-in.
  */
 export default function AuthCallbackScreen() {
   const router = useRouter();

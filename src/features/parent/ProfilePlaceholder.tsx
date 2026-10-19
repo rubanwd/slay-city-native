@@ -1,3 +1,4 @@
+import { SignOutButton } from "~/features/auth";
 import { RoutePlaceholder } from "~/features/dev";
 
 export default function ProfilePlaceholder() {
@@ -6,9 +7,11 @@ export default function ProfilePlaceholder() {
       role="Parent"
       title="Profile"
       links={[
-        { label: "Progress", href: "/progress" },
-        { label: "Map", href: "/parent-map" },
+        { label: "Progress", href: "/parent" },
+        { label: "Map", href: "/parent/map" },
       ]}
-    />
+    >
+      <SignOutButton />
+    </RoutePlaceholder>
   );
 }

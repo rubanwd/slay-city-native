@@ -1,4 +1,5 @@
 import { Link, type Href } from "expo-router";
+import { type ReactNode } from "react";
 
 import { alpha, colors } from "@slay/tokens";
 
@@ -17,6 +18,8 @@ export interface RoutePlaceholderProps {
   title: string;
   /** Every other placeholder in this role's tree, so navigation can be exercised. */
   links: PlaceholderLink[];
+  /** Rendered under the links — e.g. the profile placeholders' Log Out button. */
+  children?: ReactNode;
 }
 
 /**
@@ -25,7 +28,7 @@ export interface RoutePlaceholderProps {
  * three roles can be walked on a device before any real screen is built.
  * Replaced route by route as each feature lands.
  */
-export function RoutePlaceholder({ role, title, links }: RoutePlaceholderProps) {
+export function RoutePlaceholder({ role, title, links, children }: RoutePlaceholderProps) {
   return (
     <ScrollScreen>
       <AppContainer edges={["top"]}>
@@ -48,6 +51,8 @@ export function RoutePlaceholder({ role, title, links }: RoutePlaceholderProps) 
             </Link>
           ))}
         </Section>
+
+        {children ? <Section py="sm">{children}</Section> : null}
       </AppContainer>
     </ScrollScreen>
   );

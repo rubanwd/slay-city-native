@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import ParentLayout from "../../app/(parent)/_layout";
+import ParentLayout from "../../app/parent/_layout";
 import StudentLayout from "../../app/(student)/_layout";
-import TeacherLayout from "../../app/(teacher)/_layout";
+import TeacherLayout from "../../app/teacher/_layout";
 
 /**
  * `Tabs`/`Tabs.Screen` are declarative route registrations normally consumed
@@ -30,14 +30,14 @@ describe("role group layouts", () => {
     expect(screen.getByText("Profile")).toBeTruthy();
   });
 
-  it("(teacher) declares groups, map and profile tabs", () => {
+  it("teacher declares groups, map and profile tabs", () => {
     render(<TeacherLayout />);
     expect(screen.getByText("Groups")).toBeTruthy();
     expect(screen.getByText("Map")).toBeTruthy();
     expect(screen.getByText("Profile")).toBeTruthy();
   });
 
-  it("(parent) declares progress, map and profile tabs", () => {
+  it("parent declares progress, map and profile tabs", () => {
     render(<ParentLayout />);
     expect(screen.getByText("Progress")).toBeTruthy();
     expect(screen.getByText("Map")).toBeTruthy();

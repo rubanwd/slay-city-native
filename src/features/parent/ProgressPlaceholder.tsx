@@ -6,8 +6,8 @@ export default function ProgressPlaceholder() {
       role="Parent"
       title="Progress"
       links={[
-        { label: "Map", href: "/parent-map" },
-        { label: "Profile", href: "/parent-profile" },
+        { label: "Map", href: "/parent/map" },
+        { label: "Profile", href: "/parent/profile" },
       ]}
     />
   );

@@ -6,8 +6,8 @@ export default function MapPlaceholder() {
       role="Parent"
       title="Map"
       links={[
-        { label: "Progress", href: "/progress" },
-        { label: "Profile", href: "/parent-profile" },
+        { label: "Progress", href: "/parent" },
+        { label: "Profile", href: "/parent/profile" },
       ]}
     />
   );

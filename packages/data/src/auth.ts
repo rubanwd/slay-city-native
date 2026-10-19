@@ -188,3 +188,15 @@ export async function updatePassword(db: SupabaseClient<Database>, input: Update
   await db.auth.signOut();
   return { status: "password-updated" };
 }
+
+/**
+ * Clear the session. Upstream also drops its "view as teacher" and demo
+ * cookies; the app has neither. `useSession` clears the query cache when the
+ * sign-out event arrives, and the route guard sends the user to login.
+ */
+export async function signOut(db: SupabaseClient<Database>): Promise<void> {
+  const { error } = await db.auth.signOut();
+  if (error) {
+    throw error;
+  }
+}

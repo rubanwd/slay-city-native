@@ -112,7 +112,7 @@ limiting and the native call path — in
 | Next.js App Router | Expo Router |
 | --- | --- |
 | `app/layout.tsx` | `app/_layout.tsx` — session provider, fonts, audio, splash |
-| `middleware.ts` | `app/_layout.tsx` guard + `roleHome()` from core 🔴 |
+| `middleware.ts` | `RouteGuard` in `app/_layout.tsx`, rules in `src/lib/routeGuard.ts`, landing route from `roleHome()` in core |
 | `app/page.tsx` (WelcomeScreen) | `app/index.tsx` |
 | `app/auth/login,register,forgot-password,reset-password` | `app/auth/…` — a plain segment, not an `(auth)` group, so the paths match the web's |
 | `app/auth/callback` | `app/auth/callback.tsx` — `slaycity://auth/callback` resolves to the path `/auth/callback`, which a `(auth)` group could not serve |
@@ -123,9 +123,9 @@ limiting and the native call path — in
 | `app/wardrobe` | `app/(student)/wardrobe.tsx` |
 | `app/profile` | `app/(student)/profile.tsx` |
 | `app/onboarding` | `app/onboarding.tsx` |
-| `app/teacher/**` (6 routes) | `app/(teacher)/**` |
-| `app/parent/**` (3 routes) | `app/(parent)/**` |
-| `app/admin/**` (15 routes) | ⚪ not ported |
+| `app/teacher/**` (6 routes) | `app/teacher/**` — real segments, not a group, so `/teacher` from `roleHome()` addresses the dashboard |
+| `app/parent/**` (3 routes) | `app/parent/**` — same reason |
+| `app/admin/**` (15 routes) | ⚪ not ported — `app/admin.tsx` only tells an admin the console is on the web |
 | `app/demo/**` | ⚪ not ported — see OD-7 |
 | `app/supabase-test` | ⚪ dev-only |
 
@@ -147,7 +147,7 @@ limiting and the native call path — in
 | `ui/BackLink.tsx`, `NavLink.tsx` | Expo Router `Link` |
 | `layout/ScrollScreen.tsx` | `ScrollView` + `SafeAreaView` |
 | `layout/BottomNav.tsx` | Expo Router `Tabs` 🔴 |
-| `auth/AuthGuard.tsx` | layout-level `<Redirect>` 🔴 |
+| `auth/AuthGuard.tsx` | `RouteGuard` (WP-2.6), one guard over the root navigator |
 | `PortraitLock.tsx` | `expo-screen-orientation` — becomes one config line 🔴 |
 | `WelcomeScreen.tsx` | direct |
 | `AudioUnlock.tsx` | ⚪ deleted — no autoplay policy on native |

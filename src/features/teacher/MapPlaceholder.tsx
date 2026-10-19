@@ -6,8 +6,8 @@ export default function MapPlaceholder() {
       role="Teacher"
       title="Map"
       links={[
-        { label: "Groups", href: "/groups" },
-        { label: "Profile", href: "/teacher-profile" },
+        { label: "Groups", href: "/teacher" },
+        { label: "Profile", href: "/teacher/profile" },
       ]}
     />
   );

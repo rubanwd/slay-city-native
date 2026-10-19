@@ -11,6 +11,7 @@ import WardrobePlaceholder from "./WardrobePlaceholder";
  * above these imports, so the stub is in place before any screen loads — same
  * pattern as `src/components/primitives-gallery.test.tsx`.
  */
+vi.mock("~/features/auth", () => ({ SignOutButton: () => <button>Log Out</button> }));
 vi.mock("expo-router", () => ({
   Link: ({ href, children }: { href: string; children: React.ReactNode }) => (
     <a href={String(href)}>{children}</a>

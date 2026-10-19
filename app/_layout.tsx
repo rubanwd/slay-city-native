@@ -17,6 +17,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { colors } from "@slay/tokens";
 
+import { RouteGuard } from "~/features/auth";
 import { SessionProvider } from "~/hooks/useSession";
 import { queryClient } from "~/lib/query-client";
 import { supabase } from "~/lib/supabase";
@@ -38,8 +39,8 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
  * burning a refresh on a backgrounded app and lets a long background period
  * resolve with a single refresh on return rather than a stale, expired token.
  *
- * The audio adapter and the role-based route guard land here in later phases
- * (WP-1.2, WP-6.2). For now it establishes the one thing the whole app depends
+ * `RouteGuard` (WP-2.6) decides who may see which screen and covers the
+ * navigator until it has. The audio adapter lands here in WP-6.2. For now it establishes the one thing the whole app depends
  * on: a dark ground that never flashes white, which the web repository's
  * AGENTS.md requires by default.
  */
@@ -81,12 +82,14 @@ export default function RootLayout() {
       <SessionProvider>
         <SafeAreaProvider>
           <StatusBar style="light" />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.black },
-            }}
-          />
+          <RouteGuard>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: colors.black },
+              }}
+            />
+          </RouteGuard>
         </SafeAreaProvider>
       </SessionProvider>
     </QueryClientProvider>
