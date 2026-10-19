@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import ParentLayout from "./(parent)/_layout";
-import StudentLayout from "./(student)/_layout";
-import TeacherLayout from "./(teacher)/_layout";
+import ParentLayout from "../../app/(parent)/_layout";
+import StudentLayout from "../../app/(student)/_layout";
+import TeacherLayout from "../../app/(teacher)/_layout";
 
 /**
  * `Tabs`/`Tabs.Screen` are declarative route registrations normally consumed
