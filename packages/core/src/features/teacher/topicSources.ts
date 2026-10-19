@@ -51,8 +51,8 @@ function countByTopic(topicIds: string[]): Map<string, number> {
 
 /**
  * Builds the reuse list: every topic that carries vocabulary or grammar,
- * excluding the one being edited, ordered by group name then by the topic's own
- * order so the picker reads like the teacher's own group list.
+ * excluding the one being edited, ordered by group name then newest topic first
+ * so the picker reads like the teacher's own group list.
  */
 export function buildTopicSources({
   topics,
@@ -77,7 +77,7 @@ export function buildTopicSources({
           {
             numeric: true,
           }
-        ) || a.orderIndex - b.orderIndex
+        ) || b.orderIndex - a.orderIndex
     )
     .map((t) => ({
       topicId: t.id,

@@ -1,12 +1,12 @@
 {
   "upstream": "https://github.com/rubanwd/slay-city",
-  "syncedAt": "2026-10-06T21:14:59.973Z",
-  "syncedFrom": "beba39da099685c1a8af39364e997e265c0642ca",
+  "syncedAt": "2026-10-19T15:58:38.964Z",
+  "syncedFrom": "95aab35281a0991bfa47f7b75a2ea5484e2c7065",
   "files": [
     {
       "local": "packages/core/src/types/database.ts",
       "upstream": "src/types/database.ts",
-      "sha256": "872a13f84666a936c349cceb6f97389fda407e79d507a5fd9e8b4e44af415592",
+      "sha256": "720d79c7afc28b77b6b80be59e5a8c4b4dbca14be8c9f1106052ee494d11bf76",
       "adapted": false
     },
     {
@@ -18,13 +18,13 @@
     {
       "local": "packages/core/src/features/parent/homework.test.ts",
       "upstream": "src/features/parent/homework.test.ts",
-      "sha256": "ad6a19b561c21b4c5a3ecb19e3f98dcb79d91c32b09f9b6fea655d9562d91888",
+      "sha256": "b229c0b0885dd34f2b11dc5ba8bdf12ac13d39e31ba784979f1116a18a27e924",
       "adapted": false
     },
     {
       "local": "packages/core/src/features/parent/homework.ts",
       "upstream": "src/features/parent/homework.ts",
-      "sha256": "81aaf98c860e89ccb9641bc7cdc45ff2c25d07467aab0711cf1d0e4fcd8c89d3",
+      "sha256": "cb93af35952bf43e3dc35634c84e06154fe8f83604e74cb4838a7c273cc967c9",
       "adapted": false
     },
     {
@@ -163,13 +163,13 @@
     {
       "local": "packages/core/src/features/teacher/topicSources.test.ts",
       "upstream": "src/features/teacher/topicSources.test.ts",
-      "sha256": "db718e7fdcf53bd9872fafc17e24f310260d37044fc506fb8ba2964f137d960f",
+      "sha256": "2aeb11db88da99ed58ea08780caf20ec129b093bb3ddd4238178a11e5136a727",
       "adapted": false
     },
     {
       "local": "packages/core/src/features/teacher/topicSources.ts",
       "upstream": "src/features/teacher/topicSources.ts",
-      "sha256": "10da8b79891de641a11cef8bb50e72cded1b3d54fc8f4978cd856fd4d1c60fd4",
+      "sha256": "04b6785e3d1213945b2556a6b971f4abc6e428c8352a3aea9bc6c422dc5fb30c",
       "adapted": false
     },
     {
