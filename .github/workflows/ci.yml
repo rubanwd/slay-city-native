@@ -29,6 +29,23 @@ jobs:
       - run: npm run type-check
       - run: npm test
 
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # Lint, types and tests never run Metro, so a file Expo Router pulls into
+      # the bundle but nothing else imports (a test under app/, say) only fails
+      # here. JS bundles only — no native build, no Mac.
+      - run: npx expo export --platform android --platform ios --output-dir dist
+
   drift:
     runs-on: ubuntu-latest
     steps:

@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import Index from "./index";
+import Index from "../../app/index";
 
 vi.mock("expo-router", () => ({
   Link: ({ href, children }: { href: string; children: React.ReactNode }) => (
