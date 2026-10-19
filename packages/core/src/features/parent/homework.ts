@@ -59,3 +59,25 @@ export function toHomeworkTopicProgress(row: HomeworkTopicRow): HomeworkTopicPro
     started: !passed && (vocabDone || grammarDone),
   };
 }
+
+/**
+ * Puts each group's topics newest first.
+ *
+ * `parent_student_homework()` returns rows grouped by group name with each
+ * group's topics oldest first. Reversing each run of rows from the same group
+ * keeps the groups where they are and puts the latest topic at the top, like
+ * every other topic list.
+ */
+export function newestTopicsFirst<T extends { group_name: string }>(rows: T[]): T[] {
+  const result: T[] = [];
+  let run: T[] = [];
+  for (const row of rows) {
+    if (run.length > 0 && run[0].group_name !== row.group_name) {
+      result.push(...run.reverse());
+      run = [];
+    }
+    run.push(row);
+  }
+  result.push(...run.reverse());
+  return result;
+}

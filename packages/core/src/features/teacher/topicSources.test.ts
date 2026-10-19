@@ -28,7 +28,7 @@ describe("buildTopicSources", () => {
       grammarPointTopicIds: ["t2"],
     });
 
-    expect(sources.map((s) => s.topicId)).toEqual(["t3", "t2", "t1"]);
+    expect(sources.map((s) => s.topicId)).toEqual(["t2", "t3", "t1"]);
     expect(sources.find((s) => s.topicId === "t1")).toMatchObject({
       title: "Food",
       groupName: "Group 12",
@@ -41,7 +41,7 @@ describe("buildTopicSources", () => {
     });
   });
 
-  it("orders by group name, then by the topic's own order", () => {
+  it("orders by group name, then newest topic first", () => {
     const sources = buildTopicSources({
       topics,
       groupNames,
@@ -50,8 +50,8 @@ describe("buildTopicSources", () => {
     });
 
     expect(sources.map((s) => `${s.groupName}/${s.title}`)).toEqual([
-      "Group 6/Colours",
       "Group 6/Animals",
+      "Group 6/Colours",
       "Group 12/Food",
     ]);
   });
