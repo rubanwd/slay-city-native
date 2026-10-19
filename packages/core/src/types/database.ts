@@ -1330,11 +1330,36 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["knowledge_level"]
       }
+      assert_optional_http_url: {
+        Args: {
+          p_message: string
+          p_url: string
+        }
+        Returns: string
+      }
       available_knowledge_levels: {
         Args: never
         Returns: Database["public"]["Enums"]["knowledge_level"][]
       }
+      cache_vocab_image: {
+        Args: {
+          p_image_url: string
+          p_word_key: string
+        }
+        Returns: undefined
+      }
+      can_author_group: { Args: { p_group_id: string }; Returns: boolean }
+      can_author_topic: { Args: { p_topic_id: string }; Returns: boolean }
+      can_see_topic: { Args: { p_topic_id: string }; Returns: boolean }
       claim_admin: { Args: never; Returns: boolean }
+      clear_homework_grammar: {
+        Args: { p_topic_id: string }
+        Returns: undefined
+      }
+      clear_homework_vocabulary: {
+        Args: { p_topic_id: string }
+        Returns: undefined
+      }
       complete_homework_grammar: {
         Args: { p_topic_id: string }
         Returns: {
@@ -1356,6 +1381,33 @@ export type Database = {
           coins_earned: number
           xp_earned: number
         }[]
+      }
+      create_homework_topic: {
+        Args: {
+          p_description?: string
+          p_group_id: string
+          p_note_image_url?: string
+          p_note_link_url?: string
+          p_order_index?: number
+          p_title: string
+        }
+        Returns: string
+      }
+      create_my_profile: {
+        Args: {
+          p_age?: number
+          p_level?: Database["public"]["Enums"]["knowledge_level"]
+          p_username: string
+        }
+        Returns: undefined
+      }
+      delete_homework_topic: {
+        Args: { p_topic_id: string }
+        Returns: undefined
+      }
+      delete_topic_message: {
+        Args: { p_message_id: string }
+        Returns: undefined
       }
       equip_wardrobe_item: { Args: { p_item_id: string }; Returns: undefined }
       get_placement_test: {
@@ -1383,6 +1435,30 @@ export type Database = {
         }[]
       }
       mark_feedback_read: { Args: never; Returns: number }
+      mark_topic_read: { Args: { p_topic_id: string }; Returns: undefined }
+      post_topic_message: {
+        Args: {
+          p_body: string
+          p_topic_id: string
+        }
+        Returns: string
+      }
+      publish_homework_grammar: {
+        Args: {
+          p_points: Json
+          p_tasks?: Json
+          p_topic_id: string
+        }
+        Returns: undefined
+      }
+      publish_homework_vocabulary: {
+        Args: {
+          p_tasks?: Json
+          p_topic_id: string
+          p_words: Json
+        }
+        Returns: undefined
+      }
       submit_placement_test: { Args: { p_answers: Json }; Returns: Json }
       unread_feedback_count: { Args: never; Returns: number }
       get_topic_messages: {
@@ -1475,6 +1551,17 @@ export type Database = {
       }
       teaches_student: { Args: { p_student_id: string }; Returns: boolean }
       unequip_wardrobe_item: { Args: { p_item_id: string }; Returns: undefined }
+      update_homework_topic: {
+        Args: {
+          p_description?: string
+          p_note_image_url?: string
+          p_note_link_url?: string
+          p_order_index?: number
+          p_title: string
+          p_topic_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       ai_content_draft_status: "pending" | "approved" | "rejected"
