@@ -52,7 +52,7 @@ is a single shared component that backs exactly two routes —
 `app/auth/login/page.tsx` and `app/auth/register/page.tsx` — and the Google
 button (`GoogleButton`, wired to `googleFormAction`) renders in both modes,
 regardless of which role eventually signs in. `MIGRATION-MAP.md` §3 ports both
-routes as `app/(auth)/…` in this repository. Those two screens are therefore
+routes as `app/auth/…` in this repository. Those two screens are therefore
 where Sign in with Apple has to be added — and, because every role authenticates
 through them, adding it there covers all three:
 
@@ -62,8 +62,8 @@ through them, adding it there covers all three:
 | **Teacher** | Not a self-service role. `upstream/AGENTS.md`: *"The `teacher` role was added after the original MVP and is promotion-only (an admin flips an existing account's role via `promote_teacher()`)."* A future teacher therefore **registers exactly like a student**, on the same register screen, and is promoted server-side afterward. From then on they use the **login** screen like anyone else; `roleHome()` sends a `profiles.role = 'teacher'` account straight to `/teacher` with no separate teacher-only onboarding form to port. | register (as a student, before promotion), login |
 | **Parent** | Self-registers on the **register** screen with `role = "parent"` and an optional `student_email`. `ensureRoleProfile()` auto-provisions the `profiles` row (and a zeroed `user_stats` row) on first sign-in — there is no separate parent onboarding form either, only `ParentDashboard`'s student-linking UI, which is unrelated to authentication. | register, login |
 
-**Net result: two screens, not three** — `app/(auth)/login.tsx` and
-`app/(auth)/register.tsx` (`WP-2.2`) — because student, teacher and parent
+**Net result: two screens, not three** — `app/auth/login.tsx` and
+`app/auth/register.tsx` (`WP-2.2`) — because student, teacher and parent
 accounts all authenticate through the same shared form; only the register
 screen's role picker and the post-auth landing route (`roleHome()`) differ.
 Sign in with Apple added to those two screens satisfies Guideline 4.8 for

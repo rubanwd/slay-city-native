@@ -22,10 +22,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setIsLoading(false);
-    });
+    // A stored session that cannot be read — an Android Keystore entry that no
+    // longer decrypts after a backup restore, say — is treated as signed out.
+    // Left unhandled, `isLoading` would never clear and the app would sit on a
+    // blank screen.
+    supabase.auth
+      .getSession()
+      .then(({ data }) => setSession(data.session))
+      .catch(() => setSession(null))
+      .finally(() => setIsLoading(false));
 
     const {
       data: { subscription },

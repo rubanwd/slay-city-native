@@ -43,6 +43,15 @@ describe("useSession", () => {
     expect(result.current.session).toBeNull();
   });
 
+  it("treats a stored session it cannot read as signed out instead of loading forever", async () => {
+    supabaseAuthMock.auth.getSession.mockRejectedValueOnce(new Error("Could not decrypt the item"));
+
+    const { result } = renderHook(() => useSession(), { wrapper: SessionProvider });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.session).toBeNull();
+  });
+
   it("updates the session when onAuthStateChange fires", async () => {
     const { result } = renderHook(() => useSession(), { wrapper: SessionProvider });
     await waitFor(() => expect(result.current.isLoading).toBe(false));

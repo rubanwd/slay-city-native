@@ -114,8 +114,8 @@ limiting and the native call path — in
 | `app/layout.tsx` | `app/_layout.tsx` — session provider, fonts, audio, splash |
 | `middleware.ts` | `app/_layout.tsx` guard + `roleHome()` from core 🔴 |
 | `app/page.tsx` (WelcomeScreen) | `app/index.tsx` |
-| `app/auth/login,register,forgot-password,reset-password` | `app/(auth)/…` |
-| `app/auth/callback` | deep-link handler in `app/(auth)/_layout.tsx` 🔴 |
+| `app/auth/login,register,forgot-password,reset-password` | `app/auth/…` — a plain segment, not an `(auth)` group, so the paths match the web's |
+| `app/auth/callback` | `app/auth/callback.tsx` — `slaycity://auth/callback` resolves to the path `/auth/callback`, which a `(auth)` group could not serve |
 | `app/map` | `app/(student)/map.tsx` |
 | `app/mission/[missionId]` | `app/(student)/mission/[missionId].tsx` |
 | `app/mission/[missionId]/reward` | `app/(student)/mission/[missionId]/reward.tsx` |
