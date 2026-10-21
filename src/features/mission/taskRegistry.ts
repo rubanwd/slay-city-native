@@ -1,19 +1,25 @@
 import {
   parseAnalogyContent,
   parseAntonymMatchContent,
+  parseBubblePopContent,
   parseCategorySortContent,
   parseCauseEffectContent,
   parseClockReadingContent,
   parseCountingGameContent,
   parseDialogueChoiceContent,
   parseEmojiDecodeContent,
+  parseFlashcardsContent,
+  parseHangmanContent,
   parseLetterFillContent,
   parseMatchingContent,
+  parseMemoryCardsContent,
   parseOddOneOutContent,
   parsePictureRevealContent,
   parseQuizContent,
+  parseReactionTapContent,
   parseRhymeMatchContent,
   parseSentenceBuilderContent,
+  parseSimonSequenceContent,
   parseSizeOrderContent,
   parseSpotTheDifferenceContent,
   parseStorySequencingContent,
@@ -26,19 +32,25 @@ import {
 import { defineTask, type TaskRenderer } from "./taskContract";
 import { AnalogyTask } from "./tasks/AnalogyTask";
 import { AntonymMatchTask } from "./tasks/AntonymMatchTask";
+import { BubblePopTask } from "./tasks/BubblePopTask";
 import { CategorySortTask } from "./tasks/CategorySortTask";
 import { CauseEffectTask } from "./tasks/CauseEffectTask";
 import { ClockReadingTask } from "./tasks/ClockReadingTask";
 import { CountingGameTask } from "./tasks/CountingGameTask";
 import { DialogueChoiceTask } from "./tasks/DialogueChoiceTask";
 import { EmojiDecodeTask } from "./tasks/EmojiDecodeTask";
+import { FlashcardsTask } from "./tasks/FlashcardsTask";
+import { HangmanTask } from "./tasks/HangmanTask";
 import { LetterFillTask } from "./tasks/LetterFillTask";
 import { MatchingTask } from "./tasks/MatchingTask";
+import { MemoryCardsTask } from "./tasks/MemoryCardsTask";
 import { OddOneOutTask } from "./tasks/OddOneOutTask";
 import { PictureRevealTask } from "./tasks/PictureRevealTask";
 import { QuizTask } from "./tasks/QuizTask";
+import { ReactionTapTask } from "./tasks/ReactionTapTask";
 import { RhymeMatchTask } from "./tasks/RhymeMatchTask";
 import { SentenceBuilderTask } from "./tasks/SentenceBuilderTask";
+import { SimonSequenceTask } from "./tasks/SimonSequenceTask";
 import { SizeOrderTask } from "./tasks/SizeOrderTask";
 import { SpotTheDifferenceTask } from "./tasks/SpotTheDifferenceTask";
 import { StorySequencingTask } from "./tasks/StorySequencingTask";
@@ -56,19 +68,25 @@ import { WordScrambleTask } from "./tasks/WordScrambleTask";
 export const TASKS: Partial<Record<MissionTaskType, TaskRenderer>> = {
   analogy: defineTask(parseAnalogyContent, AnalogyTask),
   antonym_match: defineTask(parseAntonymMatchContent, AntonymMatchTask),
+  bubble_pop: defineTask(parseBubblePopContent, BubblePopTask),
   category_sort: defineTask(parseCategorySortContent, CategorySortTask),
   cause_effect: defineTask(parseCauseEffectContent, CauseEffectTask),
   clock_reading: defineTask(parseClockReadingContent, ClockReadingTask),
   counting_game: defineTask(parseCountingGameContent, CountingGameTask),
   dialogue_choice: defineTask(parseDialogueChoiceContent, DialogueChoiceTask),
   emoji_decode: defineTask(parseEmojiDecodeContent, EmojiDecodeTask),
+  flashcards: defineTask(parseFlashcardsContent, FlashcardsTask),
+  hangman: defineTask(parseHangmanContent, HangmanTask),
   letter_fill: defineTask(parseLetterFillContent, LetterFillTask),
   matching: defineTask(parseMatchingContent, MatchingTask),
+  memory_cards: defineTask(parseMemoryCardsContent, MemoryCardsTask),
   odd_one_out: defineTask(parseOddOneOutContent, OddOneOutTask),
   picture_reveal: defineTask(parsePictureRevealContent, PictureRevealTask),
   quiz: defineTask(parseQuizContent, QuizTask),
+  reaction_tap: defineTask(parseReactionTapContent, ReactionTapTask),
   rhyme_match: defineTask(parseRhymeMatchContent, RhymeMatchTask),
   sentence_builder: defineTask(parseSentenceBuilderContent, SentenceBuilderTask),
+  simon_sequence: defineTask(parseSimonSequenceContent, SimonSequenceTask),
   size_order: defineTask(parseSizeOrderContent, SizeOrderTask),
   spot_the_difference: defineTask(parseSpotTheDifferenceContent, SpotTheDifferenceTask),
   story_sequencing: defineTask(parseStorySequencingContent, StorySequencingTask),
