@@ -1,6 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { requestPasswordReset, signIn, signOut, signUp, updatePassword } from "./auth";
+import {
+  completeAuthLink,
+  requestPasswordReset,
+  signIn,
+  signInWithApple,
+  signOut,
+  signUp,
+  startGoogleSignIn,
+  updatePassword,
+} from "./auth";
 
 const REDIRECT = "slaycity:///auth/callback";
 
@@ -177,5 +186,73 @@ describe("signOut", () => {
 
     const refused = vi.fn().mockResolvedValue({ error: new Error("network") });
     await expect(signOut(client({ signOut: refused }))).rejects.toThrow("network");
+  });
+});
+
+describe("completeAuthLink", () => {
+  it("exchanges each link shape for a session", async () => {
+    const db = client({
+      exchangeCodeForSession: vi.fn().mockResolvedValue({ error: null }),
+      verifyOtp: vi.fn().mockResolvedValue({ error: null }),
+      setSession: vi.fn().mockResolvedValue({ error: null }),
+    });
+
+    expect(await completeAuthLink(db, { kind: "code", code: "c1", otpType: "" })).toEqual({ status: "signed-in" });
+    expect(await completeAuthLink(db, { kind: "otp", tokenHash: "h1", otpType: "recovery" })).toEqual({
+      status: "signed-in",
+    });
+    expect(
+      await completeAuthLink(db, { kind: "tokens", accessToken: "at", refreshToken: "rt", otpType: "" }),
+    ).toEqual({ status: "signed-in" });
+  });
+
+  it("reports a rejected link, an OTP without a type and an unreadable URL", async () => {
+    const db = client({ exchangeCodeForSession: vi.fn().mockResolvedValue({ error: { message: "Code expired" } }) });
+
+    expect(await completeAuthLink(db, { kind: "code", code: "c1", otpType: "" })).toEqual({
+      status: "error",
+      error: "Code expired",
+    });
+    expect(await completeAuthLink(db, { kind: "otp", tokenHash: "h1", otpType: "" })).toEqual({
+      status: "error",
+      error: "This link is invalid or has expired.",
+    });
+    expect(await completeAuthLink(db, { kind: "invalid" })).toEqual({
+      status: "error",
+      error: "This link is invalid or has expired.",
+    });
+    expect(
+      await completeAuthLink(db, { kind: "error", error: "access_denied", errorDescription: "Email link is invalid" }),
+    ).toEqual({ status: "error", error: "Email link is invalid" });
+  });
+});
+
+describe("startGoogleSignIn", () => {
+  it("asks Supabase for the consent URL without redirecting", async () => {
+    const signInWithOAuth = vi.fn().mockResolvedValue({ data: { url: "https://consent" }, error: null });
+
+    expect(await startGoogleSignIn(client({ signInWithOAuth }), REDIRECT)).toEqual({ url: "https://consent" });
+    expect(signInWithOAuth).toHaveBeenCalledWith({
+      provider: "google",
+      options: { redirectTo: REDIRECT, skipBrowserRedirect: true },
+    });
+  });
+});
+
+describe("signInWithApple", () => {
+  it("exchanges the identity token with the raw nonce", async () => {
+    const signInWithIdToken = vi.fn().mockResolvedValue({ error: null });
+
+    expect(await signInWithApple(client({ signInWithIdToken }), "jwt", "nonce")).toEqual({ status: "signed-in" });
+    expect(signInWithIdToken).toHaveBeenCalledWith({ provider: "apple", token: "jwt", nonce: "nonce" });
+  });
+
+  it("passes Supabase's error through", async () => {
+    const signInWithIdToken = vi.fn().mockResolvedValue({ error: { message: "Provider apple is not enabled" } });
+
+    expect(await signInWithApple(client({ signInWithIdToken }), "jwt", "nonce")).toEqual({
+      status: "error",
+      error: "Provider apple is not enabled",
+    });
   });
 });

@@ -10,6 +10,7 @@ import { getAuthRedirectUrl } from "~/lib/authRedirect";
 import { supabase } from "~/lib/supabase";
 
 import { AuthStatus, AuthTitle } from "./AuthScreen";
+import { SocialSignIn } from "./SocialSignIn";
 import { currentPasswordFieldProps, emailFieldProps, newPasswordFieldProps } from "./fieldProps";
 import { TextLink } from "./TextLink";
 
@@ -55,8 +56,8 @@ const ROLE_OPTIONS: { value: SignupRole; label: string }[] = [
  * register forms, one component, same copy. The checks and the Supabase calls
  * live in `@slay/data` (`signIn`, `signUp`); this only collects the fields.
  *
- * Not ported yet: the "or — Continue with Google" button. It arrives with
- * Sign in with Apple in WP-2.5, because OD-2 requires the two side by side.
+ * Under the submit button, `SocialSignIn` adds Google — and Sign in with Apple
+ * on iOS (WP-2.5).
  */
 export function AuthForm({ mode, onSignedIn, initialMessage, initialError }: AuthFormProps) {
   const isRegister = mode === "register";
@@ -164,6 +165,8 @@ export function AuthForm({ mode, onSignedIn, initialMessage, initialError }: Aut
       <SlayButton variant="pink" size="lg" loading={submit.isPending} onPress={onSubmit}>
         {copy.submit}
       </SlayButton>
+
+      <SocialSignIn mode={mode} />
 
       <View style={styles.switchRow}>
         <SlayText variant="small" color={alpha.white50}>

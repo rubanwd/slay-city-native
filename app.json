@@ -10,7 +10,8 @@
     "icon": "./assets/icons/icon.png",
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "app.slaycity.mobile"
+      "bundleIdentifier": "app.slaycity.mobile",
+      "usesAppleSignIn": true
     },
     "android": {
       "package": "app.slaycity.mobile",
@@ -32,7 +33,9 @@
           "resizeMode": "contain",
           "backgroundColor": "#111111"
         }
-      ]
+      ],
+      "expo-web-browser",
+      "expo-apple-authentication"
     ],
     "experiments": {
       "typedRoutes": true,
