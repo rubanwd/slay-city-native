@@ -5,6 +5,7 @@ import GroupsPlaceholder from "./GroupsPlaceholder";
 import MapPlaceholder from "./MapPlaceholder";
 import ProfilePlaceholder from "./ProfilePlaceholder";
 
+vi.mock("~/features/auth", () => ({ SignOutButton: () => <button>Log Out</button> }));
 vi.mock("expo-router", () => ({
   Link: ({ href, children }: { href: string; children: React.ReactNode }) => (
     <a href={String(href)}>{children}</a>
@@ -19,21 +20,21 @@ describe("teacher placeholders", () => {
   it("Groups links to the other teacher placeholders", () => {
     render(<GroupsPlaceholder />);
     expect(screen.getByText("Groups")).toBeTruthy();
-    expect(hrefOf("Map")).toBe("/teacher-map");
-    expect(hrefOf("Profile")).toBe("/teacher-profile");
+    expect(hrefOf("Map")).toBe("/teacher/map");
+    expect(hrefOf("Profile")).toBe("/teacher/profile");
   });
 
   it("Map links to the other teacher placeholders", () => {
     render(<MapPlaceholder />);
     expect(screen.getByText("Map")).toBeTruthy();
-    expect(hrefOf("Groups")).toBe("/groups");
-    expect(hrefOf("Profile")).toBe("/teacher-profile");
+    expect(hrefOf("Groups")).toBe("/teacher");
+    expect(hrefOf("Profile")).toBe("/teacher/profile");
   });
 
   it("Profile links to the other teacher placeholders", () => {
     render(<ProfilePlaceholder />);
     expect(screen.getByText("Profile")).toBeTruthy();
-    expect(hrefOf("Groups")).toBe("/groups");
-    expect(hrefOf("Map")).toBe("/teacher-map");
+    expect(hrefOf("Groups")).toBe("/teacher");
+    expect(hrefOf("Map")).toBe("/teacher/map");
   });
 });

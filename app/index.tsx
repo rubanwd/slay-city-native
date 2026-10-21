@@ -1,10 +1,7 @@
-import { RoleSwitcher } from "~/features/dev";
-
 /**
- * Temporary dev route-switcher (WP-1.5). Real role-based redirects arrive
- * with the auth milestone (WP-2.6); until then this is how `/` is reached
- * and how a role's route tree is entered on a device.
+ * `/` has no screen of its own: the route guard (src/features/auth/RouteGuard)
+ * sends a signed-out visitor to login and everyone else to `roleHome()`.
  */
 export default function Index() {
-  return <RoleSwitcher />;
+  return null;
 }

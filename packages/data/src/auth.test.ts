@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { requestPasswordReset, signIn, signUp, updatePassword } from "./auth";
+import { requestPasswordReset, signIn, signOut, signUp, updatePassword } from "./auth";
 
 const REDIRECT = "slaycity:///auth/callback";
 
@@ -166,5 +166,16 @@ describe("updatePassword", () => {
       error: "New password should be different from the old password.",
     });
     expect(signOut).not.toHaveBeenCalled();
+  });
+});
+
+describe("signOut", () => {
+  it("signs out, and throws if Supabase refuses", async () => {
+    const ok = vi.fn().mockResolvedValue({ error: null });
+    await signOut(client({ signOut: ok }));
+    expect(ok).toHaveBeenCalled();
+
+    const refused = vi.fn().mockResolvedValue({ error: new Error("network") });
+    await expect(signOut(client({ signOut: refused }))).rejects.toThrow("network");
   });
 });

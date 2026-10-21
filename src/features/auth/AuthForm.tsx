@@ -15,8 +15,11 @@ import { TextLink } from "./TextLink";
 
 export interface AuthFormProps {
   mode: "login" | "register";
-  /** Called once a session exists; the route decides where to go. */
-  onSignedIn: () => void;
+  /**
+   * Called once a session exists. Where to go next is the route guard's
+   * call (`next`, or the role's home), so routes normally leave this out.
+   */
+  onSignedIn?: () => void;
   /** Pre-filled status message, e.g. after a password reset. */
   initialMessage?: string;
   /** Pre-filled error, e.g. after an expired reset link. */
@@ -75,7 +78,7 @@ export function AuthForm({ mode, onSignedIn, initialMessage, initialError }: Aut
         ? signUp(supabase, { email, password, confirmPassword, role, studentEmail }, getAuthRedirectUrl())
         : signIn(supabase, { email, password }),
     onSuccess: (result) => {
-      if (result.status === "signed-in") onSignedIn();
+      if (result.status === "signed-in") onSignedIn?.();
     },
   });
 

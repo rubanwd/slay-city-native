@@ -112,7 +112,7 @@ timeline.
 slay-city-native/
 ├── app/                      # Expo Router — routes only, thin
 │   ├── _layout.tsx
-│   ├── auth/  (student)/  (teacher)/  (parent)/
+│   ├── auth/  (student)/  teacher/  parent/
 ├── src/
 │   ├── components/ui/        # design-system primitives
 │   ├── components/layout/

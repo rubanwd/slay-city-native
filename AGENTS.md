@@ -47,7 +47,7 @@ core, never a screen. A screen renders and dispatches. It does not decide.
 slay-city-native/
 ├── app/                  # Expo Router — routes only, thin
 │   ├── _layout.tsx       # session, fonts, audio, splash, route guard
-│   └── auth/ (student)/ (teacher)/ (parent)/
+│   └── auth/ (student)/ teacher/ parent/ onboarding admin
 ├── src/
 │   ├── components/ui/    # design-system primitives
 │   ├── components/layout/
