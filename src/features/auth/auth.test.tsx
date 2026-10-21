@@ -16,6 +16,7 @@ const auth = vi.hoisted(() => ({
 }));
 
 vi.mock("~/lib/supabase", () => ({ supabase: { auth } }));
+vi.mock("./SocialSignIn", () => ({ SocialSignIn: () => null }));
 vi.mock("~/lib/authRedirect", () => ({ getAuthRedirectUrl: () => "slaycity:///auth/callback" }));
 vi.mock("expo-router", () => ({ useRouter: () => ({ push: vi.fn(), replace: vi.fn() }) }));
 

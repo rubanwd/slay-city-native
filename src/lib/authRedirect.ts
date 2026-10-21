@@ -1,5 +1,7 @@
 import * as Linking from "expo-linking";
 
+import type { AuthLink } from "@slay/data";
+
 /**
  * Every auth email and OAuth redirect should point here — the one shape
  * Supabase's redirect allow-list (SCN-62) was given: `slaycity://auth/callback`.
@@ -10,12 +12,8 @@ export function getAuthRedirectUrl(): string {
   return Linking.createURL("auth/callback");
 }
 
-export type AuthCallbackLink =
-  | { kind: "code"; code: string; otpType: string }
-  | { kind: "otp"; tokenHash: string; otpType: string }
-  | { kind: "tokens"; accessToken: string; refreshToken: string; otpType: string }
-  | { kind: "error"; error: string; errorDescription: string | null }
-  | { kind: "invalid" };
+/** Exchanged for a session by `completeAuthLink` in `@slay/data`. */
+export type AuthCallbackLink = AuthLink;
 
 /**
  * True for a link whose `type` (query string or fragment) is `recovery`,

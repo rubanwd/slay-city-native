@@ -59,6 +59,9 @@ export const lockedBrandColors = {
  *
  * `map.*` are the fallback sky and skyline of `MapBackground`, shown only for a
  * district with no art.
+ *
+ * `google.*` is Google's own "G" mark on the Continue with Google button — the
+ * logo must keep its colours, so they are artwork, not brand.
  */
 export const artwork = {
   coin: {
@@ -72,6 +75,12 @@ export const artwork = {
     skyTop: "#241246",
     skyMid: "#0A0616",
     skyline: "#160A2B",
+  },
+  google: {
+    blue: "#4285F4",
+    green: "#34A853",
+    yellow: "#FBBC05",
+    red: "#EA4335",
   },
 } as const;
 

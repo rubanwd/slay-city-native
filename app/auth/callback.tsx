@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet } from "react-native";
 
+import { completeAuthLink } from "@slay/data";
 import { alpha, colors } from "@slay/tokens";
 
 import { AppContainer, Section } from "~/components/layout";
@@ -45,47 +46,10 @@ export default function AuthCallbackScreen() {
       const link = parseAuthCallbackUrl(url);
       const recovery = isRecoveryLink(link);
 
-      switch (link.kind) {
-        case "error":
-          setErrorMessage(link.errorDescription ?? link.error);
-          return;
-        case "invalid":
-          setErrorMessage("This link is invalid or has expired.");
-          return;
-        case "code": {
-          const { error } = await supabase.auth.exchangeCodeForSession(link.code);
-          if (error) {
-            setErrorMessage(error.message);
-            return;
-          }
-          break;
-        }
-        case "otp": {
-          if (!link.otpType) {
-            setErrorMessage("This link is invalid or has expired.");
-            return;
-          }
-          const { error } = await supabase.auth.verifyOtp({
-            token_hash: link.tokenHash,
-            type: link.otpType,
-          });
-          if (error) {
-            setErrorMessage(error.message);
-            return;
-          }
-          break;
-        }
-        case "tokens": {
-          const { error } = await supabase.auth.setSession({
-            access_token: link.accessToken,
-            refresh_token: link.refreshToken,
-          });
-          if (error) {
-            setErrorMessage(error.message);
-            return;
-          }
-          break;
-        }
+      const result = await completeAuthLink(supabase, link);
+      if (result.status === "error") {
+        setErrorMessage(result.error);
+        return;
       }
 
       router.replace(recovery ? "/auth/reset-password" : "/");
