@@ -193,11 +193,16 @@ that re-checks the caller's role in SQL.
 ### WP-3.1 · City map
 `2d` · deps: WP-2.6
 
-- `AC1` Locked, unlocked, current and completed nodes are visually distinct, matching the web.
-- `AC2` Node positions come from the database and match the web's layout proportionally at 390 pt, 428 pt and tablet widths.
-- `AC3` Pan and zoom are smooth; the map cannot be panned entirely off-screen.
+- `AC1` Open, selected and completed nodes are visually distinct, matching the web.
+- `AC2` Node positions come from the database and match the web's layout proportionally at 390 pt, 428 pt and tablet widths — inside the same `MAP_ASPECT` (5:7) frame the admin position picker uses.
+- `AC3` The map is the web's fixed frame: no pan or zoom, since locations are authored for that frame.
 - `AC4` The mascot marker is present and animated.
-- `AC5` Tapping an unlocked node opens its mission; a locked node explains why it is locked.
+- `AC5` Tapping a node moves the mascot there; Start opens its next mission. Every stop in a district is playable — there are no locked nodes, as on the web (`mapState`).
+
+> Revised in WP-3.1's own PR. The first draft asked for pan/zoom and locked
+> nodes; the web map has neither, and building them here would make the phone
+> a different game from the browser. Changing that is a product decision that
+> starts on the web, where `mapState` lives.
 
 ### WP-3.2 · TaskRunner contract 🔒
 `1d` · deps: WP-3.1 · **freeze before WP-3.3–3.6 fan out**

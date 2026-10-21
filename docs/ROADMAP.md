@@ -146,7 +146,7 @@ each of the four roles lands on its own home; **web password reset still works**
 
 The loop is the product. Nothing else matters if this does not feel good.
 
-- `WP-3.1` City map: background, location nodes, mascot marker, pan and zoom
+- `WP-3.1` City map: background, location nodes, mascot marker in the web's fixed 5:7 frame
 - `WP-3.2` `TaskRunner` contract and `MissionScreen` shell — **freeze before fan-out**
 - `WP-3.3` Tier 1 tasks — 21 tap-only components
 - `WP-3.4` Tier 2 tasks — 6 timed components
