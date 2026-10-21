@@ -25,7 +25,8 @@ export default function StudentLayout() {
       <Tabs.Screen name="homework" options={{ title: "Homework" }} />
       <Tabs.Screen name="profile" options={{ title: "Profile" }} />
       {/* A mission is full-screen, as on the web: no tab of its own, no tab bar. */}
-      <Tabs.Screen name="mission/[missionId]" options={{ href: null, tabBarStyle: { display: "none" } }} />
+      <Tabs.Screen name="mission/[missionId]/index" options={{ href: null, tabBarStyle: { display: "none" } }} />
+      <Tabs.Screen name="mission/[missionId]/reward" options={{ href: null, tabBarStyle: { display: "none" } }} />
     </Tabs>
   );
 }
