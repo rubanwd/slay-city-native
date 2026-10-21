@@ -1,4 +1,4 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { EmailOtpType, SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@slay/core/types";
 
 /**
@@ -26,7 +26,9 @@ export type AuthResult =
   | { status: "message"; message: string }
   | { status: "signed-in" }
   /** The recovery session has been used and signed out. */
-  | { status: "password-updated" };
+  | { status: "password-updated" }
+  /** The user backed out of a Google or Apple sheet — not an error, nothing to show. */
+  | { status: "cancelled" };
 
 /** Shown on the login screen after a successful password reset. */
 export const PASSWORD_UPDATED_MESSAGE = "Password updated. Log in with your new password.";
@@ -199,4 +201,88 @@ export async function signOut(db: SupabaseClient<Database>): Promise<void> {
   if (error) {
     throw error;
   }
+}
+
+/**
+ * What Supabase can attach to the `auth/callback` redirect — parsed from the
+ * URL by the app (src/lib/authRedirect.ts), exchanged for a session here.
+ */
+export type AuthLink =
+  | { kind: "code"; code: string; otpType: string }
+  | { kind: "otp"; tokenHash: string; otpType: string }
+  | { kind: "tokens"; accessToken: string; refreshToken: string; otpType: string }
+  | { kind: "error"; error: string; errorDescription: string | null }
+  | { kind: "invalid" };
+
+const LINK_INVALID = "This link is invalid or has expired.";
+
+/**
+ * Turns a parsed callback link into a session: a PKCE `code`, a
+ * `token_hash` + `type` pair, or implicit-grant tokens. Used by the deep-link
+ * callback screen and by the Google flow, which gets the same URL back from
+ * the browser sheet.
+ */
+export async function completeAuthLink(db: SupabaseClient<Database>, link: AuthLink): Promise<AuthResult> {
+  switch (link.kind) {
+    case "error":
+      return fail(link.errorDescription ?? link.error);
+    case "invalid":
+      return fail(LINK_INVALID);
+    case "code": {
+      const { error } = await db.auth.exchangeCodeForSession(link.code);
+      return error ? fail(error.message) : { status: "signed-in" };
+    }
+    case "otp": {
+      if (!link.otpType) {
+        return fail(LINK_INVALID);
+      }
+      const { error } = await db.auth.verifyOtp({
+        token_hash: link.tokenHash,
+        type: link.otpType as EmailOtpType,
+      });
+      return error ? fail(error.message) : { status: "signed-in" };
+    }
+    case "tokens": {
+      const { error } = await db.auth.setSession({
+        access_token: link.accessToken,
+        refresh_token: link.refreshToken,
+      });
+      return error ? fail(error.message) : { status: "signed-in" };
+    }
+  }
+}
+
+/**
+ * The Google consent URL to open in a browser sheet. Supabase sends the user
+ * back to `redirectTo` (the app's `auth/callback`), and the caller finishes
+ * with {@link completeAuthLink}. Google users carry no role flag, so a new
+ * one is a student and lands on onboarding — as on the web.
+ */
+export async function startGoogleSignIn(
+  db: SupabaseClient<Database>,
+  redirectTo: string,
+): Promise<{ url: string } | { error: string }> {
+  const { data, error } = await db.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo, skipBrowserRedirect: true },
+  });
+  if (error || !data.url) {
+    return { error: error?.message ?? "Could not start Google sign-in." };
+  }
+  return { url: data.url };
+}
+
+/**
+ * Exchanges the identity token from the native Sign in with Apple sheet for a
+ * Supabase session. `rawNonce` is the value whose SHA-256 was handed to Apple;
+ * Supabase hashes it again and checks it against the token, so a replayed
+ * token is refused.
+ */
+export async function signInWithApple(
+  db: SupabaseClient<Database>,
+  identityToken: string,
+  rawNonce: string,
+): Promise<AuthResult> {
+  const { error } = await db.auth.signInWithIdToken({ provider: "apple", token: identityToken, nonce: rawNonce });
+  return error ? fail(error.message) : { status: "signed-in" };
 }
