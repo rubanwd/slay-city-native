@@ -6,7 +6,7 @@ import { MissionScreen } from "~/features/mission";
 /**
  * One task of every ported type with made-up content, in review mode so
  * nothing is recorded — for trying the tasks on a device with no backend. The
- * last is a type not ported yet, to show the skip card. Dev-only.
+ * last has malformed content, to show the skip card. Dev-only.
  *
  * `?types=hangman,flashcards` plays only those types, in fixture order.
  */
