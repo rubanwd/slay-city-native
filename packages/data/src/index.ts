@@ -40,3 +40,4 @@ export * from "./parent";
 export * from "./guardedWrites";
 export * from "./auth";
 export * from "./account";
+export * from "./mapScreen";

@@ -52,3 +52,29 @@ vi.mock("react-native-safe-area-context", async () => {
 });
 
 afterEach(cleanup);
+
+/*
+ * Reanimated's worklets need its Babel plugin, which vitest does not run, and
+ * its own mock pulls in Flow-typed React Native source. This stand-in renders
+ * every animated value at its target: tests assert what a component shows,
+ * not how it moves.
+ */
+vi.mock("react-native-reanimated", async () => {
+  const { Image, ScrollView, Text, View, Easing } = await import("react-native");
+  const Animated = { View, Text, Image, ScrollView };
+  const last = <T,>(...values: T[]) => values[values.length - 1];
+  return {
+    __esModule: true,
+    default: Animated,
+    ...Animated,
+    Easing,
+    useSharedValue: <T,>(value: T) => ({ value }),
+    useAnimatedStyle: (factory: () => object) => factory(),
+    withTiming: <T,>(value: T) => value,
+    withSpring: <T,>(value: T) => value,
+    withRepeat: <T,>(value: T) => value,
+    withDelay: <T,>(_delay: number, value: T) => value,
+    withSequence: last,
+    cancelAnimation: () => {},
+  };
+});

@@ -2,7 +2,6 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import HomeworkPlaceholder from "./HomeworkPlaceholder";
-import MapPlaceholder from "./MapPlaceholder";
 import ProfilePlaceholder from "./ProfilePlaceholder";
 import WardrobePlaceholder from "./WardrobePlaceholder";
 
@@ -23,14 +22,6 @@ function hrefOf(label: string): string | null {
 }
 
 describe("student placeholders", () => {
-  it("Map links to every other student placeholder", () => {
-    render(<MapPlaceholder />);
-    expect(screen.getByText("Map")).toBeTruthy();
-    expect(hrefOf("Wardrobe")).toBe("/wardrobe");
-    expect(hrefOf("Homework")).toBe("/homework");
-    expect(hrefOf("Profile")).toBe("/profile");
-  });
-
   it("Wardrobe links to every other student placeholder", () => {
     render(<WardrobePlaceholder />);
     expect(screen.getByText("Wardrobe")).toBeTruthy();
