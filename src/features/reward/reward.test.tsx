@@ -1,9 +1,8 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import * as Haptics from "expo-haptics";
-import { AppState, type AppStateStatus } from "react-native";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { audioAdapter } from "~/lib/audio-adapter";
+import { playSfx } from "~/lib/sfx";
 
 import { RewardScreen, type RewardScreenProps } from "./RewardScreen";
 
@@ -13,24 +12,11 @@ vi.mock("expo-haptics", () => ({
   NotificationFeedbackType: { Success: "success" },
   ImpactFeedbackStyle: { Light: "light" },
 }));
-vi.mock("~/lib/audio-adapter", () => ({ audioAdapter: { createSoundPlayer: vi.fn() } }));
-vi.mock("./assets", () => ({ HERO_IMAGE: { uri: "hero.webp" }, APPLAUSE_SOUND: { uri: "applause.m4a" } }));
-
-const player = { play: vi.fn(), pause: vi.fn(), remove: vi.fn() };
-let appStateListeners: ((state: AppStateStatus) => void)[] = [];
-
-beforeEach(() => {
-  vi.mocked(audioAdapter.createSoundPlayer).mockResolvedValue(player as never);
-  appStateListeners = [];
-  vi.spyOn(AppState, "addEventListener").mockImplementation((_type, listener) => {
-    appStateListeners.push(listener as (state: AppStateStatus) => void);
-    return { remove: () => (appStateListeners = appStateListeners.filter((l) => l !== listener)) };
-  });
-});
+vi.mock("~/lib/sfx", () => ({ playSfx: vi.fn() }));
+vi.mock("./assets", () => ({ HERO_IMAGE: { uri: "hero.webp" } }));
 
 afterEach(() => {
   vi.clearAllMocks();
-  vi.restoreAllMocks();
 });
 
 async function renderReward(props: Partial<RewardScreenProps> = {}) {
@@ -59,14 +45,8 @@ describe("RewardScreen", () => {
   it("celebrates once with applause and a success haptic (AC2)", async () => {
     await renderReward();
     expect(Haptics.notificationAsync).toHaveBeenCalledTimes(1);
-    expect(audioAdapter.createSoundPlayer).toHaveBeenCalledTimes(1);
-    expect(player.play).toHaveBeenCalledTimes(1);
-  });
-
-  it("stops the applause when the app leaves the foreground, and releases it on close", async () => {
-    await renderReward();
-    act(() => appStateListeners.forEach((listener) => listener("background")));
-    expect(player.pause).toHaveBeenCalled();
+    expect(playSfx).toHaveBeenCalledTimes(1);
+    expect(playSfx).toHaveBeenCalledWith("rewardApplause");
   });
 
   it("says a replay earns nothing instead of showing rewards (AC4)", async () => {

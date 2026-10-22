@@ -13,6 +13,7 @@ import { alpha, colors, radii, withAlpha } from "@slay/tokens";
 
 import { CoinAmount, SlayButton, SlayPressable, SlayText, XpAmount } from "~/components/ui";
 import { imageSource } from "~/lib/imageSource";
+import { playSfx } from "~/lib/sfx";
 
 import { MapBackground } from "./MapBackground";
 import { MapLocationNode } from "./MapLocationNode";
@@ -164,7 +165,11 @@ export function CityMap({
                 mapY={loc.mapY}
                 state={loc.state}
                 selected={loc.id === selected?.id}
-                onSelect={() => setSelectedId(loc.id)}
+                onSelect={() => {
+                  // Only worth a sound when the mascot actually walks somewhere new.
+                  if (loc.id !== selected?.id) playSfx("mapTravel");
+                  setSelectedId(loc.id);
+                }}
               />
             ))}
 
@@ -257,7 +262,11 @@ export function CityMap({
               <SlayButton
                 variant="green"
                 style={styles.grow}
-                onPress={() => selected.missionId && onStartMission(selected.missionId)}
+                onPress={() => {
+                  if (!selected.missionId) return;
+                  playSfx("missionStart");
+                  onStartMission(selected.missionId);
+                }}
               >
                 ▶ Start
               </SlayButton>

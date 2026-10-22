@@ -32,8 +32,13 @@ const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..")
 const upstream = path.join(root, "upstream/src/lib");
 const out = path.join(root, "assets/sounds");
 
-/** Which upstream player becomes which file, and how long to render. */
-const SOUNDS = [{ name: "reward-applause", play: "playRewardApplauseSfx", seconds: 2.6 }];
+/** Which upstream player becomes which file, and how long to render (its full tail). */
+const SOUNDS = [
+  { name: "reward-applause", module: "sfx", play: "playRewardApplauseSfx", seconds: 2.6 },
+  { name: "mission-start", module: "sfx", play: "playMissionStartSfx", seconds: 2.8 },
+  { name: "map-travel", module: "sfx", play: "playMapTravelSfx", seconds: 0.4 },
+  { name: "snake-hiss", module: "hiss", play: "playSnakeHiss", seconds: 0.9 },
+];
 const SAMPLE_RATE = 44100;
 
 const work = fs.mkdtempSync(path.join(os.tmpdir(), "sfx-"));
@@ -63,20 +68,19 @@ await page.goto("http://sfx.local/index.html");
 fs.mkdirSync(out, { recursive: true });
 for (const sound of SOUNDS) {
   const pcm = await page.evaluate(
-    async ({ play, seconds, rate }) => {
+    async ({ module, play, seconds, rate }) => {
       // A seeded generator in place of Math.random, so renders are reproducible.
       let seed = 0x5eed;
       Math.random = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 2 ** 32);
       const ctx = new OfflineAudioContext(1, Math.ceil(seconds * rate), rate);
       globalThis.__ctx = ctx;
       // Resolved inside the page, from the compiled upstream modules above.
-      // eslint-disable-next-line import/no-unresolved
-      const sfx = await import("./sfx.js");
-      await sfx[play]();
+      const sounds = await import(`./${module}.js`);
+      await sounds[play]();
       const rendered = await ctx.startRendering();
       return Array.from(rendered.getChannelData(0));
     },
-    { play: sound.play, seconds: sound.seconds, rate: SAMPLE_RATE },
+    { module: sound.module, play: sound.play, seconds: sound.seconds, rate: SAMPLE_RATE },
   );
 
   const raw = path.join(work, `${sound.name}.f32`);

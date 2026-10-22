@@ -8,10 +8,9 @@ import { alpha, artwork, colors, radii, withAlpha } from "@slay/tokens";
 
 import { AppContainer } from "~/components/layout";
 import { CoinIcon, SlayButton, SlayText, XpIcon } from "~/components/ui";
-import { useAppActive } from "~/hooks/useAppStateAwareInterval";
-import { audioAdapter } from "~/lib/audio-adapter";
+import { playSfx } from "~/lib/sfx";
 
-import { APPLAUSE_SOUND, HERO_IMAGE } from "./assets";
+import { HERO_IMAGE } from "./assets";
 import { RewardRain } from "./RewardRain";
 import { useRewardPop, useRewardRise, useWiggle } from "./useRewardMotion";
 
@@ -74,39 +73,14 @@ function pickGreetingTheme(): GreetingTheme {
 
 /**
  * The one payoff moment of the loop: a round of applause and a success
- * haptic, once, as the screen lands. The applause is upstream's own
- * synthesised fanfare, rendered to a file (`scripts/render-sfx.mjs`). It
- * stops if the app leaves the foreground.
+ * haptic, once, as the screen lands — upstream plays `playRewardApplauseSfx`
+ * on mount and never re-fires it.
  */
 function useCelebration() {
-  const active = useAppActive();
-  const [player, setPlayer] = useState<Awaited<ReturnType<typeof audioAdapter.createSoundPlayer>> | null>(null);
-
   useEffect(() => {
-    let disposed = false;
-    let created: Awaited<ReturnType<typeof audioAdapter.createSoundPlayer>> | null = null;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
-    audioAdapter
-      .createSoundPlayer(APPLAUSE_SOUND)
-      .then((sound) => {
-        if (disposed) {
-          sound.remove();
-          return;
-        }
-        created = sound;
-        setPlayer(sound);
-        sound.play();
-      })
-      .catch(() => {});
-    return () => {
-      disposed = true;
-      created?.remove();
-    };
+    playSfx("rewardApplause");
   }, []);
-
-  useEffect(() => {
-    if (!active) player?.pause();
-  }, [active, player]);
 }
 
 function Milestone({ title, children, style }: { title: string; children: string; style: object }) {
