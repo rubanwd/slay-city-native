@@ -276,7 +276,7 @@ that re-checks the caller's role in SQL.
 | ID | Package | Est. | Key acceptance criteria |
 | --- | --- | --- | --- |
 | `WP-6.1` | Reanimated animations | 1.5d | All eight keyframes ported, same names; every animation runs on the UI thread; nothing animates `width`/`height` where `transform` works |
-| `WP-6.2` | Audio | 1d | `expo-audio` behind the core adapter; respects the silent switch appropriately; no audio while backgrounded; `hiss` and `sfx` behave as on the web |
+| `WP-6.2` | Audio | 1d | `expo-audio` behind the core adapter; respects the silent switch appropriately; no audio while backgrounded; `hiss` and `sfx` behave as on the web — **partly done early**: all four of upstream's synthesised sounds are rendered to files by `scripts/render-sfx.mjs` and play through `src/lib/sfx.ts`, stopping on background; the silent-switch policy is still open |
 | `WP-6.3` | Haptics | 0.5d | Reward, correct answer, level unlock and mission complete each have a distinct, tasteful pattern; a global off switch exists |
 | `WP-6.4` | Offline | 1.5d | Per OD-5. Under (a): map, profile and wardrobe render from cache with a clear offline indicator, and no mutation is silently lost — writes fail loudly |
 | `WP-6.5` | Performance | 1d | 60 fps through map → mission → reward on the target device; cold start under 2 s to interactive; every long list virtualised; images cached by `expo-image` |

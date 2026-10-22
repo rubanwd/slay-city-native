@@ -89,3 +89,13 @@ vi.mock("expo-audio", () => ({
   createAudioPlayer: vi.fn(() => ({ play: vi.fn(), pause: vi.fn(), seekTo: vi.fn(async () => {}), remove: vi.fn() })),
   setAudioModeAsync: vi.fn(async () => {}),
 }));
+
+/* The bundled sound files (`~/lib/sfxSources`) are binary; tests get stand-ins. */
+vi.mock("~/lib/sfxSources", () => ({
+  SFX_SOURCES: {
+    missionStart: { uri: "mission-start.m4a" },
+    mapTravel: { uri: "map-travel.m4a" },
+    snakeHiss: { uri: "snake-hiss.m4a" },
+    rewardApplause: { uri: "reward-applause.m4a" },
+  },
+}));

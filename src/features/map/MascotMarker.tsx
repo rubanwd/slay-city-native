@@ -5,6 +5,8 @@ import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "
 import { colors, withAlpha } from "@slay/tokens";
 
 import { useLoaderBob, useLoaderShadow } from "~/animations";
+import { SlayPressable } from "~/components/ui";
+import { playSfx } from "~/lib/sfx";
 import { useReducedMotion } from "~/hooks/useReducedMotion";
 
 /** Gap between the mascot's shadow and the label it stands over — the web's 1.25rem. */
@@ -25,8 +27,9 @@ export interface MascotMarkerProps {
  * left/top transition, done here as a transform) and hops with the loader's
  * bob and shadow, so it moves the same way everywhere.
  *
- * Never takes touches: taps go to the labels underneath. (Upstream's snake
- * hisses when tapped — that arrives with audio in WP-6.2.)
+ * The snake itself hisses when tapped, as upstream's `HissableMascot` does —
+ * the cheapest bit of "the mascot is alive". Everything around it lets
+ * touches through to the labels underneath.
  */
 export function MascotMarker({ x, y, source }: MascotMarkerProps) {
   const { width, height } = useWindowDimensions();
@@ -50,11 +53,18 @@ export function MascotMarker({ x, y, source }: MascotMarkerProps) {
   const shadow = useLoaderShadow();
 
   return (
-    <Animated.View pointerEvents="none" style={[styles.wrap, { width: size }, glide]}>
-      <Animated.View style={[styles.glow, bob]}>
-        <Image source={source} style={{ width: size, height: size }} resizeMode="contain" />
-      </Animated.View>
-      <View style={styles.shadowSlot}>
+    <Animated.View pointerEvents="box-none" style={[styles.wrap, { width: size }, glide]}>
+      <SlayPressable
+        accessibilityRole="button"
+        accessibilityLabel="Make Slay hiss"
+        onPress={() => playSfx("snakeHiss")}
+        style={({ pressed }) => pressed && styles.pressed}
+      >
+        <Animated.View style={[styles.glow, bob]}>
+          <Image source={source} style={{ width: size, height: size }} resizeMode="contain" />
+        </Animated.View>
+      </SlayPressable>
+      <View pointerEvents="none" style={styles.shadowSlot}>
         <Animated.View style={[styles.shadow, shadow]} />
       </View>
     </Animated.View>
@@ -78,6 +88,10 @@ const styles = StyleSheet.create({
     height: SHADOW_HEIGHT,
     marginTop: SHADOW_GAP,
     alignItems: "center",
+  },
+  // Upstream's `active:scale-90`.
+  pressed: {
+    transform: [{ scale: 0.9 }],
   },
   shadow: {
     width: 48,

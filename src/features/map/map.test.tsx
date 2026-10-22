@@ -1,13 +1,24 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import type { MapLocationViewModel } from "@slay/core";
 import type { MapScreenData } from "@slay/data";
 
+import { playSfx } from "~/lib/sfx";
+
 import { CityMap, type CityMapProps } from "./CityMap";
 import { MapLocationNode } from "./MapLocationNode";
 
 vi.mock("~/lib/imageSource", () => ({ imageSource: (url: string | null) => (url ? { uri: url } : null) }));
+vi.mock("~/lib/sfx", () => ({ playSfx: vi.fn() }));
+
+/** react-native-web reports layout through a ResizeObserver, which jsdom lacks — call the handlers directly. */
+function measure(width: number, height: number) {
+  const nodes = [...document.querySelectorAll("div")].filter(
+    (node) => typeof (node as unknown as Record<string, unknown>).__reactLayoutHandler === "function",
+  ) as unknown as { __reactLayoutHandler: (event: object) => void }[];
+  act(() => nodes.forEach((node) => node.__reactLayoutHandler({ nativeEvent: { layout: { x: 0, y: 0, width, height } } })));
+}
 
 function stop(overrides: Partial<MapLocationViewModel>): MapLocationViewModel {
   return {
@@ -93,6 +104,31 @@ describe("CityMap", () => {
 
     expect(screen.getByText("✓ Bakery complete!")).toBeTruthy();
     expect(screen.getByText("Library")).toBeTruthy();
+  });
+
+  it("whooshes only when the mascot walks somewhere new, and rolls the drum on Start", () => {
+    vi.mocked(playSfx).mockClear();
+    renderMap(data([stop({}), stop({ id: "l2", name: "Library", missionId: "m9" })]));
+    measure(390, 546);
+
+    // Bakery is already selected: tapping it again goes nowhere.
+    fireEvent.click(screen.getByRole("button", { name: "Bakery" }));
+    expect(playSfx).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Library" }));
+    expect(playSfx).toHaveBeenCalledWith("mapTravel");
+
+    fireEvent.click(screen.getByRole("button", { name: "▶ Start" }));
+    expect(playSfx).toHaveBeenLastCalledWith("missionStart");
+  });
+
+  it("makes Slay hiss when tapped", () => {
+    vi.mocked(playSfx).mockClear();
+    renderMap({ ...data([stop({})]), mascotImageUrl: "/wardrobe/slay-base.webp" });
+    measure(390, 546);
+
+    fireEvent.click(screen.getByRole("button", { name: "Make Slay hiss" }));
+    expect(playSfx).toHaveBeenCalledWith("snakeHiss");
   });
 });
 
