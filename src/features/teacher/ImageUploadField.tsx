@@ -1,15 +1,13 @@
-import * as Crypto from "expo-crypto";
-import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { ActivityIndicator, Image, Linking, StyleSheet, View } from "react-native";
 
-import { uploadContentImage, type ContentImageFolder } from "@slay/data";
+import type { ContentImageFolder } from "@slay/data";
 import { alpha, colors, radii } from "@slay/tokens";
 
 import { SlayButton, SlayText } from "~/components/ui";
-import { prepareScreenshot } from "~/features/feedback";
 import { imageSource } from "~/lib/imageSource";
-import { supabase } from "~/lib/supabase";
+
+import { pickAndUploadImage } from "./pickAndUpload";
 
 export interface ImageUploadFieldProps {
   label: string;
@@ -41,24 +39,14 @@ export function ImageUploadField({ label, folder, value, onChange, disabled = fa
   const pick = async () => {
     setError(null);
     setBlocked(false);
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) {
-      setBlocked(!permission.canAskAgain);
-      setError("SLAY CITY needs access to your photos to add a picture.");
-      return;
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ["images"], quality: 1 });
-    if (result.canceled || result.assets.length === 0) return;
-
     busy(true);
-    try {
-      const image = await prepareScreenshot(result.assets[0]);
-      onChange(await uploadContentImage(supabase, folder, { ...image, id: Crypto.randomUUID() }));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed.");
-    } finally {
-      busy(false);
-    }
+    const result = await pickAndUploadImage(folder);
+    busy(false);
+    if (result.kind === "uploaded") onChange(result.url);
+    else if (result.kind === "denied") {
+      setBlocked(!result.canAskAgain);
+      setError(result.error);
+    } else if (result.kind === "failed") setError(result.error);
   };
 
   return (

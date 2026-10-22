@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Redirect, useRouter, type Href } from "expo-router";
-import type { ReactNode } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 
+import { sourcesForKind } from "@slay/core";
 import { loadGroupTopics, loadTeacherTopic } from "@slay/data";
 import { alpha, colors } from "@slay/tokens";
 
@@ -13,6 +13,7 @@ import { supabase } from "~/lib/supabase";
 import { GroupTopicsScreen } from "./GroupTopicsScreen";
 import { TEACHER_GROUP_QUERY_KEY, TEACHER_TOPIC_QUERY_KEY } from "./queryKeys";
 import { TeacherTopicScreen } from "./TeacherTopicScreen";
+import { VocabularyManager } from "./VocabularyManager";
 
 function Loading({ label }: { label: string }) {
   return (
@@ -51,19 +52,11 @@ export function GroupTopicsLoader({ groupId }: { groupId: string }) {
 }
 
 /**
- * `/teacher/groups/[groupId]/topics/[topicId]`. A topic outside this teacher's
- * group goes back to the group, as upstream redirects. The editors slot in
- * through `render`, so the managers can grow without this loader changing.
+ * `/teacher/groups/[groupId]/topics/[topicId]`, with the vocabulary editor in
+ * its section. A topic outside this teacher's group goes back to the group,
+ * as upstream redirects.
  */
-export function TeacherTopicLoader({
-  groupId,
-  topicId,
-  render,
-}: {
-  groupId: string;
-  topicId: string;
-  render?: (data: NonNullable<Awaited<ReturnType<typeof loadTeacherTopic>>>) => { vocabularyEditor?: ReactNode; grammarEditor?: ReactNode };
-}) {
+export function TeacherTopicLoader({ groupId, topicId }: { groupId: string; topicId: string }) {
   const topic = useQuery({
     queryKey: [TEACHER_TOPIC_QUERY_KEY, topicId],
     queryFn: () => loadTeacherTopic(supabase, groupId, topicId),
@@ -80,7 +73,23 @@ export function TeacherTopicLoader({
       />
     );
   if (!topic.data) return <Redirect href={{ pathname: "/teacher/groups/[groupId]", params: { groupId } }} />;
-  return <TeacherTopicScreen {...topic.data} {...render?.(topic.data)} refreshing={topic.isRefetching} onRefresh={() => topic.refetch()} />;
+  const data = topic.data;
+  return (
+    <TeacherTopicScreen
+      {...data}
+      vocabularyEditor={
+        <VocabularyManager
+          topicId={data.topic.id}
+          groupId={data.group.id}
+          initialWords={data.vocabWords}
+          initialTaskCount={data.vocabTaskCount}
+          reuseSources={sourcesForKind(data.reuseSources, "vocabulary")}
+        />
+      }
+      refreshing={topic.isRefetching}
+      onRefresh={() => topic.refetch()}
+    />
+  );
 }
 
 const styles = StyleSheet.create({

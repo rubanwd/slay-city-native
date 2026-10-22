@@ -2,7 +2,7 @@ import { Redirect, useLocalSearchParams } from "expo-router";
 
 import type { GroupTopicsData, TeacherGroup, TeacherTopicData } from "@slay/data";
 
-import { GroupTopicsScreen, TeacherDashboard, TeacherTopicScreen } from "~/features/teacher";
+import { GroupTopicsScreen, TeacherDashboard, TeacherTopicScreen, VocabularyManager } from "~/features/teacher";
 
 const GROUPS: TeacherGroup[] = [
   {
@@ -83,6 +83,20 @@ export default function TeacherPreviewScreen() {
   const { screen } = useLocalSearchParams<{ screen?: string }>();
   if (!__DEV__) return <Redirect href="/" />;
   if (screen === "group") return <GroupTopicsScreen {...TOPICS} />;
-  if (screen === "topic") return <TeacherTopicScreen {...TOPIC} />;
+  if (screen === "topic")
+    return (
+      <TeacherTopicScreen
+        {...TOPIC}
+        vocabularyEditor={
+          <VocabularyManager
+            topicId="t1"
+            groupId="g1"
+            initialWords={TOPIC.vocabWords}
+            initialTaskCount={TOPIC.vocabTaskCount}
+            reuseSources={[{ topicId: "t9", title: "Pets", groupName: "6-B · Thursday", wordCount: 8, pointCount: 0 }]}
+          />
+        }
+      />
+    );
   return <TeacherDashboard groups={GROUPS} username="ms_kate" email="kate@school.org" />;
 }
