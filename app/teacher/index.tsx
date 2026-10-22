@@ -1,1 +1,5 @@
-export { default } from "~/features/teacher/GroupsPlaceholder";
+import { TeacherDashboardLoader } from "~/features/teacher";
+
+export default function TeacherDashboardRoute() {
+  return <TeacherDashboardLoader />;
+}
