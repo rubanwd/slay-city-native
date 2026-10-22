@@ -10,8 +10,10 @@ import { TeacherDashboardLoader } from "./TeacherDashboardLoader";
 
 const data = vi.hoisted(() => ({ loadTeacherDashboard: vi.fn(), signOut: vi.fn() }));
 const supabase = vi.hoisted(() => ({}));
+const nav = vi.hoisted(() => ({ push: vi.fn(), navigate: vi.fn() }));
 
 vi.mock("@slay/data", () => data);
+vi.mock("expo-router", () => ({ useRouter: () => nav }));
 vi.mock("~/lib/supabase", () => ({ supabase }));
 vi.mock("~/features/auth", () => ({ SignOutButton: () => <button>Log Out</button> }));
 
@@ -54,6 +56,8 @@ describe("TeacherDashboard", () => {
     expect(screen.getByRole("button", { name: "anna, topics 1 of 2, 7 missions" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "bo, 0 missions" })).toBeTruthy();
     expect(screen.getByText("No students in this group yet.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("link", { name: "5-A homework" }));
+    expect(nav.push).toHaveBeenCalledWith({ pathname: "/teacher/groups/[groupId]", params: { groupId: "g1" } });
   });
 
   it("expands a student to their level test and topic passes", () => {

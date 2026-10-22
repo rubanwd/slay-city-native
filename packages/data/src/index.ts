@@ -49,4 +49,5 @@ export * from "./onboarding";
 export * from "./contentImages";
 export * from "./placement";
 export * from "./teacherDashboard";
+export * from "./teacherTopics";
 export * from "./profileScreen";

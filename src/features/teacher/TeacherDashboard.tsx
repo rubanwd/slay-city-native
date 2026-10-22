@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import { RefreshControl, SectionList, StyleSheet, View } from "react-native";
 import Svg, { Circle, Line, Path, Polyline } from "react-native-svg";
 
@@ -44,12 +45,14 @@ function LogOutPill() {
 
 /**
  * Port of upstream's `teacher/TeacherDashboard.tsx`: one section per group,
- * each student a compact expandable row. No per-student activity list — a
+ * with a Homework link into its topics, and each student a compact expandable
+ * row. No per-student activity list — a
  * class-sized group has to stay scannable. A virtualised `SectionList`, so a
  * large school's groups scroll smoothly; pull to refresh for the latest
  * progress.
  */
 export function TeacherDashboard({ groups, username, email, refreshing = false, onRefresh }: TeacherDashboardProps) {
+  const router = useRouter();
   const header = (
     <View style={styles.header}>
       <View style={styles.headerText}>
@@ -78,9 +81,22 @@ export function TeacherDashboard({ groups, username, email, refreshing = false, 
             <SlayText variant="label" color={alpha.white50} numberOfLines={1} style={styles.shrink}>
               {section.title}
             </SlayText>
-            <SlayText variant="small" weight="700" color={alpha.white40}>
-              {plural(section.data.length, "student", "students")}
-            </SlayText>
+            <View style={styles.sectionRight}>
+              <SlayText variant="small" weight="700" color={alpha.white40}>
+                {plural(section.data.length, "student", "students")}
+              </SlayText>
+              <SlayPressable
+                accessibilityRole="link"
+                accessibilityLabel={`${section.title} homework`}
+                hitSlop={8}
+                onPress={() => router.push({ pathname: "/teacher/groups/[groupId]", params: { groupId: section.key } })}
+                style={({ pressed }) => [styles.homework, pressed && styles.homeworkPressed]}
+              >
+                <SlayText variant="label" weight="900" color={colors.limeGreen}>
+                  Homework
+                </SlayText>
+              </SlayPressable>
+            </View>
           </View>
         )}
         renderSectionFooter={({ section }) => (
@@ -142,6 +158,9 @@ const styles = StyleSheet.create({
   plain: { textTransform: "none", letterSpacing: 0 },
   sectionHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 8 },
   shrink: { flexShrink: 1 },
+  sectionRight: { flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 0 },
+  homework: { borderRadius: 999, borderWidth: 1, borderColor: withAlpha(colors.limeGreen, 0.5), paddingHorizontal: 10, paddingVertical: 4 },
+  homeworkPressed: { backgroundColor: withAlpha(colors.limeGreen, 0.1) },
   gap: { height: 8 },
   sectionGap: { marginBottom: 24 },
   center: { textAlign: "center" },
