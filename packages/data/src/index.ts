@@ -42,3 +42,4 @@ export * from "./auth";
 export * from "./account";
 export * from "./mapScreen";
 export * from "./missionScreen";
+export * from "./rewardScreen";

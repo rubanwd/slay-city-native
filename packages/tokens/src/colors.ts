@@ -60,6 +60,9 @@ export const lockedBrandColors = {
  * `map.*` are the fallback sky and skyline of `MapBackground`, shown only for a
  * district with no art.
  *
+ * `reward.gold` is the "Iconic!" headline on the reward screen — the web's
+ * `text-yellow-300`, one of its eight celebration themes.
+ *
  * `google.*` is Google's own "G" mark on the Continue with Google button — the
  * logo must keep its colours, so they are artwork, not brand.
  */
@@ -70,6 +73,9 @@ export const artwork = {
     starShadow: "#7BB800",
     text: "#FDE047",
     rain: "#FACC15",
+  },
+  reward: {
+    gold: "#FDE047",
   },
   map: {
     skyTop: "#241246",

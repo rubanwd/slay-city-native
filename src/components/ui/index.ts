@@ -6,4 +6,5 @@ export { SlayPressable, type SlayPressableProps } from "./SlayPressable";
 export { ProgressBar, type ProgressBarProps, type ProgressBarVariant } from "./ProgressBar";
 export { CoinAmount, XpAmount, type CurrencyAmountProps } from "./CurrencyAmount";
 export { StreakBadge, type StreakBadgeProps, type StreakBadgeSize } from "./StreakBadge";
+export { RewardModal, type RewardModalProps } from "./RewardModal";
 export { CoinIcon, XpIcon, ShareIcon, GoogleIcon, type IconProps } from "./icons";

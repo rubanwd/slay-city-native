@@ -75,7 +75,7 @@ describe("MissionScreen", () => {
   }
 
   it("runs every task, then records a full completion and opens the reward screen", async () => {
-    submitMissionCompletion.mockResolvedValue({ ok: true });
+    submitMissionCompletion.mockResolvedValue({ ok: true, alreadyCompleted: false, xpEarned: 30, coinsEarned: 10 });
     renderMission();
 
     expect(screen.getByText("1/2")).toBeTruthy();
@@ -87,9 +87,27 @@ describe("MissionScreen", () => {
     fireEvent.click(screen.getByRole("button", { name: "Finish Mission" }));
 
     await waitFor(() =>
-      expect(nav.replace).toHaveBeenCalledWith({ pathname: "/mission/[missionId]/reward", params: { missionId: "m1" } }),
+      expect(nav.replace).toHaveBeenCalledWith({
+        pathname: "/mission/[missionId]/reward",
+        params: { missionId: "m1", xp: "30", coins: "10", replay: "0" },
+      }),
     );
     expect(submitMissionCompletion).toHaveBeenCalledWith({}, "m1", 1);
+  });
+
+  it("tells the reward screen when a replay granted nothing (WP-3.7 AC4)", async () => {
+    submitMissionCompletion.mockResolvedValue({ ok: true, alreadyCompleted: true, xpEarned: 0, coinsEarned: 0 });
+    renderMission({ tasks: [tasks[0]] });
+
+    fireEvent.click(screen.getByRole("radio", { name: "Apple" }));
+    fireEvent.click(screen.getByRole("button", { name: "Finish Mission" }));
+
+    await waitFor(() =>
+      expect(nav.replace).toHaveBeenCalledWith({
+        pathname: "/mission/[missionId]/reward",
+        params: { missionId: "m1", xp: "0", coins: "0", replay: "1" },
+      }),
+    );
   });
 
   it("pays half for a two-task mission with one task skipped (AC2)", async () => {
