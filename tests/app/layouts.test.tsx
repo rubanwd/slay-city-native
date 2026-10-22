@@ -2,6 +2,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { LocaleProvider } from "~/lib/locale";
+
 import ParentLayout from "../../app/parent/_layout";
 import StudentLayout from "../../app/(student)/_layout";
 import TeacherLayout from "../../app/teacher/_layout";
@@ -14,6 +16,12 @@ import TeacherLayout from "../../app/teacher/_layout";
  * screen with `href: null` is hidden from the tab bar, so the stub leaves it out.
  */
 const hasAnyGroup = vi.hoisted(() => vi.fn());
+const stored = vi.hoisted(() => ({ locale: null as string | null }));
+vi.mock("~/lib/secure-storage", () => ({
+  readSecureItem: vi.fn(async () => stored.locale),
+  writeSecureItem: vi.fn(async () => {}),
+  deleteSecureItem: vi.fn(async () => {}),
+}));
 vi.mock("~/lib/supabase", () => ({ supabase: {} }));
 vi.mock("@slay/data", async (importOriginal) => ({ ...(await importOriginal<typeof import("@slay/data")>()), hasAnyGroup }));
 
@@ -50,6 +58,23 @@ describe("role group layouts", () => {
     renderStudent();
     await vi.waitFor(() => expect(hasAnyGroup).toHaveBeenCalled());
     expect(screen.queryByText("Homework")).toBeNull();
+  });
+
+  it("(student) labels the tabs in the student's chosen language", async () => {
+    hasAnyGroup.mockResolvedValue(true);
+    stored.locale = "uk";
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <LocaleProvider>
+          <StudentLayout />
+        </LocaleProvider>
+      </QueryClientProvider>,
+    );
+    expect(await screen.findByText("Карта")).toBeTruthy();
+    expect(screen.getByText("Гардероб")).toBeTruthy();
+    expect(screen.getByText("Профіль")).toBeTruthy();
+    expect(await screen.findByText("Домашка")).toBeTruthy();
+    stored.locale = null;
   });
 
   it("teacher declares groups, map and profile tabs", () => {

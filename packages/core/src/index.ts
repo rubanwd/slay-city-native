@@ -74,9 +74,11 @@ export * from "./features/auth/roleRouting";
 
 // ── Internationalisation ──────────────────────────────────────────────────────
 // i18n/index already re-exports the locale constants and the Locale/Messages
-// types, so only the plural helpers are added alongside it.
+// types, so only the plural helpers and the student default — which index
+// leaves out — are added alongside it.
 export * from "./features/i18n";
 export * from "./features/i18n/plural";
+export { STUDENT_DEFAULT_LOCALE, studentLocaleFrom } from "./features/i18n/locales";
 
 // ── Audio synthesis (playback lives in the platform adapter, WP-6.2) ──────────
 export * from "./lib/hiss";
