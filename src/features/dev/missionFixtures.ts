@@ -63,8 +63,10 @@ const CONTENT: [MissionTaskType, Json][] = [
       ],
     },
   ],
-  // Not ported yet — shows the skip card.
-  ["word_search", { words: ["CAT"] }],
+  ["word_search", { prompt: "Find the animals", words: ["CAT", "DOG", "FOX", "OWL"] }],
+  ["snake_game", { word: "CAT", translation: "кіт" }],
+  // Malformed content — shows the skip card a broken task gets.
+  ["quiz", { question: "No options" }],
 ];
 
 export const DEV_MISSION_TASKS: MissionTaskViewModel[] = CONTENT.map(([taskType, content], orderIndex) => ({

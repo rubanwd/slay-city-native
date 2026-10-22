@@ -233,6 +233,8 @@ that re-checks the caller's role in SQL.
 - `AC2` `SnakeGameTask`: the tick loop pauses on background and does not desync on resume; the D-pad is comfortable one-handed; the keyboard handler is removed.
 - `AC3` Neither drops below 60 fps on the target low-end device.
 
+> **AC1 corrected (WP-3.6).** `wordPuzzle.ts` holds the scramble and missing-letter helpers only; upstream's word-search grid generation and line selection live inside `WordSearchTask.tsx` itself, not in shared logic. The native port carries them over unchanged, beside the component, as upstream has them. Moving them into `packages/core` would be an upstream change first (`docs/SYNC.md`), not a local one.
+
 ### WP-3.7 · Reward
 `1.5d` · deps: WP-3.3
 - `AC1` `RewardModal` and `RewardScreen` both exist. `AC2` The celebration reads as a celebration — animation, sound, haptics. `AC3` XP and coins shown match what `complete_mission` returned; the client computes nothing. `AC4` Replaying a completed mission grants nothing and says so.
