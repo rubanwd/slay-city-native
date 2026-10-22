@@ -50,8 +50,21 @@ const CONTENT: [MissionTaskType, Json][] = [
   ["reaction_tap", { prompt: "Tap every animal!", correct: ["Cat", "Dog", "Fox"], distractors: ["Cup", "Pen", "Hat"], roundSeconds: 20 }],
   ["simon_sequence", { colors: ["Red", "Blue", "Green", "Purple"], sequence: [0, 2, 1, 3] }],
   ["hangman", { word: "BREAD", hint: "You make toast from it", translation: "хліб" }],
+  ["spelling_bee", { word: "bread", translation: "хліб" }],
+  ["fill_blank", { sentence: "I ___ to school every day.", answer: "go", translation: "Я ходжу до школи щодня." }],
+  ["fill_blank", { sentence: "The cat is ___ the box.", answer: "in", options: ["in", "on", "at", "of"] }],
+  [
+    "crossword",
+    {
+      entries: [
+        { answer: "CAT", clue: "It says meow", row: 0, col: 0, direction: "across" },
+        { answer: "CUP", clue: "You drink tea from it", row: 0, col: 0, direction: "down" },
+        { answer: "TEA", clue: "A hot drink", row: 0, col: 2, direction: "down" },
+      ],
+    },
+  ],
   // Not ported yet — shows the skip card.
-  ["spelling_bee", { word: "BREAD" }],
+  ["word_search", { words: ["CAT"] }],
 ];
 
 export const DEV_MISSION_TASKS: MissionTaskViewModel[] = CONTENT.map(([taskType, content], orderIndex) => ({

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, type Href } from "expo-router";
 import { useRef, useState } from "react";
-import { Alert, Image, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
 import {
@@ -214,44 +214,56 @@ export function MissionScreen({
         ) : null}
       </View>
 
-      <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} keyboardShouldPersistTaps="handled">
-        <TaskRunner
-          key={currentTask.id}
-          taskType={currentTask.taskType}
-          content={currentTask.content}
-          actionLabel={actionLabel}
-          onComplete={handleTaskComplete}
-          onSkip={handleSkip}
-        />
-      </ScrollView>
+      {/*
+        The typing tasks (WP-3.5 AC1): on iOS the body shrinks by the keyboard's
+        height so the field and its Check button stay above it; Android's
+        default adjustResize window already does that, as on the auth screens.
+      */}
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.body}>
+        <ScrollView
+          style={styles.body}
+          contentContainerStyle={styles.bodyContent}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+        >
+          <TaskRunner
+            key={currentTask.id}
+            taskType={currentTask.taskType}
+            content={currentTask.content}
+            actionLabel={actionLabel}
+            onComplete={handleTaskComplete}
+            onSkip={handleSkip}
+          />
+        </ScrollView>
 
-      {submit.isPending || error ? (
-        <View style={styles.footer}>
-          {submit.isPending ? (
-            <SlayText variant="body" color={alpha.white60}>
-              Saving your rewards…
-            </SlayText>
-          ) : (
-            <>
-              <SlayText variant="body" color={colors.neonPink} accessibilityRole="alert" style={styles.center}>
-                {error}
+        {submit.isPending || error ? (
+          <View style={styles.footer}>
+            {submit.isPending ? (
+              <SlayText variant="body" color={alpha.white60}>
+                Saving your rewards…
               </SlayText>
-              <SlayButton variant="pink" onPress={() => finishMission(earnedFraction())}>
-                Try Again
-              </SlayButton>
-            </>
-          )}
-        </View>
-      ) : (
-        // Hidden once the run is over — there is no task left to skip.
-        <View style={styles.footer}>
-          <SlayPressable accessibilityRole="button" hitSlop={12} onPress={handleSkip}>
-            <SlayText variant="small" color={alpha.white40} style={styles.underline}>
-              Skip this task
-            </SlayText>
-          </SlayPressable>
-        </View>
-      )}
+            ) : (
+              <>
+                <SlayText variant="body" color={colors.neonPink} accessibilityRole="alert" style={styles.center}>
+                  {error}
+                </SlayText>
+                <SlayButton variant="pink" onPress={() => finishMission(earnedFraction())}>
+                  Try Again
+                </SlayButton>
+              </>
+            )}
+          </View>
+        ) : (
+          // Hidden once the run is over — there is no task left to skip.
+          <View style={styles.footer}>
+            <SlayPressable accessibilityRole="button" hitSlop={12} onPress={handleSkip}>
+              <SlayText variant="small" color={alpha.white40} style={styles.underline}>
+                Skip this task
+              </SlayText>
+            </SlayPressable>
+          </View>
+        )}
+      </KeyboardAvoidingView>
     </AppContainer>
   );
 }

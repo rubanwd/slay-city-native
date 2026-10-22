@@ -6,8 +6,10 @@ import {
   parseCauseEffectContent,
   parseClockReadingContent,
   parseCountingGameContent,
+  parseCrosswordContent,
   parseDialogueChoiceContent,
   parseEmojiDecodeContent,
+  parseFillBlankContent,
   parseFlashcardsContent,
   parseHangmanContent,
   parseLetterFillContent,
@@ -21,6 +23,7 @@ import {
   parseSentenceBuilderContent,
   parseSimonSequenceContent,
   parseSizeOrderContent,
+  parseSpellingBeeContent,
   parseSpotTheDifferenceContent,
   parseStorySequencingContent,
   parseTrueFalseContent,
@@ -37,8 +40,10 @@ import { CategorySortTask } from "./tasks/CategorySortTask";
 import { CauseEffectTask } from "./tasks/CauseEffectTask";
 import { ClockReadingTask } from "./tasks/ClockReadingTask";
 import { CountingGameTask } from "./tasks/CountingGameTask";
+import { CrosswordTask } from "./tasks/CrosswordTask";
 import { DialogueChoiceTask } from "./tasks/DialogueChoiceTask";
 import { EmojiDecodeTask } from "./tasks/EmojiDecodeTask";
+import { FillBlankTask } from "./tasks/FillBlankTask";
 import { FlashcardsTask } from "./tasks/FlashcardsTask";
 import { HangmanTask } from "./tasks/HangmanTask";
 import { LetterFillTask } from "./tasks/LetterFillTask";
@@ -52,6 +57,7 @@ import { RhymeMatchTask } from "./tasks/RhymeMatchTask";
 import { SentenceBuilderTask } from "./tasks/SentenceBuilderTask";
 import { SimonSequenceTask } from "./tasks/SimonSequenceTask";
 import { SizeOrderTask } from "./tasks/SizeOrderTask";
+import { SpellingBeeTask } from "./tasks/SpellingBeeTask";
 import { SpotTheDifferenceTask } from "./tasks/SpotTheDifferenceTask";
 import { StorySequencingTask } from "./tasks/StorySequencingTask";
 import { TrueFalseTask } from "./tasks/TrueFalseTask";
@@ -73,8 +79,10 @@ export const TASKS: Partial<Record<MissionTaskType, TaskRenderer>> = {
   cause_effect: defineTask(parseCauseEffectContent, CauseEffectTask),
   clock_reading: defineTask(parseClockReadingContent, ClockReadingTask),
   counting_game: defineTask(parseCountingGameContent, CountingGameTask),
+  crossword: defineTask(parseCrosswordContent, CrosswordTask),
   dialogue_choice: defineTask(parseDialogueChoiceContent, DialogueChoiceTask),
   emoji_decode: defineTask(parseEmojiDecodeContent, EmojiDecodeTask),
+  fill_blank: defineTask(parseFillBlankContent, FillBlankTask),
   flashcards: defineTask(parseFlashcardsContent, FlashcardsTask),
   hangman: defineTask(parseHangmanContent, HangmanTask),
   letter_fill: defineTask(parseLetterFillContent, LetterFillTask),
@@ -88,6 +96,7 @@ export const TASKS: Partial<Record<MissionTaskType, TaskRenderer>> = {
   sentence_builder: defineTask(parseSentenceBuilderContent, SentenceBuilderTask),
   simon_sequence: defineTask(parseSimonSequenceContent, SimonSequenceTask),
   size_order: defineTask(parseSizeOrderContent, SizeOrderTask),
+  spelling_bee: defineTask(parseSpellingBeeContent, SpellingBeeTask),
   spot_the_difference: defineTask(parseSpotTheDifferenceContent, SpotTheDifferenceTask),
   story_sequencing: defineTask(parseStorySequencingContent, StorySequencingTask),
   true_false: defineTask(parseTrueFalseContent, TrueFalseTask),

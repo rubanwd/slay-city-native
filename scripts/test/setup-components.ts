@@ -78,3 +78,14 @@ vi.mock("react-native-reanimated", async () => {
     cancelAnimation: () => {},
   };
 });
+
+/*
+ * `expo-speech` and `expo-audio` load native modules that have no jsdom build.
+ * Nothing is spoken or played in a test; one that asserts on sound mocks them
+ * itself (see `textTasks.test.tsx`).
+ */
+vi.mock("expo-speech", () => ({ speak: vi.fn(), stop: vi.fn() }));
+vi.mock("expo-audio", () => ({
+  createAudioPlayer: vi.fn(() => ({ play: vi.fn(), pause: vi.fn(), seekTo: vi.fn(async () => {}), remove: vi.fn() })),
+  setAudioModeAsync: vi.fn(async () => {}),
+}));
