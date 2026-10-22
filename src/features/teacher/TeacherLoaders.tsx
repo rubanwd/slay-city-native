@@ -12,6 +12,7 @@ import { supabase } from "~/lib/supabase";
 
 import { GroupTopicsScreen } from "./GroupTopicsScreen";
 import { TEACHER_GROUP_QUERY_KEY, TEACHER_TOPIC_QUERY_KEY } from "./queryKeys";
+import { GrammarManager } from "./GrammarManager";
 import { TeacherTopicScreen } from "./TeacherTopicScreen";
 import { VocabularyManager } from "./VocabularyManager";
 
@@ -52,8 +53,8 @@ export function GroupTopicsLoader({ groupId }: { groupId: string }) {
 }
 
 /**
- * `/teacher/groups/[groupId]/topics/[topicId]`, with the vocabulary editor in
- * its section. A topic outside this teacher's group goes back to the group,
+ * `/teacher/groups/[groupId]/topics/[topicId]`, with the vocabulary and
+ * grammar editors in their sections. A topic outside this teacher's group goes back to the group,
  * as upstream redirects.
  */
 export function TeacherTopicLoader({ groupId, topicId }: { groupId: string; topicId: string }) {
@@ -84,6 +85,15 @@ export function TeacherTopicLoader({ groupId, topicId }: { groupId: string; topi
           initialWords={data.vocabWords}
           initialTaskCount={data.vocabTaskCount}
           reuseSources={sourcesForKind(data.reuseSources, "vocabulary")}
+        />
+      }
+      grammarEditor={
+        <GrammarManager
+          topicId={data.topic.id}
+          groupId={data.group.id}
+          initialPoints={data.grammarPoints}
+          initialTasks={data.grammarTasks}
+          reuseSources={sourcesForKind(data.reuseSources, "grammar")}
         />
       }
       refreshing={topic.isRefetching}

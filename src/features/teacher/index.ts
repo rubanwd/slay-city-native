@@ -10,3 +10,4 @@ export { TEACHER_DASHBOARD_QUERY_KEY, TEACHER_GROUP_QUERY_KEY, TEACHER_TOPIC_QUE
 export { VocabularyManager, type VocabularyManagerProps } from "./VocabularyManager";
 export { TestPreviewRunner, type PreviewTask } from "./TestPreviewRunner";
 export { TopicContentImporter } from "./TopicContentImporter";
+export { GrammarManager, type GrammarManagerProps } from "./GrammarManager";

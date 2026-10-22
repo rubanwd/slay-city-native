@@ -2,7 +2,7 @@ import { Redirect, useLocalSearchParams } from "expo-router";
 
 import type { GroupTopicsData, TeacherGroup, TeacherTopicData } from "@slay/data";
 
-import { GroupTopicsScreen, TeacherDashboard, TeacherTopicScreen, VocabularyManager } from "~/features/teacher";
+import { GrammarManager, GroupTopicsScreen, TeacherDashboard, TeacherTopicScreen, VocabularyManager } from "~/features/teacher";
 
 const GROUPS: TeacherGroup[] = [
   {
@@ -94,6 +94,18 @@ export default function TeacherPreviewScreen() {
             initialWords={TOPIC.vocabWords}
             initialTaskCount={TOPIC.vocabTaskCount}
             reuseSources={[{ topicId: "t9", title: "Pets", groupName: "6-B · Thursday", wordCount: 8, pointCount: 0 }]}
+          />
+        }
+        grammarEditor={
+          <GrammarManager
+            topicId="t1"
+            groupId="g1"
+            initialPoints={TOPIC.grammarPoints}
+            initialTasks={[
+              { taskType: "quiz", content: { question: "One cat, two ___.", options: ["cats", "cat", "cates"], correctIndex: 0 } },
+              { taskType: "fill_blank", content: { sentence: "I have three ___.", answer: "dogs" } },
+            ]}
+            reuseSources={[]}
           />
         }
       />
