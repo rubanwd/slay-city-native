@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import HomeworkPlaceholder from "./HomeworkPlaceholder";
 import ProfilePlaceholder from "./ProfilePlaceholder";
 import WardrobePlaceholder from "./WardrobePlaceholder";
 
@@ -27,14 +26,6 @@ describe("student placeholders", () => {
     expect(screen.getByText("Wardrobe")).toBeTruthy();
     expect(hrefOf("Map")).toBe("/map");
     expect(hrefOf("Homework")).toBe("/homework");
-    expect(hrefOf("Profile")).toBe("/profile");
-  });
-
-  it("Homework links to every other student placeholder", () => {
-    render(<HomeworkPlaceholder />);
-    expect(screen.getByText("Homework")).toBeTruthy();
-    expect(hrefOf("Map")).toBe("/map");
-    expect(hrefOf("Wardrobe")).toBe("/wardrobe");
     expect(hrefOf("Profile")).toBe("/profile");
   });
 

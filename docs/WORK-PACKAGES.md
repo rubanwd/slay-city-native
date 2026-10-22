@@ -245,7 +245,7 @@ that re-checks the caller's role in SQL.
 
 | ID | Package | Est. | Key acceptance criteria |
 | --- | --- | --- | --- |
-| `WP-4.1` | Homework flows | 2d | Topic list, vocabulary and grammar flows work; word audio plays through `expo-audio`; completion writes via the existing RPCs; unread badges match the web |
+| `WP-4.1` | Homework flows | 2d | Topic list, vocabulary and grammar flows work; word audio plays through `expo-audio`; completion writes via the existing RPCs; unread badges match the web — **done**; one AC revised: words have no recorded audio on the web (it uses the browser's speech synthesis), so the phone speaks them with `expo-speech` rather than playing a file through `expo-audio` |
 | `WP-4.2` | Wardrobe | 1d | Grid scrolls smoothly at 100+ items; purchase and equip go through `purchase_wardrobe_item` / `equip_wardrobe_item`; exactly one item equipped at a time; the mascot updates everywhere it appears |
 | `WP-4.3` | Profile & levels | 1d | Knowledge-level picker calls `set_my_knowledge_level`; username validation reuses `username.ts` from core; locked levels explain themselves |
 | `WP-4.4` | Onboarding | 0.5d | Age range 5–99 as in the current app; completing it routes via `roleHome()`; it cannot be re-entered once done |

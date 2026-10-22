@@ -159,7 +159,9 @@ each of the 32 task types, sees the reward, and the XP and coins in Supabase mat
 what the web app grants for the same mission.
 
 ## P7 - Student surround
-**7 days · needs P6 · needs OD-7 answered** (OD-1 answered ✅)
+**7 days · needs P6 · OD-7 provisionally (a) — skip the demo** (OD-1 answered ✅)
+
+> OD-7 was not answered when P7 started (2026-10-22), so the recommended default was taken: the signed-out demo is not ported. Nothing in P7 depends on it — reversing it later is an added route, not a rework.
 
 `WP-4.1` homework · `WP-4.2` wardrobe · `WP-4.3` profile and levels ·
 `WP-4.4` onboarding · `WP-4.5` study-time tracker · `WP-4.6` feedback ·

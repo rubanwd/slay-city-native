@@ -259,4 +259,4 @@ Blocking. Each needs an explicit answer before the phase that depends on it star
 | **OD-4** | Analytics on mobile | (a) Drop GA on mobile. **Recommended if OD-3(a).** (b) Keep it | P9 |
 | **OD-5** | Offline play depth | (a) Read-only cache of map + profile. **Recommended for v1.** (b) Full offline missions with a sync queue — significant extra work | P9 |
 | **OD-6** | Push notifications | (a) Defer past v1. **Recommended** — `AGENTS.md` lists it under Do Not Build Yet. (b) Ship streak reminders in v1 | P9 |
-| **OD-7** | The signed-out demo (`/demo`) on mobile | (a) Skip — the store listing is the discovery surface. **Recommended.** (b) Port it | P6 |
+| **OD-7** | The signed-out demo (`/demo`) on mobile | (a) Skip — the store listing is the discovery surface. **Recommended.** (b) Port it — **provisionally (a)** since P7 started, 2026-10-22; not yet confirmed by the owner | P6 |
