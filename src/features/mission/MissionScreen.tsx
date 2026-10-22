@@ -214,6 +214,14 @@ export function MissionScreen({
             </SlayText>
           </View>
         </View>
+        {review ? (
+          // A teacher must never mistake a review for a real run (WP-5.7).
+          <View style={styles.reviewBadge} accessibilityRole="text" accessibilityLabel="Review mode: nothing is saved">
+            <SlayText variant="label" weight="700" color={colors.cyan}>
+              Review · nothing is saved
+            </SlayText>
+          </View>
+        ) : null}
         {!IMMERSIVE_TASK_TYPES.includes(currentTask.taskType) ? (
           <ProgressBar
             value={(currentIndex / Math.max(total, 1)) * 100}
@@ -279,6 +287,15 @@ export function MissionScreen({
 }
 
 const styles = StyleSheet.create({
+  reviewBadge: {
+    alignSelf: "center",
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: withAlpha(colors.cyan, 0.4),
+    backgroundColor: withAlpha(colors.cyan, 0.1),
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
   centered: {
     justifyContent: "center",
   },

@@ -1,1 +1,5 @@
-export { default } from "~/features/teacher/MapPlaceholder";
+import { TeacherMapLoader } from "~/features/teacher";
+
+export default function TeacherMapRoute() {
+  return <TeacherMapLoader />;
+}

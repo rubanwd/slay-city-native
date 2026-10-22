@@ -25,6 +25,9 @@ export default function TeacherLayout() {
       {/* A group's topics and a topic's authoring are full-screen, as on the web: no tab, no tab bar. */}
       <Tabs.Screen name="groups/[groupId]/index" options={{ href: null, tabBarStyle: { display: "none" } }} />
       <Tabs.Screen name="groups/[groupId]/topics/[topicId]" options={{ href: null, tabBarStyle: { display: "none" } }} />
+      {/* The map's stops and their missions in review: a stop's list keeps the tab bar, a mission is full-screen. */}
+      <Tabs.Screen name="location/[locationId]" options={{ href: null }} />
+      <Tabs.Screen name="mission/[missionId]" options={{ href: null, tabBarStyle: { display: "none" } }} />
     </Tabs>
   );
 }

@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import MapPlaceholder from "./MapPlaceholder";
 import ProfilePlaceholder from "./ProfilePlaceholder";
 
 vi.mock("~/features/auth", () => ({ SignOutButton: () => <button>Log Out</button> }));
@@ -16,13 +15,6 @@ function hrefOf(label: string): string | null {
 }
 
 describe("teacher placeholders", () => {
-  it("Map links to the other teacher placeholders", () => {
-    render(<MapPlaceholder />);
-    expect(screen.getByText("Map")).toBeTruthy();
-    expect(hrefOf("Groups")).toBe("/teacher");
-    expect(hrefOf("Profile")).toBe("/teacher/profile");
-  });
-
   it("Profile links to the other teacher placeholders", () => {
     render(<ProfilePlaceholder />);
     expect(screen.getByText("Profile")).toBeTruthy();
