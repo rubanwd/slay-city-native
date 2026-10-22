@@ -29,6 +29,16 @@ describe("loadProfile", () => {
       { id: "u1", email: "sam@example.com" },
       {
         profiles: { data: { username: "sam", level: "beginner" } },
+        placement_test_attempts: {
+          data: {
+            profile_id: "u1",
+            total_correct: 23,
+            total_questions: 40,
+            level_scores: [],
+            recommended_level: "elementary",
+            created_at: "2026-10-20T10:00:00Z",
+          },
+        },
         user_wardrobe_items: {
           data: [{ equipped_at: "2026-10-20T10:00:00Z", wardrobe_items: { preview_url: "/wardrobe/slay-crown.webp", image_url: null } }],
         },
@@ -43,6 +53,13 @@ describe("loadProfile", () => {
       mascotImageUrl: "/wardrobe/slay-crown.webp",
       level: "beginner",
       availableLevels: ["beginner", "elementary"],
+      latestPlacement: {
+        totalCorrect: 23,
+        totalQuestions: 40,
+        levelScores: [],
+        recommendedLevel: "elementary",
+        takenAt: "2026-10-20T10:00:00Z",
+      },
     });
   });
 
@@ -53,6 +70,7 @@ describe("loadProfile", () => {
     expect(data.mascotImageUrl).toBe("/wardrobe/slay-base.webp");
     expect(data.email).toBeNull();
     expect(data.username).toBeNull();
+    expect(data.latestPlacement).toBeNull();
   });
 
   it("throws on a failed profile read", async () => {

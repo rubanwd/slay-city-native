@@ -17,6 +17,13 @@ export default function ProfilePreviewScreen() {
       mascotImageUrl="/wardrobe/hat-crown.webp"
       level="elementary"
       availableLevels={["beginner", "elementary"]}
+      latestPlacement={{
+        totalCorrect: 23,
+        totalQuestions: 40,
+        recommendedLevel: "elementary",
+        levelScores: [],
+        takenAt: "2026-10-20T10:00:00Z",
+      }}
     />
   );
 }

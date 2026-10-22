@@ -1,6 +1,6 @@
 {
   "upstream": "https://github.com/rubanwd/slay-city",
-  "syncedAt": "2026-10-22T19:21:13.235Z",
+  "syncedAt": "2026-10-22T21:26:01.263Z",
   "syncedFrom": "9eb51e0e76512739667e3e9c92fa50958861c175",
   "files": [
     {
@@ -327,6 +327,18 @@
       "local": "packages/core/src/features/onboarding/age.test.ts",
       "upstream": "src/features/onboarding/age.test.ts",
       "sha256": "e547285d692169a1ad8edf1b348898887ed7e71e2b34bf8f4e3a343fc99b53d1",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/placement/placement.ts",
+      "upstream": "src/features/placement/placement.ts",
+      "sha256": "409c3b60c79952e632401cd445b3dd490af40e2fdfb96502bff39aeaaeed7a32",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/placement/placement.test.ts",
+      "upstream": "src/features/placement/placement.test.ts",
+      "sha256": "e2a31899bfd45f1c8854972c64a825565992eac2afc294a153495eb77b8e077c",
       "adapted": false
     }
   ]

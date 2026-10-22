@@ -17,12 +17,14 @@ const data = vi.hoisted(() => ({
   signOut: vi.fn(),
 }));
 const supabase = vi.hoisted(() => ({}));
+const nav = vi.hoisted(() => ({ push: vi.fn(), navigate: vi.fn() }));
 
 vi.mock("~/lib/supabase", () => ({ supabase }));
 vi.mock("~/lib/imageSource", () => ({ imageSource: (url: string | null) => (url ? { uri: url } : null) }));
 vi.mock("~/features/map", () => ({ MAP_QUERY_KEY: "map" }));
 vi.mock("~/features/auth", () => ({ SignOutButton: () => <button>Log Out</button> }));
 vi.mock("@slay/data", () => data);
+vi.mock("expo-router", () => ({ useRouter: () => nav }));
 vi.mock("~/lib/secure-storage", () => ({
   readSecureItem: vi.fn(async () => null),
   writeSecureItem: vi.fn(async () => {}),
@@ -45,6 +47,7 @@ const profile: ProfileData = {
   mascotImageUrl: "/wardrobe/slay-crown.webp",
   level: "elementary",
   availableLevels: ["beginner", "elementary"],
+  latestPlacement: null,
 };
 
 describe("ProfileScreen", () => {
@@ -162,6 +165,26 @@ describe("ProfileLevelCard", () => {
     withQueries(<ProfileScreen {...profile} availableLevels={["elementary"]} />);
     expect(screen.queryByRole("button", { name: "Change level" })).toBeNull();
     expect(screen.getByText("More levels unlock as new districts are added to the city.")).toBeTruthy();
+  });
+});
+
+describe("PlacementTestCard", () => {
+  it("invites a student who never took the level test", () => {
+    withQueries(<ProfileScreen {...profile} />);
+    expect(screen.getByText("Not sure which level fits you? Take a quick test and find out.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Take the test" }));
+    expect(nav.push).toHaveBeenCalledWith("/placement-test");
+  });
+
+  it("shows the last result and offers a retake", () => {
+    withQueries(
+      <ProfileScreen
+        {...profile}
+        latestPlacement={{ totalCorrect: 23, totalQuestions: 40, recommendedLevel: "elementary", levelScores: [], takenAt: "2026-10-20T10:00:00Z" }}
+      />,
+    );
+    expect(screen.getByText("Last result: Elementary (23/40)")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Take it again" })).toBeTruthy();
   });
 });
 

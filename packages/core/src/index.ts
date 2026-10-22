@@ -51,6 +51,7 @@ export * from "./features/levels/levels";
 export * from "./features/study/studyTime";
 export * from "./features/profile/username";
 export * from "./features/onboarding/age";
+export * from "./features/placement/placement";
 export * from "./features/wardrobe/categories";
 export * from "./features/wardrobe/mascot";
 export * from "./features/demo/demoProgress";
