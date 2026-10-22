@@ -1,1 +1,2 @@
-export { OnboardingPlaceholder } from "./OnboardingPlaceholder";
+export { OnboardingForm, type OnboardingFormProps } from "./OnboardingForm";
+export { OnboardingScreen } from "./OnboardingScreen";

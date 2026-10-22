@@ -1,5 +1,5 @@
-import { OnboardingPlaceholder } from "~/features/onboarding";
+import { OnboardingScreen } from "~/features/onboarding";
 
-export default function OnboardingScreen() {
-  return <OnboardingPlaceholder />;
+export default function OnboardingRoute() {
+  return <OnboardingScreen />;
 }

@@ -424,6 +424,11 @@ export async function deleteTopicMessage(
  *
  * A duplicate username propagates as `23505`, which is what lets a caller keep
  * mapping it to "That username is already taken."
+ *
+ * Unused since `WP-4.4`: the onboarding screen goes through `createProfile`
+ * (`onboarding.ts`), which calls the now-typed RPC directly because it needs
+ * that `23505`, and this wrapper's result keeps only the message. Remove it
+ * with the cast cleanup in `P8`.
  */
 export async function createMyProfile(
   db: SupabaseClient<Database>,

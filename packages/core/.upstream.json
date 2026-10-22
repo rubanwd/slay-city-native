@@ -1,6 +1,6 @@
 {
   "upstream": "https://github.com/rubanwd/slay-city",
-  "syncedAt": "2026-10-22T14:09:23.555Z",
+  "syncedAt": "2026-10-22T19:21:13.235Z",
   "syncedFrom": "9eb51e0e76512739667e3e9c92fa50958861c175",
   "files": [
     {
@@ -315,6 +315,18 @@
       "local": "packages/core/src/features/homework/grammar.test.ts",
       "upstream": "src/features/homework/grammar.test.ts",
       "sha256": "03a19cb743f3d96f9dca53983be79cc169109c321aa49ab3bd4beb47d43b49c3",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/onboarding/age.ts",
+      "upstream": "src/features/onboarding/age.ts",
+      "sha256": "40ef9e04fef7b65ec89f5268b626439fe199f0aca6beb6ab503a3373422ae0b9",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/onboarding/age.test.ts",
+      "upstream": "src/features/onboarding/age.test.ts",
+      "sha256": "e547285d692169a1ad8edf1b348898887ed7e71e2b34bf8f4e3a343fc99b53d1",
       "adapted": false
     }
   ]
