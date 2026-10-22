@@ -19,6 +19,7 @@ import { colors } from "@slay/tokens";
 
 import { RouteGuard } from "~/features/auth";
 import { SessionProvider } from "~/hooks/useSession";
+import { LocaleProvider } from "~/lib/locale";
 import { queryClient } from "~/lib/query-client";
 import { supabase } from "~/lib/supabase";
 
@@ -80,17 +81,19 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <SessionProvider>
-        <SafeAreaProvider>
-          <StatusBar style="light" />
-          <RouteGuard>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: colors.black },
-              }}
-            />
-          </RouteGuard>
-        </SafeAreaProvider>
+        <LocaleProvider>
+          <SafeAreaProvider>
+            <StatusBar style="light" />
+            <RouteGuard>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  contentStyle: { backgroundColor: colors.black },
+                }}
+              />
+            </RouteGuard>
+          </SafeAreaProvider>
+        </LocaleProvider>
       </SessionProvider>
     </QueryClientProvider>
   );

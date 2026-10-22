@@ -5,6 +5,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { ProfileData } from "@slay/data";
 
+import { LocaleProvider } from "~/lib/locale";
+
 import { ProfileLoader } from "./ProfileLoader";
 import { ProfileScreen } from "./ProfileScreen";
 
@@ -21,6 +23,11 @@ vi.mock("~/lib/imageSource", () => ({ imageSource: (url: string | null) => (url 
 vi.mock("~/features/map", () => ({ MAP_QUERY_KEY: "map" }));
 vi.mock("~/features/auth", () => ({ SignOutButton: () => <button>Log Out</button> }));
 vi.mock("@slay/data", () => data);
+vi.mock("~/lib/secure-storage", () => ({
+  readSecureItem: vi.fn(async () => null),
+  writeSecureItem: vi.fn(async () => {}),
+  deleteSecureItem: vi.fn(async () => {}),
+}));
 
 afterEach(() => {
   vi.clearAllMocks();
@@ -155,6 +162,26 @@ describe("ProfileLevelCard", () => {
     withQueries(<ProfileScreen {...profile} availableLevels={["elementary"]} />);
     expect(screen.queryByRole("button", { name: "Change level" })).toBeNull();
     expect(screen.getByText("More levels unlock as new districts are added to the city.")).toBeTruthy();
+  });
+});
+
+describe("language", () => {
+  it("switches the profile to Ukrainian and Russian, leaving the level names as authored", async () => {
+    withQueries(
+      <LocaleProvider>
+        <ProfileScreen {...profile} />
+      </LocaleProvider>,
+    );
+    expect(await screen.findByRole("heading", { name: "Profile" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "English" }).getAttribute("aria-pressed")).toBe("true");
+
+    await act(async () => fireEvent.click(screen.getByRole("button", { name: "Українська" })));
+    expect(screen.getByRole("heading", { name: "Профіль" })).toBeTruthy();
+    expect(screen.getByText("Вийти")).toBeTruthy();
+    expect(screen.getByText("Elementary")).toBeTruthy();
+
+    await act(async () => fireEvent.click(screen.getByRole("button", { name: "Русский" })));
+    expect(screen.getByRole("heading", { name: "Профиль" })).toBeTruthy();
   });
 });
 

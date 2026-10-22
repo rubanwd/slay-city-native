@@ -1,20 +1,22 @@
 import { Image, KeyboardAvoidingView, Platform, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 
-import { DEFAULT_LOCALE, getMessages, type Locale } from "@slay/core";
+import { getMessages, type Locale } from "@slay/core";
 import type { ProfileData } from "@slay/data";
 import { alpha, colors } from "@slay/tokens";
 
 import { AppContainer } from "~/components/layout";
 import { SlayText } from "~/components/ui";
 import { FeedbackButton } from "~/features/feedback";
+import { LocalePicker } from "~/features/i18n";
 import { imageSource } from "~/lib/imageSource";
+import { useLocalePreference, useStudentLocale } from "~/lib/locale";
 
 import { LogoutButton } from "./LogoutButton";
 import { ProfileLevelCard } from "./ProfileLevelCard";
 import { ProfileUsernameCard } from "./ProfileUsernameCard";
 
 export interface ProfileScreenProps extends ProfileData {
-  /** Language for this screen's own chrome; the picker itself arrives with WP-4.7. */
+  /** Language for this screen's own chrome; defaults to the student's own choice. */
   locale?: Locale;
   refreshing?: boolean;
   onRefresh?: () => void;
@@ -23,10 +25,9 @@ export interface ProfileScreenProps extends ProfileData {
 /**
  * Port of upstream's `profile/ProfileScreen.tsx` as the student page renders
  * it: the player's dressed snake as the avatar, their name and email, the
- * rename and level cards, and Log Out.
+ * rename and level cards, the language picker, Feedback & Bugs, and Log Out.
  *
- * Not here yet, each with its own package: the language picker (WP-4.7) and
- * the placement test card (WP-4.8).
+ * Not here yet: the placement test card (WP-4.8).
  */
 export function ProfileScreen({
   username,
@@ -34,10 +35,13 @@ export function ProfileScreen({
   mascotImageUrl,
   level,
   availableLevels,
-  locale = DEFAULT_LOCALE,
+  locale: localeOverride,
   refreshing = false,
   onRefresh,
 }: ProfileScreenProps) {
+  const studentLocale = useStudentLocale();
+  const { choose } = useLocalePreference();
+  const locale = localeOverride ?? studentLocale;
   const messages = getMessages(locale).student.profile;
   const mascot = imageSource(mascotImageUrl);
 
@@ -78,6 +82,8 @@ export function ProfileScreen({
           <ProfileUsernameCard username={username} messages={messages} />
           {/* Keyed by the stored level, so a level changed elsewhere and refetched resets the card. */}
           <ProfileLevelCard key={level} current={level} available={availableLevels} locale={locale} />
+
+          <LocalePicker locale={locale} title={messages.languageTitle} hint={messages.languageHint} onChoose={choose} />
 
           <View style={styles.footer}>
             {/* Reporting a bug or sending an idea — reaches the admin console's inbox. */}
