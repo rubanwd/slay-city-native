@@ -50,4 +50,6 @@ export * from "./contentImages";
 export * from "./placement";
 export * from "./teacherDashboard";
 export * from "./teacherTopics";
+export * from "./aiDrafting";
+export * from "./vocabularyAuthoring";
 export * from "./profileScreen";
