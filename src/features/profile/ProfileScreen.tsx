@@ -6,6 +6,7 @@ import { alpha, colors } from "@slay/tokens";
 
 import { AppContainer } from "~/components/layout";
 import { SlayText } from "~/components/ui";
+import { FeedbackButton } from "~/features/feedback";
 import { imageSource } from "~/lib/imageSource";
 
 import { LogoutButton } from "./LogoutButton";
@@ -24,9 +25,8 @@ export interface ProfileScreenProps extends ProfileData {
  * it: the player's dressed snake as the avatar, their name and email, the
  * rename and level cards, and Log Out.
  *
- * Not here yet, each with its own package: the language picker (WP-4.7), the
- * Feedback button (WP-4.6), and the placement test card (the placement test is
- * not ported).
+ * Not here yet, each with its own package: the language picker (WP-4.7) and
+ * the placement test card (WP-4.8).
  */
 export function ProfileScreen({
   username,
@@ -80,6 +80,8 @@ export function ProfileScreen({
           <ProfileLevelCard key={level} current={level} available={availableLevels} locale={locale} />
 
           <View style={styles.footer}>
+            {/* Reporting a bug or sending an idea — reaches the admin console's inbox. */}
+            <FeedbackButton />
             <LogoutButton label={messages.logOut} pendingLabel={messages.loggingOut} />
           </View>
         </ScrollView>

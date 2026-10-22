@@ -10,10 +10,10 @@ import { secureStorage } from "./secure-storage";
  * merges both into `process.env` for `EXPO_PUBLIC_*` keys, so no extra plumbing
  * is needed to support either source.
  */
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
+if (!url || !supabaseAnonKey) {
   throw new Error(
     "Missing EXPO_PUBLIC_SUPABASE_URL or EXPO_PUBLIC_SUPABASE_ANON_KEY. Copy .env.example to .env and fill in the shared Supabase project's values.",
   );
@@ -27,6 +27,9 @@ if (!supabaseUrl || !supabaseAnonKey) {
  * This only wires up storage; sign-in/sign-out flows and the AppState-driven
  * auto-refresh listener land with the auth screens (WP-2.1/WP-2.2).
  */
+/** The project URL — what `@slay/data` functions that check Storage URLs take as an argument. */
+export const supabaseUrl: string = url;
+
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: secureStorage,

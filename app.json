@@ -35,7 +35,15 @@
         }
       ],
       "expo-web-browser",
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "SLAY CITY attaches the screenshots you pick to your bug reports.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
