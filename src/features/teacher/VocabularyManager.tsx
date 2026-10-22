@@ -1,14 +1,15 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, Alert, StyleSheet, Switch, TextInput, View } from "react-native";
+import { ActivityIndicator, Alert, StyleSheet, Switch, View } from "react-native";
 
 import { buildVocabTest, clampWordCount, defaultTestTaskCount, describeVocabTask, MAX_VOCAB_WORDS, type TopicSource } from "@slay/core";
 import { clearVocabulary, copyVocabularyFromTopic, generateVocabularyDraft, generateWordImage, publishVocabulary, type TeacherVocabWord } from "@slay/data";
-import { alpha, colors, fontFamilyByWeight, radii, typeScale, withAlpha } from "@slay/tokens";
+import { alpha, colors, radii, withAlpha } from "@slay/tokens";
 
-import { SlayButton, SlayPressable, SlayText } from "~/components/ui";
+import { SlayButton, SlayText } from "~/components/ui";
 import { supabase } from "~/lib/supabase";
 
+import { authoringStyles, CountField, SmallField, StatusLine, TestPreviewPanel, type Status } from "./AuthoringParts";
 import { pickAndUploadImage } from "./pickAndUpload";
 import { TEACHER_DASHBOARD_QUERY_KEY, TEACHER_GROUP_QUERY_KEY, TEACHER_TOPIC_QUERY_KEY } from "./queryKeys";
 import { TestPreviewRunner } from "./TestPreviewRunner";
@@ -34,8 +35,6 @@ interface ImageJob {
   failed: number;
 }
 
-type Status = { kind: "error" | "success"; text: string } | null;
-
 let keySeq = 0;
 const nextKey = () => `w${keySeq++}`;
 
@@ -53,28 +52,6 @@ const blankDraft = (): DraftWord => toDraft({ word: "", transcription: null, tra
 /** Everything Publish sends — compared with the last publish to tell whether anything changed. */
 function publishSignature(words: Pick<DraftWord, "word" | "transcription" | "translation" | "imageUrl">[], taskCount: number, seed: number): string {
   return `${words.map((w) => [w.word, w.transcription, w.translation, w.imageUrl ?? ""].join("\u0001")).join("\u0002")}|${taskCount}|${seed}`;
-}
-
-function NumberField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
-  return (
-    <View style={styles.numberField}>
-      <SlayText variant="label" color={alpha.white50} style={styles.plain}>
-        {label}
-      </SlayText>
-      <TextInput
-        value={value}
-        onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ""))}
-        keyboardType="number-pad"
-        maxLength={2}
-        accessibilityLabel={label}
-        autoCorrect={false}
-        autoCapitalize="none"
-        spellCheck={false}
-        selectionColor={colors.neonPink}
-        style={styles.input}
-      />
-    </View>
-  );
 }
 
 /**
@@ -272,31 +249,23 @@ export function VocabularyManager({ topicId, groupId, initialWords, initialTaskC
 
   return (
     <View style={styles.manager}>
-      <View style={styles.panel}>
+      <View style={authoringStyles.panel}>
         <SlayText variant="label" color={alpha.white50}>
           Generate with AI
         </SlayText>
         <View style={styles.pair}>
-          <NumberField label="Words" value={wordCount} onChange={setWordCount} />
-          <NumberField label="Test tasks" value={taskCount} onChange={setTaskCount} />
+          <CountField label="Words" value={wordCount} onChange={setWordCount} />
+          <CountField label="Test tasks" value={taskCount} onChange={setTaskCount} />
         </View>
-        <View style={styles.numberField}>
-          <SlayText variant="label" color={alpha.white50} style={styles.plain}>
-            Extra instructions (optional)
-          </SlayText>
-          <TextInput
-            value={extra}
-            onChangeText={setExtra}
-            placeholder="e.g. beginner level, only nouns"
-            placeholderTextColor={alpha.white40}
-            accessibilityLabel="Extra instructions"
-            autoCapitalize="sentences"
-            autoCorrect
-            spellCheck
-            selectionColor={colors.neonPink}
-            style={styles.input}
-          />
-        </View>
+        <SmallField
+          label="Extra instructions (optional)"
+          value={extra}
+          onChangeText={setExtra}
+          placeholder="e.g. beginner level, only nouns"
+          autoCapitalize="sentences"
+          autoCorrect
+          spellCheck
+        />
         <View style={styles.toggle}>
           <View style={styles.shrink}>
             <SlayText variant="small" weight="600">
@@ -340,74 +309,20 @@ export function VocabularyManager({ topicId, groupId, initialWords, initialTaskC
       </SlayButton>
 
       {words.length > 0 ? (
-        <View style={styles.panel}>
-          <View style={styles.previewHead}>
-            <SlayText variant="label" color={alpha.white50}>
-              Test preview ({previewTasks.length} task{previewTasks.length === 1 ? "" : "s"})
-            </SlayText>
-            <View style={styles.previewButtons}>
-              <SlayPressable
-                accessibilityRole="button"
-                disabled={busy || previewTasks.length === 0}
-                onPress={() => setPreviewOpen(true)}
-                style={[styles.small, styles.smallCyan, (busy || previewTasks.length === 0) && styles.dim]}
-              >
-                <SlayText variant="label" weight="700" color={colors.cyan} style={styles.smallText}>
-                  Try the test
-                </SlayText>
-              </SlayPressable>
-              <SlayPressable
-                accessibilityRole="button"
-                disabled={busy || previewTasks.length === 0}
-                onPress={() => setTestSeed((s) => s + 1)}
-                style={[styles.small, styles.smallPurple, (busy || previewTasks.length === 0) && styles.dim]}
-              >
-                <SlayText variant="label" weight="700" style={styles.smallText}>
-                  Regenerate test
-                </SlayText>
-              </SlayPressable>
-            </View>
-          </View>
-          {previewTasks.length === 0 ? (
-            <SlayText variant="label" color={alpha.white40} style={styles.plain}>
-              {taskCountValue === 0 ? "Test tasks set to 0 — no test will be built." : "Add a word with a translation to build the test."}
-            </SlayText>
-          ) : (
-            previewTasks.map((task, i) => {
-              const { label, detail } = describeVocabTask(task.taskType, task.content);
-              return (
-                <View key={i} style={styles.taskLine}>
-                  <View style={styles.taskLabel}>
-                    <SlayText variant="label" weight="700" style={styles.smallText}>
-                      {label}
-                    </SlayText>
-                  </View>
-                  <SlayText variant="small" color={alpha.white60} numberOfLines={1} style={styles.shrink}>
-                    {detail}
-                  </SlayText>
-                </View>
-              );
-            })
-          )}
-          <SlayText variant="label" color={withAlpha(colors.white, 0.3)} style={styles.plain}>
-            Publishing replaces this topic&apos;s current test with the one above. &quot;Try the test&quot; plays it exactly as a student would, without saving anything.
-          </SlayText>
-        </View>
+        <TestPreviewPanel
+          count={previewTasks.length}
+          empty={taskCountValue === 0 ? "Test tasks set to 0 — no test will be built." : "Add a word with a translation to build the test."}
+          lines={previewTasks.map((task) => describeVocabTask(task.taskType, task.content))}
+          busy={busy}
+          onTry={() => setPreviewOpen(true)}
+          onRegenerate={() => setTestSeed((s) => s + 1)}
+          footnote={'Publishing replaces this topic\'s current test with the one above. "Try the test" plays it exactly as a student would, without saving anything.'}
+        />
       ) : null}
 
       <TestPreviewRunner open={previewOpen} onClose={() => setPreviewOpen(false)} title="Preview — Vocabulary test" tasks={previewTasks} />
 
-      {status ? (
-        <SlayText
-          variant="small"
-          weight="600"
-          color={status.kind === "error" ? colors.neonPink : colors.limeGreen}
-          accessibilityRole={status.kind === "error" ? "alert" : undefined}
-          accessibilityLiveRegion="polite"
-        >
-          {status.text}
-        </SlayText>
-      ) : null}
+      <StatusLine status={status} />
 
       <View style={styles.actions}>
         <SlayButton
@@ -452,34 +367,10 @@ export function VocabularyManager({ topicId, groupId, initialWords, initialTaskC
 
 const styles = StyleSheet.create({
   manager: { gap: 16 },
-  panel: { gap: 12, borderRadius: radii.md, borderWidth: 1, borderColor: alpha.white10, backgroundColor: withAlpha(colors.black, 0.3), padding: 12 },
   pair: { flexDirection: "row", gap: 12 },
-  numberField: { flex: 1, gap: 4 },
   plain: { textTransform: "none", letterSpacing: 0 },
-  input: {
-    minWidth: 0,
-    minHeight: 40,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: alpha.white20,
-    backgroundColor: alpha.white10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    color: colors.white,
-    fontFamily: fontFamilyByWeight["400"],
-    fontSize: typeScale.small.max,
-  },
   toggle: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12, borderRadius: radii.md, borderWidth: 1, borderColor: alpha.white15, backgroundColor: alpha.white5, paddingHorizontal: 12, paddingVertical: 10 },
   shrink: { flexShrink: 1, minWidth: 0 },
-  previewHead: { gap: 8 },
-  previewButtons: { flexDirection: "row", gap: 6 },
-  small: { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4 },
-  smallCyan: { borderWidth: 1, borderColor: withAlpha(colors.cyan, 0.6) },
-  smallPurple: { backgroundColor: withAlpha(colors.purple, 0.8) },
-  smallText: { fontSize: 10 },
-  dim: { opacity: 0.4 },
-  taskLine: { flexDirection: "row", alignItems: "center", gap: 8 },
-  taskLabel: { borderRadius: 4, backgroundColor: withAlpha(colors.purple, 0.25), paddingHorizontal: 6, paddingVertical: 2 },
   actions: { flexDirection: "row", gap: 8 },
   grow: { flex: 1 },
   center: { textAlign: "center" },

@@ -52,4 +52,5 @@ export * from "./teacherDashboard";
 export * from "./teacherTopics";
 export * from "./aiDrafting";
 export * from "./vocabularyAuthoring";
+export * from "./grammarAuthoring";
 export * from "./profileScreen";
