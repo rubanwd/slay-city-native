@@ -204,7 +204,7 @@ Derived from an interaction audit of all 32 files. No task needs drag gestures.
 
 **Tier 2 — tap plus a timer or animation (6 files, ~780 LOC).**
 `BubblePopTask` · `FlashcardsTask` (flip animation) · `MemoryCardsTask` ·
-`ReactionTapTask` · `SimonSequenceTask` (audio + light sequence) · `HangmanTask`
+`ReactionTapTask` · `SimonSequenceTask` (light sequence; haptics on native — the web plays no sound) · `HangmanTask`
 
 **Tier 3 — text input (3 files, ~450 LOC).**
 `CrosswordTask` · `FillBlankTask` · `SpellingBeeTask`. Native keyboards behave

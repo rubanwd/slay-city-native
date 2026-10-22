@@ -7,7 +7,8 @@ import { SlayPressable, SlayText } from "~/components/ui";
 
 /**
  * The pieces upstream's tap-to-arrange tasks (sentence builder, size order,
- * word scramble, letter fill, category sort) are built from, written once.
+ * word scramble, letter fill, category sort — and reaction tap's word field)
+ * are built from, written once.
  */
 
 /** The dark answer row that fills up as the student taps — upstream's `bg-black/30` tray. */
@@ -24,7 +25,7 @@ export function TrayPlaceholder({ children }: { children: string }) {
   );
 }
 
-export type ChipState = "pool" | "used" | "placed" | "solved" | "selected" | "wrong";
+export type ChipState = "pool" | "used" | "placed" | "solved" | "selected" | "wrong" | "missed";
 
 const CHIP: Record<ChipState, { box: ViewStyle; text: string }> = {
   pool: { box: { borderColor: alpha.white20, backgroundColor: alpha.white10 }, text: colors.white },
@@ -33,6 +34,11 @@ const CHIP: Record<ChipState, { box: ViewStyle; text: string }> = {
   solved: { box: { borderColor: colors.limeGreen, backgroundColor: withAlpha(colors.limeGreen, 0.15) }, text: colors.limeGreen },
   selected: { box: { borderColor: colors.cyan, backgroundColor: withAlpha(colors.cyan, 0.2), borderWidth: 2 }, text: colors.white },
   wrong: { box: { borderColor: colors.neonPink, backgroundColor: withAlpha(colors.neonPink, 0.15) }, text: colors.neonPink },
+  /** A right answer the student never reached — shown once a timed round ends. */
+  missed: {
+    box: { borderColor: withAlpha(colors.limeGreen, 0.6), backgroundColor: withAlpha(colors.limeGreen, 0.05) },
+    text: withAlpha(colors.limeGreen, 0.7),
+  },
 };
 
 export interface ChipProps {

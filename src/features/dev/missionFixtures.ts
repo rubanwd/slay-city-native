@@ -41,8 +41,17 @@ const CONTENT: [MissionTaskType, Json][] = [
     },
   ],
   ["story_sequencing", { steps: [{ text: "Wake up" }, { text: "Brush your teeth" }, { text: "Eat breakfast" }, { text: "Go to school" }] }],
+  ["flashcards", { cards: [{ front: "Apple", back: "Яблуко" }, { front: "Bread", back: "Хліб" }] }],
+  [
+    "memory_cards",
+    { pairs: [{ word: "Cat", match: "Кіт" }, { word: "Dog", match: "Пес" }, { word: "Sun", match: "Сонце" }, { word: "Moon", match: "Місяць" }] },
+  ],
+  ["bubble_pop", { prompt: "Pop the fruits", correct: ["Apple", "Pear", "Plum"], distractors: ["Chair", "Bus", "Shoe"] }],
+  ["reaction_tap", { prompt: "Tap every animal!", correct: ["Cat", "Dog", "Fox"], distractors: ["Cup", "Pen", "Hat"], roundSeconds: 20 }],
+  ["simon_sequence", { colors: ["Red", "Blue", "Green", "Purple"], sequence: [0, 2, 1, 3] }],
+  ["hangman", { word: "BREAD", hint: "You make toast from it", translation: "хліб" }],
   // Not ported yet — shows the skip card.
-  ["hangman", { word: "BREAD" }],
+  ["spelling_bee", { word: "BREAD" }],
 ];
 
 export const DEV_MISSION_TASKS: MissionTaskViewModel[] = CONTENT.map(([taskType, content], orderIndex) => ({

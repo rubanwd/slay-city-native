@@ -218,7 +218,9 @@ that re-checks the caller's role in SQL.
 
 ### WP-3.4 · Tier 2 tasks — 6 components
 `1d` · deps: WP-3.2
-- `AC1` Timers pause when the app backgrounds and resume correctly. `AC2` `FlashcardsTask` flip animation runs on the UI thread via Reanimated. `AC3` `SimonSequenceTask` audio and lights stay in sync.
+- `AC1` Timers pause when the app backgrounds and resume correctly. `AC2` `FlashcardsTask` flip animation runs on the UI thread via Reanimated. `AC3` `SimonSequenceTask` haptics and lights stay in sync.
+
+> **AC3 revised (WP-3.4).** It assumed the web's Simon plays tones; it doesn't — upstream `SimonSequenceTask.tsx` is lights only. Adding sound here would make the phone play a different game from the browser, so the native port pairs each light with a haptic tick instead, fired from the same timer callback. If the web gains audio, port it with the same rule.
 
 ### WP-3.5 · Tier 3 tasks — 3 components
 `0.5d` · deps: WP-3.2
