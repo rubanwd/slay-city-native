@@ -88,7 +88,17 @@ export function MissionScreen({
     onSuccess: async (result) => {
       if (!result.ok) return;
       await queryClient.invalidateQueries({ queryKey: [MAP_QUERY_KEY] });
-      router.replace({ pathname: "/mission/[missionId]/reward", params: { missionId: mission.id } });
+      // The reward screen shows exactly what `complete_mission` granted — a
+      // replay grants nothing, and says so (WP-3.7 AC3–4).
+      router.replace({
+        pathname: "/mission/[missionId]/reward",
+        params: {
+          missionId: mission.id,
+          xp: String(result.xpEarned),
+          coins: String(result.coinsEarned),
+          replay: result.alreadyCompleted ? "1" : "0",
+        },
+      });
     },
   });
   const error = submit.data && !submit.data.ok ? submit.data.error : submit.error?.message;
