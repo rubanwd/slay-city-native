@@ -82,3 +82,14 @@ export function deviceLocale(): Locale {
   }
   return matchLocale(tag) ?? DEFAULT_LOCALE;
 }
+
+/**
+ * The language of the parent console — upstream's `resolveLocale`: the
+ * parent's own choice if they made one, otherwise the phone's language
+ * ("Automatic"). An adult's device language is a real signal; a child's is not.
+ */
+export function useParentLocale(): { locale: Locale; detected: Locale; manual: boolean } {
+  const { chosen } = useLocalePreference();
+  const detected = deviceLocale();
+  return { locale: chosen ?? detected, detected, manual: chosen !== null };
+}

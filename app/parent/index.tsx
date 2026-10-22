@@ -1,1 +1,5 @@
-export { default } from "~/features/parent/ProgressPlaceholder";
+import { ParentDashboardLoader } from "~/features/parent";
+
+export default function ParentDashboardRoute() {
+  return <ParentDashboardLoader />;
+}
