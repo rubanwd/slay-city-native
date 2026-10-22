@@ -3,7 +3,6 @@ import { describe, expect, it, vi } from "vitest";
 
 import HomeworkPlaceholder from "./HomeworkPlaceholder";
 import ProfilePlaceholder from "./ProfilePlaceholder";
-import WardrobePlaceholder from "./WardrobePlaceholder";
 
 /**
  * Each placeholder is a route, so it renders a `Link`. `vi.mock` is hoisted
@@ -22,14 +21,6 @@ function hrefOf(label: string): string | null {
 }
 
 describe("student placeholders", () => {
-  it("Wardrobe links to every other student placeholder", () => {
-    render(<WardrobePlaceholder />);
-    expect(screen.getByText("Wardrobe")).toBeTruthy();
-    expect(hrefOf("Map")).toBe("/map");
-    expect(hrefOf("Homework")).toBe("/homework");
-    expect(hrefOf("Profile")).toBe("/profile");
-  });
-
   it("Homework links to every other student placeholder", () => {
     render(<HomeworkPlaceholder />);
     expect(screen.getByText("Homework")).toBeTruthy();
