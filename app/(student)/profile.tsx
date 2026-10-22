@@ -1,1 +1,5 @@
-export { default } from "~/features/student/ProfilePlaceholder";
+import { ProfileLoader } from "~/features/profile";
+
+export default function ProfileRoute() {
+  return <ProfileLoader />;
+}
