@@ -8,6 +8,7 @@ import { AppContainer } from "~/components/layout";
 import { SlayText } from "~/components/ui";
 import { FeedbackButton } from "~/features/feedback";
 import { LocalePicker } from "~/features/i18n";
+import { PlacementTestCard } from "~/features/placement";
 import { imageSource } from "~/lib/imageSource";
 import { useLocalePreference, useStudentLocale } from "~/lib/locale";
 
@@ -25,9 +26,8 @@ export interface ProfileScreenProps extends ProfileData {
 /**
  * Port of upstream's `profile/ProfileScreen.tsx` as the student page renders
  * it: the player's dressed snake as the avatar, their name and email, the
- * rename and level cards, the language picker, Feedback & Bugs, and Log Out.
- *
- * Not here yet: the placement test card (WP-4.8).
+ * rename and level cards, the level test card, the language picker,
+ * Feedback & Bugs, and Log Out.
  */
 export function ProfileScreen({
   username,
@@ -35,6 +35,7 @@ export function ProfileScreen({
   mascotImageUrl,
   level,
   availableLevels,
+  latestPlacement,
   locale: localeOverride,
   refreshing = false,
   onRefresh,
@@ -82,6 +83,8 @@ export function ProfileScreen({
           <ProfileUsernameCard username={username} messages={messages} />
           {/* Keyed by the stored level, so a level changed elsewhere and refetched resets the card. */}
           <ProfileLevelCard key={level} current={level} available={availableLevels} locale={locale} />
+
+          <PlacementTestCard latest={latestPlacement} messages={messages} />
 
           <LocalePicker locale={locale} title={messages.languageTitle} hint={messages.languageHint} onChoose={choose} />
 

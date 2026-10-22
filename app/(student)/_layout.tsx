@@ -43,6 +43,8 @@ export default function StudentLayout() {
       <Tabs.Screen name="mission/[missionId]/reward" options={{ href: null, tabBarStyle: { display: "none" } }} />
       {/* A topic is full-screen too: its study flows run like a mission. */}
       <Tabs.Screen name="homework/[topicId]" options={{ href: null, tabBarStyle: { display: "none" } }} />
+      {/* The level test is full-screen too, one question at a time. */}
+      <Tabs.Screen name="placement-test" options={{ href: null, tabBarStyle: { display: "none" } }} />
     </Tabs>
   );
 }

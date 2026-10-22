@@ -252,7 +252,7 @@ that re-checks the caller's role in SQL.
 | `WP-4.5` | Study-time tracker | 0.5d | The heartbeat stops on background and resumes on foreground; no time is recorded while backgrounded; `record_study_time` receives plausible values — **done**; it also stops while its screen is not the one on show, since a tab navigator keeps a visited mission mounted where the web would have unmounted the page |
 | `WP-4.6` | Feedback | 1d | `expo-image-picker` with permission handling and a graceful denial path; uploads reach the same Storage bucket; the image is compressed before upload — **done**; on the student profile — the teacher's gets it with its own profile in `P8` |
 | `WP-4.7` | i18n | 1d | Locale persists in SecureStore; en/uk/ru all render; **mission content and authored content stay English**, per `AGENTS.md`; only the profile screen and tab bar are translated on the student side — **done**; `~/lib/locale` also offers `deviceLocale()` for the parent console's "Automatic" (`WP-5.9`) |
-| `WP-4.8` | Placement test | 1d | **Added 2026-10-22** — upstream shipped it (`features/placement`, ~1 000 lines) after this plan was written. The test, its profile card and the latest result; answers are scored by the same `submit_placement_test` RPC as on the web, and `placement.ts` is synced into core rather than re-written |
+| `WP-4.8` | Placement test | 1d | **Added 2026-10-22** — upstream shipped it (`features/placement`, ~1 000 lines) after this plan was written. The test, its profile card and the latest result; answers are scored by the same `submit_placement_test` RPC as on the web, and `placement.ts` is synced into core rather than re-written — **done** |
 
 ---
 
