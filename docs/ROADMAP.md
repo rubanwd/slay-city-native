@@ -165,7 +165,7 @@ what the web app grants for the same mission.
 
 `WP-4.1` homework · `WP-4.2` wardrobe · `WP-4.3` profile and levels ·
 `WP-4.4` onboarding · `WP-4.5` study-time tracker · `WP-4.6` feedback ·
-`WP-4.7` i18n
+`WP-4.7` i18n · `WP-4.8` placement test (added: upstream shipped it after this plan)
 
 **Exit:** every student-facing route in the migration map exists and works; the
 student app is feature-complete against the web app.
