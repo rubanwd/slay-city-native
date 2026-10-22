@@ -80,7 +80,8 @@ describe("signed in", () => {
 
 describe("role areas (AC2)", () => {
   it("keeps a student out of the teacher, parent and admin areas", () => {
-    for (const pathname of ["/teacher", "/teacher/map", "/parent", "/parent/profile", "/admin"]) {
+    // Including the teacher's review of the game (WP-5.7): only a teacher may enter it.
+    for (const pathname of ["/teacher", "/teacher/map", "/teacher/mission/m1", "/teacher/location/l1", "/parent", "/parent/profile", "/admin"]) {
       expect(decide({ pathname, account: as("student") })).toEqual(to("/map"));
     }
     for (const pathname of ["/map", "/wardrobe", "/homework", "/profile"]) {

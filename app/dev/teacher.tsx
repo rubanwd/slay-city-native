@@ -2,7 +2,8 @@ import { Redirect, useLocalSearchParams } from "expo-router";
 
 import type { GroupTopicsData, TeacherGroup, TeacherTopicData } from "@slay/data";
 
-import { GrammarManager, GroupTopicsScreen, TeacherDashboard, TeacherTopicScreen, VocabularyManager } from "~/features/teacher";
+import { CityMapPreview } from "~/features/map";
+import { GrammarManager, GroupTopicsScreen, ReviewLocationScreen, TeacherDashboard, TeacherTopicScreen, VocabularyManager } from "~/features/teacher";
 
 const GROUPS: TeacherGroup[] = [
   {
@@ -77,12 +78,45 @@ const TOPIC: TeacherTopicData = {
 
 /**
  * The teacher console with made-up data and no backend: the dashboard, or
- * `?screen=group` / `?screen=topic` for a group's topics and one topic. Dev-only.
+ * `?screen=group|topic|map|location` for a group's topics, one topic, the
+ * city map preview and a stop's missions in review. Dev-only.
  */
 export default function TeacherPreviewScreen() {
   const { screen } = useLocalSearchParams<{ screen?: string }>();
   if (!__DEV__) return <Redirect href="/" />;
   if (screen === "group") return <GroupTopicsScreen {...TOPICS} />;
+  if (screen === "map")
+    return (
+      <CityMapPreview
+        districts={[
+          {
+            id: "d1",
+            name: "Old Town",
+            orderIndex: 0,
+            backgroundUrl: null,
+            locations: [
+              { id: "l1", name: "Bakery", description: "Bread, rolls and a very busy baker.", mapX: 30, mapY: 35, iconUrl: null, orderIndex: 0, state: "available", missionId: null, missionsCompleted: 0, totalMissions: 3, totalXp: 60, totalCoins: 15 },
+              { id: "l2", name: "Park", description: null, mapX: 65, mapY: 60, iconUrl: null, orderIndex: 1, state: "available", missionId: null, missionsCompleted: 0, totalMissions: 2, totalXp: 40, totalCoins: 10 },
+            ],
+          },
+          { id: "d2", name: "Harbour", orderIndex: 1, backgroundUrl: null, locations: [] },
+        ] as never}
+        levelName="Elementary"
+        subtitle="Every district and mission"
+        locationHref={(locationId) => ({ pathname: "/teacher/location/[locationId]", params: { locationId } })}
+      />
+    );
+  if (screen === "location")
+    return (
+      <ReviewLocationScreen
+        location={{ id: "l1", name: "Bakery", description: "Bread, rolls and a very busy baker.", districtName: "Old Town" }}
+        missions={[
+          { id: "m1", title: "Buy some bread", description: "Shopping words" },
+          { id: "m2", title: "Count the rolls", description: "Numbers 1–20" },
+          { id: "m3", title: "Thank the baker", description: null },
+        ]}
+      />
+    );
   if (screen === "topic")
     return (
       <TeacherTopicScreen

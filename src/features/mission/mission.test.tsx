@@ -136,6 +136,8 @@ describe("MissionScreen", () => {
 
   it("records nothing in review mode", () => {
     renderMission({ tasks: [tasks[0]], review: true });
+    // Said on screen, so a teacher never mistakes a review for a real run.
+    expect(screen.getByLabelText("Review mode: nothing is saved")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("radio", { name: "Apple" }));
     fireEvent.click(screen.getByRole("button", { name: "Finish Review" }));
