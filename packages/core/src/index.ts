@@ -38,6 +38,10 @@ export * from "./features/mission/wordPuzzle";
 export * from "./features/mission/taskUtils";
 export * from "./features/mission/types";
 
+// ── Homework: the word and grammar sets a topic teaches ───────────────────────
+export * from "./features/homework/vocabulary";
+export * from "./features/homework/grammar";
+
 // ── Map: unlock state and layout constants ────────────────────────────────────
 export * from "./features/map/mapState";
 export * from "./features/map/mapConstants";

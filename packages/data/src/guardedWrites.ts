@@ -10,13 +10,13 @@ import type { Database, Json, KnowledgeLevel, MissionTaskType } from "@slay/core
  * anon key and never runs that guard, so each of those writes re-checks the
  * caller's role and the record's ownership in SQL instead.
  *
- * **Nothing in this file works yet, and nothing imports it.** The functions do
- * not exist in any database until the `WP-2.3` pull request is merged into
- * `rubanwd/slay-city` (see `docs/UPSTREAM-PR-WP-2.3.md`). Calling one today
- * returns a `PGRST202` "function not found" error, which is why `P8`'s screens
- * are blocked on that merge rather than on this file. It is written now so the
- * contract is reviewed alongside the SQL it calls, and so the day the PR lands
- * the only change needed here is deleting {@link callGuardedRpc}'s cast.
+ * **These are live.** The `WP-2.3` pull request has been merged into
+ * `rubanwd/slay-city` (see `docs/UPSTREAM-PR-WP-2.3.md`), all twelve functions
+ * exist, and the student Q&A thread (`postTopicMessage`, `markTopicRead`,
+ * `deleteTopicMessage`) uses them since `WP-4.1`. The tracked `database.ts`
+ * already lists them, so {@link callGuardedRpc}'s cast below is now dead
+ * weight — removing it is left for `P8`, alongside the teacher screens that
+ * call the rest.
  *
  * ## Why the cast
  *

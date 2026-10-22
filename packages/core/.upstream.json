@@ -1,7 +1,7 @@
 {
   "upstream": "https://github.com/rubanwd/slay-city",
-  "syncedAt": "2026-10-19T15:58:38.964Z",
-  "syncedFrom": "95aab35281a0991bfa47f7b75a2ea5484e2c7065",
+  "syncedAt": "2026-10-22T14:09:23.555Z",
+  "syncedFrom": "9eb51e0e76512739667e3e9c92fa50958861c175",
   "files": [
     {
       "local": "packages/core/src/types/database.ts",
@@ -292,6 +292,30 @@
       "sha256": "aff4bdf286054ac8d7f6a519357de3ae5e00b0155c9b25e44471ca2ac1f4aff6",
       "adapted": true,
       "note": "Synthesis maths only; playSnakeHiss drives the Web Audio API and becomes an expo-audio player in WP-6.2. A drift alert inside playSnakeHiss belongs in the platform adapter."
+    },
+    {
+      "local": "packages/core/src/features/homework/vocabulary.ts",
+      "upstream": "src/features/homework/vocabulary.ts",
+      "sha256": "26af5fdf1447bfaa4792df5f5719b16c73ab98839d0a8f958c25e3a2f2d7d038",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/homework/vocabulary.test.ts",
+      "upstream": "src/features/homework/vocabulary.test.ts",
+      "sha256": "754519bbf1006e09f16e1dff925afffbb50f3901d40eadae1cb830a1eba5bda8",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/homework/grammar.ts",
+      "upstream": "src/features/homework/grammar.ts",
+      "sha256": "58543f8fe7f601c658130d9d2f8c330241ad1677446b719fd20ac8c9ad65bdfd",
+      "adapted": false
+    },
+    {
+      "local": "packages/core/src/features/homework/grammar.test.ts",
+      "upstream": "src/features/homework/grammar.test.ts",
+      "sha256": "03a19cb743f3d96f9dca53983be79cc169109c321aa49ab3bd4beb47d43b49c3",
+      "adapted": false
     }
   ]
 }
