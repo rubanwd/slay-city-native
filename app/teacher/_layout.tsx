@@ -22,6 +22,9 @@ export default function TeacherLayout() {
       <Tabs.Screen name="index" options={{ title: "Groups" }} />
       <Tabs.Screen name="map" options={{ title: "Map" }} />
       <Tabs.Screen name="profile" options={{ title: "Profile" }} />
+      {/* A group's topics and a topic's authoring are full-screen, as on the web: no tab, no tab bar. */}
+      <Tabs.Screen name="groups/[groupId]/index" options={{ href: null, tabBarStyle: { display: "none" } }} />
+      <Tabs.Screen name="groups/[groupId]/topics/[topicId]" options={{ href: null, tabBarStyle: { display: "none" } }} />
     </Tabs>
   );
 }

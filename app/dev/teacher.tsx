@@ -1,8 +1,8 @@
-import { Redirect } from "expo-router";
+import { Redirect, useLocalSearchParams } from "expo-router";
 
-import type { TeacherGroup } from "@slay/data";
+import type { GroupTopicsData, TeacherGroup, TeacherTopicData } from "@slay/data";
 
-import { TeacherDashboard } from "~/features/teacher";
+import { GroupTopicsScreen, TeacherDashboard, TeacherTopicScreen } from "~/features/teacher";
 
 const GROUPS: TeacherGroup[] = [
   {
@@ -27,8 +27,62 @@ const GROUPS: TeacherGroup[] = [
   { id: "g2", name: "6-B · Thursday", students: [] },
 ];
 
-/** The teacher dashboard with made-up groups and no backend. Dev-only. */
+const summary = (id: string, title: string, extra: Partial<GroupTopicsData["topics"][number]> = {}) => ({
+  id,
+  title,
+  description: null,
+  orderIndex: 0,
+  noteText: null,
+  noteLinkUrl: null,
+  noteImageUrl: null,
+  wordCount: 0,
+  grammarCount: 0,
+  unreadCount: 0,
+  ...extra,
+});
+
+const TOPICS: GroupTopicsData = {
+  group: { id: "g1", name: "5-A · Monday" },
+  topics: [
+    summary("t3", "Past Simple", { description: "Regular and irregular verbs", grammarCount: 3, unreadCount: 2 }),
+    summary("t2", "Food & drinks", { wordCount: 14, noteLinkUrl: "https://example.com" }),
+    summary("t1", "Animals", { wordCount: 10, grammarCount: 1 }),
+  ],
+  nextOrder: 3,
+};
+
+const TOPIC: TeacherTopicData = {
+  group: TOPICS.group,
+  topic: { id: "t1", title: "Animals", description: "Pets and farm animals", orderIndex: 0, noteText: null, noteLinkUrl: "https://example.com/animals", noteImageUrl: null },
+  teacherId: "me",
+  vocabWords: [
+    { word: "cat", transcription: "/kæt/", translation: "кіт", imageUrl: null },
+    { word: "rabbit", transcription: "/ˈræbɪt/", translation: "кролик", imageUrl: null },
+  ],
+  vocabTaskCount: 6,
+  grammarPoints: [{ title: "Plural nouns", explanation: "Add -s to most nouns: cat → cats.", example: "Two cats." }],
+  grammarTasks: [],
+  vocabRows: [
+    { studentId: "s1", username: "anna", passed: true },
+    { studentId: "s2", username: "bohdan", passed: false },
+  ],
+  grammarRows: [
+    { studentId: "s1", username: "anna", passed: false },
+    { studentId: "s2", username: "bohdan", passed: false },
+  ],
+  reuseSources: [],
+  messages: [],
+  unreadCount: 1,
+};
+
+/**
+ * The teacher console with made-up data and no backend: the dashboard, or
+ * `?screen=group` / `?screen=topic` for a group's topics and one topic. Dev-only.
+ */
 export default function TeacherPreviewScreen() {
+  const { screen } = useLocalSearchParams<{ screen?: string }>();
   if (!__DEV__) return <Redirect href="/" />;
+  if (screen === "group") return <GroupTopicsScreen {...TOPICS} />;
+  if (screen === "topic") return <TeacherTopicScreen {...TOPIC} />;
   return <TeacherDashboard groups={GROUPS} username="ms_kate" email="kate@school.org" />;
 }

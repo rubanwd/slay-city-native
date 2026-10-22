@@ -1,5 +1,9 @@
 export { default as MapPlaceholder } from "./MapPlaceholder";
 export { default as ProfilePlaceholder } from "./ProfilePlaceholder";
+export { GroupTopicsScreen, type GroupTopicsScreenProps } from "./GroupTopicsScreen";
 export { StudentCard } from "./StudentCard";
 export { TeacherDashboard, type TeacherDashboardProps } from "./TeacherDashboard";
-export { TEACHER_DASHBOARD_QUERY_KEY, TeacherDashboardLoader } from "./TeacherDashboardLoader";
+export { TeacherDashboardLoader } from "./TeacherDashboardLoader";
+export { GroupTopicsLoader, TeacherTopicLoader } from "./TeacherLoaders";
+export { TeacherTopicScreen, type TeacherTopicScreenProps } from "./TeacherTopicScreen";
+export { TEACHER_DASHBOARD_QUERY_KEY, TEACHER_GROUP_QUERY_KEY, TEACHER_TOPIC_QUERY_KEY } from "./queryKeys";

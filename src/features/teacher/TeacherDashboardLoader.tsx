@@ -9,9 +9,8 @@ import { SlayButton, SlayText } from "~/components/ui";
 import { SignOutButton } from "~/features/auth";
 import { supabase } from "~/lib/supabase";
 
+import { TEACHER_DASHBOARD_QUERY_KEY } from "./queryKeys";
 import { TeacherDashboard } from "./TeacherDashboard";
-
-export const TEACHER_DASHBOARD_QUERY_KEY = "teacher-dashboard";
 
 /**
  * `/teacher`: loads the groups (`loadTeacherDashboard`). Refetches when the
