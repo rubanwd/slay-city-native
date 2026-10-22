@@ -84,9 +84,9 @@ describe("role group layouts", () => {
     expect(screen.getByText("Profile")).toBeTruthy();
   });
 
-  it("parent declares progress, map and profile tabs", () => {
+  it("parent declares dashboard, map and profile tabs", () => {
     render(<ParentLayout />);
-    expect(screen.getByText("Progress")).toBeTruthy();
+    expect(screen.getByText("Dashboard")).toBeTruthy();
     expect(screen.getByText("Map")).toBeTruthy();
     expect(screen.getByText("Profile")).toBeTruthy();
   });

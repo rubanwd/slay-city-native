@@ -63,6 +63,9 @@ export const lockedBrandColors = {
  * `reward.gold` is the "Iconic!" headline on the reward screen — the web's
  * `text-yellow-300`, one of its eight celebration themes.
  *
+ * `status.inProgress` is the parent dashboard's "In progress" homework chip — the
+ * web's `text-yellow-300` / `bg-yellow-300/15`, the one place a status is yellow.
+ *
  * `google.*` is Google's own "G" mark on the Continue with Google button — the
  * logo must keep its colours, so they are artwork, not brand.
  */
@@ -76,6 +79,9 @@ export const artwork = {
   },
   reward: {
     gold: "#FDE047",
+  },
+  status: {
+    inProgress: "#FDE047",
   },
   map: {
     skyTop: "#241246",

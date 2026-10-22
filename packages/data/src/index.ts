@@ -54,4 +54,5 @@ export * from "./aiDrafting";
 export * from "./vocabularyAuthoring";
 export * from "./grammarAuthoring";
 export * from "./mapPreview";
+export * from "./parentDashboard";
 export * from "./profileScreen";
