@@ -43,4 +43,5 @@ export * from "./account";
 export * from "./mapScreen";
 export * from "./missionScreen";
 export * from "./rewardScreen";
+export * from "./wardrobeScreen";
 export * from "./homeworkScreen";

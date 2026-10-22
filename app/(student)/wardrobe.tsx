@@ -1,1 +1,5 @@
-export { default } from "~/features/student/WardrobePlaceholder";
+import { WardrobeLoader } from "~/features/wardrobe";
+
+export default function WardrobeRoute() {
+  return <WardrobeLoader />;
+}

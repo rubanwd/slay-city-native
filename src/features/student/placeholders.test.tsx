@@ -2,7 +2,6 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import ProfilePlaceholder from "./ProfilePlaceholder";
-import WardrobePlaceholder from "./WardrobePlaceholder";
 
 /**
  * Each placeholder is a route, so it renders a `Link`. `vi.mock` is hoisted
@@ -21,14 +20,6 @@ function hrefOf(label: string): string | null {
 }
 
 describe("student placeholders", () => {
-  it("Wardrobe links to every other student placeholder", () => {
-    render(<WardrobePlaceholder />);
-    expect(screen.getByText("Wardrobe")).toBeTruthy();
-    expect(hrefOf("Map")).toBe("/map");
-    expect(hrefOf("Homework")).toBe("/homework");
-    expect(hrefOf("Profile")).toBe("/profile");
-  });
-
   it("Profile links to every other student placeholder", () => {
     render(<ProfilePlaceholder />);
     expect(screen.getByText("Profile")).toBeTruthy();
