@@ -99,3 +99,15 @@ vi.mock("~/lib/sfxSources", () => ({
     rewardApplause: { uri: "reward-applause.m4a" },
   },
 }));
+
+/*
+ * The photo library, the image re-encoder and `expo-crypto` are native modules
+ * too. A test that picks a screenshot drives these mocks itself (see
+ * `feedback.test.tsx`).
+ */
+vi.mock("expo-image-picker", () => ({
+  requestMediaLibraryPermissionsAsync: vi.fn(async () => ({ granted: true, canAskAgain: true })),
+  launchImageLibraryAsync: vi.fn(async () => ({ canceled: true, assets: null })),
+}));
+vi.mock("expo-image-manipulator", () => ({ ImageManipulator: { manipulate: vi.fn() }, SaveFormat: { JPEG: "jpeg" } }));
+vi.mock("expo-crypto", () => ({ randomUUID: vi.fn(() => "uuid") }));

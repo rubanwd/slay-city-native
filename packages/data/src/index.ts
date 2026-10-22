@@ -46,4 +46,5 @@ export * from "./rewardScreen";
 export * from "./wardrobeScreen";
 export * from "./homeworkScreen";
 export * from "./onboarding";
+export * from "./contentImages";
 export * from "./profileScreen";
