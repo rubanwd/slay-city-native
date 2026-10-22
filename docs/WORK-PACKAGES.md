@@ -260,7 +260,7 @@ that re-checks the caller's role in SQL.
 
 | ID | Package | Est. | Key acceptance criteria |
 | --- | --- | --- | --- |
-| `WP-5.1` | Teacher dashboard & groups | 1.5d | `my_groups` drives the list; student cards show live progress; a teacher sees only their own groups |
+| `WP-5.1` | Teacher dashboard & groups | 1.5d | `my_groups` drives the list; student cards show live progress; a teacher sees only their own groups — **done**; one AC revised: `my_groups()` is the *student's* list of groups, so the teacher's comes from `teacher_groups` under `teacher_groups_select_own_or_admin`, exactly as upstream's `getTeacherGroups` reads it; "live" is a refetch whenever the app returns to the foreground, plus pull to refresh |
 | `WP-5.2` | Homework topic authoring | 1.5d | Create, edit, assign and reuse another topic's content (`topicSources.ts`); all writes go through WP-2.3's audited paths |
 | `WP-5.3` | `VocabularyManager` | 2d | The 632-LOC component's full feature set, including per-word images from Storage; images optional, per the existing behaviour; long lists virtualised |
 | `WP-5.4` | `GrammarManager` | 1d | Full feature set of the 383-LOC component |
