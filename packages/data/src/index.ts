@@ -55,4 +55,5 @@ export * from "./vocabularyAuthoring";
 export * from "./grammarAuthoring";
 export * from "./mapPreview";
 export * from "./parentDashboard";
+export * from "./adultProfiles";
 export * from "./profileScreen";

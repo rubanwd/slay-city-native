@@ -3,3 +3,4 @@ export { ProfileLoader } from "./ProfileLoader";
 export { ProfileScreen, type ProfileScreenProps } from "./ProfileScreen";
 export { ProfileLevelCard, type ProfileLevelCardProps } from "./ProfileLevelCard";
 export { ProfileUsernameCard, type ProfileUsernameCardProps } from "./ProfileUsernameCard";
+export { LogoutButton } from "./LogoutButton";
