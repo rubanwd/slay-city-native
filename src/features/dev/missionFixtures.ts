@@ -23,6 +23,24 @@ const CONTENT: [MissionTaskType, Json][] = [
   ["counting_game", { emoji: "🍎", count: 5, options: [3, 4, 5, 6] }],
   ["clock_reading", { hour: 3, minute: 30, options: ["3:30", "6:15", "12:00", "9:45"], correctIndex: 0 }],
   ["spot_the_difference", { emoji: "🐱", oddEmoji: "🐶", gridSize: 16, oddIndex: 9 }],
+  ["matching", { prompt: "Match the words", pairs: [{ word: "Cat", match: "Кіт" }, { word: "Dog", match: "Пес" }, { word: "Bird", match: "Птах" }] }],
+  ["sentence_builder", { words: ["I", "like", "green", "apples"], translation: "Я люблю зелені яблука" }],
+  ["size_order", { items: ["Ant", "Cat", "Horse", "Whale"] }],
+  ["word_scramble", { word: "APPLE", translation: "яблуко", hint: "A red or green fruit" }],
+  ["letter_fill", { word: "BREAD", translation: "хліб" }],
+  [
+    "category_sort",
+    {
+      categories: ["Fruit", "Animals"],
+      items: [
+        { text: "Apple", categoryIndex: 0 },
+        { text: "Cat", categoryIndex: 1 },
+        { text: "Banana", categoryIndex: 0 },
+        { text: "Dog", categoryIndex: 1 },
+      ],
+    },
+  ],
+  ["story_sequencing", { steps: [{ text: "Wake up" }, { text: "Brush your teeth" }, { text: "Eat breakfast" }, { text: "Go to school" }] }],
   // Not ported yet — shows the skip card.
   ["hangman", { word: "BREAD" }],
 ];
