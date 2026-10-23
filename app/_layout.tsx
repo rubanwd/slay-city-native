@@ -8,7 +8,7 @@ import {
   useFonts,
 } from "@expo-google-fonts/nunito";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import { Stack, type ErrorBoundaryProps } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
@@ -18,7 +18,9 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { colors } from "@slay/tokens";
 
 import { RouteGuard } from "~/features/auth";
+import { RouteError } from "~/features/errors";
 import { SessionProvider } from "~/hooks/useSession";
+import { installGlobalErrorHandler } from "~/lib/errorReporting";
 import { loadHapticsPreference } from "~/lib/haptics";
 import { LocaleProvider } from "~/lib/locale";
 import { queryClient } from "~/lib/query-client";
@@ -29,6 +31,8 @@ import "../global.css";
 SplashScreen.preventAutoHideAsync().catch(() => {});
 // The vibration switch (WP-6.3) is read once; haptics stay on until it resolves.
 void loadHapticsPreference();
+// Uncaught errors are reported before React Native handles them (WP-6.7).
+installGlobalErrorHandler();
 
 /**
  * Root layout.
@@ -99,5 +103,18 @@ export default function RootLayout() {
         </LocaleProvider>
       </SessionProvider>
     </QueryClientProvider>
+  );
+}
+
+/**
+ * The last line: a crash outside the role groups (auth, onboarding) or in this
+ * layout itself. It renders without this layout's providers, so it brings its
+ * own safe area and speaks English.
+ */
+export function ErrorBoundary(props: ErrorBoundaryProps) {
+  return (
+    <SafeAreaProvider>
+      <RouteError {...props} where="root" />
+    </SafeAreaProvider>
   );
 }

@@ -1,8 +1,9 @@
-import { Tabs } from "expo-router";
+import { Tabs, type ErrorBoundaryProps } from "expo-router";
 
 import { getMessages } from "@slay/core";
 
 import { SlayTabBar, slayTabScreenOptions, tabIcon } from "~/components/navigation";
+import { RouteError } from "~/features/errors";
 import { useParentLocale } from "~/lib/locale";
 
 /**
@@ -22,4 +23,9 @@ export default function ParentLayout() {
       <Tabs.Screen name="profile" options={{ title: nav.profile, tabBarIcon: tabIcon("profile") }} />
     </Tabs>
   );
+}
+
+/** A crash in any parent screen lands here, in the console's language, instead of closing the app (WP-6.7). */
+export function ErrorBoundary(props: ErrorBoundaryProps) {
+  return <RouteError {...props} where="parent" locale={useParentLocale().locale} />;
 }

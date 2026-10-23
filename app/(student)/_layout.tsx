@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { Tabs } from "expo-router";
+import { Tabs, type ErrorBoundaryProps } from "expo-router";
 
 import { getMessages } from "@slay/core";
 import { hasAnyGroup } from "@slay/data";
 
 import { SlayTabBar, slayTabScreenOptions, tabIcon } from "~/components/navigation";
+import { RouteError } from "~/features/errors";
 import { HOMEWORK_QUERY_KEY } from "~/features/homework";
 import { useStudentLocale } from "~/lib/locale";
 import { supabase } from "~/lib/supabase";
@@ -40,4 +41,9 @@ export default function StudentLayout() {
       <Tabs.Screen name="placement-test" options={{ href: null, tabBarStyle: { display: "none" } }} />
     </Tabs>
   );
+}
+
+/** A crash in any student screen lands here, in the student's language, instead of closing the app (WP-6.7). */
+export function ErrorBoundary(props: ErrorBoundaryProps) {
+  return <RouteError {...props} where="student" locale={useStudentLocale()} />;
 }
