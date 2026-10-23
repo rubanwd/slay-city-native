@@ -5,6 +5,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { MissionTaskViewModel } from "@slay/core";
 
+import { haptic } from "~/lib/haptics";
+
 import { MissionScreen } from "./MissionScreen";
 import { TaskRunner } from "./TaskRunner";
 
@@ -15,6 +17,7 @@ vi.mock("expo-router", () => ({ useRouter: () => nav }));
 vi.mock("~/lib/supabase", () => ({ supabase: {} }));
 vi.mock("~/lib/imageSource", () => ({ imageSource: () => null }));
 vi.mock("@slay/data", () => ({ submitMissionCompletion }));
+vi.mock("~/lib/haptics", () => ({ haptic: vi.fn() }));
 
 const quiz = { question: "Which is a fruit?", imageUrl: null, options: ["Apple", "Chair"], correctIndex: 0 };
 
@@ -93,6 +96,7 @@ describe("MissionScreen", () => {
       }),
     );
     expect(submitMissionCompletion).toHaveBeenCalledWith({}, "m1", 1);
+    expect(haptic).toHaveBeenCalledWith("missionComplete");
   });
 
   it("tells the reward screen when a replay granted nothing (WP-3.7 AC4)", async () => {

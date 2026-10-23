@@ -5,6 +5,7 @@ import { shuffle, type MatchingContent, type MatchingPair } from "@slay/core";
 import { alpha, colors, radii, withAlpha } from "@slay/tokens";
 
 import { SlayButton, SlayPressable, SlayText } from "~/components/ui";
+import { haptic } from "~/lib/haptics";
 import { imageSource } from "~/lib/imageSource";
 
 import type { TaskProps } from "../taskContract";
@@ -43,10 +44,12 @@ export function MatchingTask({ content, onComplete, actionLabel }: TaskProps<Mat
     // can share a translation, and refusing the twin would read as wrong.
     const selectedMatch = words.find((p) => p.id === selectedWordId)?.match;
     if (pair.id === selectedWordId || pair.match === selectedMatch) {
+      haptic("correct");
       setResolved((prev) => new Set(prev).add(selectedWordId));
       setSelectedWordId(null);
       return;
     }
+    haptic("wrong");
     setWrongMatchId(pair.id);
     if (flash.current) clearTimeout(flash.current);
     flash.current = setTimeout(() => setWrongMatchId(null), WRONG_FLASH_MS);

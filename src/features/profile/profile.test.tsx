@@ -208,6 +208,22 @@ describe("language", () => {
   });
 });
 
+describe("HapticsCard", () => {
+  it("switches vibration off for the whole app, and stores it", async () => {
+    const { writeSecureItem } = await import("~/lib/secure-storage");
+    withQueries(<ProfileScreen {...profile} />);
+    const toggle = screen.getByRole("switch", { name: "Vibration" }) as HTMLInputElement;
+    expect(toggle.checked).toBe(true);
+
+    await act(async () => fireEvent.click(toggle));
+    expect(writeSecureItem).toHaveBeenCalledWith("slay_haptics", "off");
+    expect((screen.getByRole("switch", { name: "Vibration" }) as HTMLInputElement).checked).toBe(false);
+
+    await act(async () => fireEvent.click(screen.getByRole("switch", { name: "Vibration" })));
+    expect(writeSecureItem).toHaveBeenCalledWith("slay_haptics", "on");
+  });
+});
+
 describe("ProfileLoader", () => {
   it("loads the profile", async () => {
     data.loadProfile.mockResolvedValue(profile);

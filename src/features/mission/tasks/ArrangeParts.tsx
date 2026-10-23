@@ -1,9 +1,10 @@
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 
 import { alpha, colors, radii, withAlpha } from "@slay/tokens";
 
 import { SlayPressable, SlayText } from "~/components/ui";
+import { haptic } from "~/lib/haptics";
 
 /**
  * The pieces upstream's tap-to-arrange tasks (sentence builder, size order,
@@ -81,8 +82,12 @@ export function ClearButton({ onPress }: { onPress: () => void }) {
   );
 }
 
-/** The verdict line once the answer is built. */
+/** The verdict line once the answer is built — and the `correct` or `wrong` haptic as it appears. */
 export function Verdict({ ok, children }: { ok: boolean; children: string }) {
+  useEffect(() => {
+    haptic(ok ? "correct" : "wrong");
+  }, [ok]);
+
   return (
     <SlayText
       variant="bodyStrong"

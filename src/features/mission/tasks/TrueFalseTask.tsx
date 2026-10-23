@@ -5,6 +5,7 @@ import type { TrueFalseContent } from "@slay/core";
 import { alpha, colors, radii, withAlpha } from "@slay/tokens";
 
 import { SlayButton, SlayPressable, SlayText } from "~/components/ui";
+import { haptic } from "~/lib/haptics";
 import { imageSource } from "~/lib/imageSource";
 
 import type { TaskProps } from "../taskContract";
@@ -55,7 +56,10 @@ export function TrueFalseTask({ content, onComplete, actionLabel }: TaskProps<Tr
               accessibilityRole="radio"
               accessibilityState={{ checked: answer === value, disabled: answered }}
               disabled={answered}
-              onPress={() => setAnswer(value)}
+              onPress={() => {
+                haptic(value === isTrue ? "correct" : "wrong");
+                setAnswer(value);
+              }}
               style={[styles.choice, box]}
             >
               <SlayText variant="h3" weight="900" color={text}>

@@ -7,7 +7,7 @@ import { alpha, colors, radii, withAlpha } from "@slay/tokens";
 import { AppContainer } from "~/components/layout";
 import { SlayText } from "~/components/ui";
 import { LocalePicker } from "~/features/i18n";
-import { LogoutButton, ProfileUsernameCard } from "~/features/profile";
+import { HapticsCard, LogoutButton, ProfileUsernameCard } from "~/features/profile";
 
 export interface ParentProfileScreenProps extends ParentProfileData {
   /** The console's language, and where it came from. */
@@ -64,6 +64,8 @@ export function ParentProfileScreen({ username, email, student, locale, manualLo
               hint: messages.profile.languageAutoHint(LOCALE_LABELS[detectedLocale]),
             }}
           />
+
+          <HapticsCard locale={locale} />
 
           <View style={styles.card} accessibilityLabel={messages.profile.studentTitle}>
             <SlayText variant="label" color={alpha.white50} accessibilityRole="header">

@@ -5,6 +5,7 @@ import { shuffle, type CategorySortContent } from "@slay/core";
 import { alpha, colors, radii, withAlpha } from "@slay/tokens";
 
 import { SlayButton, SlayPressable, SlayText } from "~/components/ui";
+import { haptic } from "~/lib/haptics";
 
 import type { TaskProps } from "../taskContract";
 import { Chip, Tray } from "./ArrangeParts";
@@ -41,9 +42,11 @@ export function CategorySortTask({ content, onComplete, actionLabel }: TaskProps
     if (!item) return;
     setSelected(null);
     if (item.categoryIndex === categoryIndex) {
+      haptic("correct");
       setPlaced((prev) => ({ ...prev, [item.id]: categoryIndex }));
       return;
     }
+    haptic("wrong");
     setWrongCategory(categoryIndex);
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => setWrongCategory(null), WRONG_FLASH_MS);

@@ -19,6 +19,7 @@ import { colors } from "@slay/tokens";
 
 import { RouteGuard } from "~/features/auth";
 import { SessionProvider } from "~/hooks/useSession";
+import { loadHapticsPreference } from "~/lib/haptics";
 import { LocaleProvider } from "~/lib/locale";
 import { queryClient } from "~/lib/query-client";
 import { supabase } from "~/lib/supabase";
@@ -26,6 +27,8 @@ import { supabase } from "~/lib/supabase";
 import "../global.css";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
+// The vibration switch (WP-6.3) is read once; haptics stay on until it resolves.
+void loadHapticsPreference();
 
 /**
  * Root layout.

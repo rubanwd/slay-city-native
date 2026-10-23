@@ -1,12 +1,19 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { MissionTaskType } from "@slay/core";
 import type { Json } from "@slay/core/types";
 
+import { haptic } from "~/lib/haptics";
+
 import { TaskRunner } from "../TaskRunner";
 
 vi.mock("~/lib/imageSource", () => ({ imageSource: (url: string | null) => (url ? { uri: url } : null) }));
+vi.mock("~/lib/haptics", () => ({ haptic: vi.fn() }));
+
+afterEach(() => {
+  vi.mocked(haptic).mockClear();
+});
 
 const NOT_QUITE = "Not quite — the answer is highlighted.";
 
@@ -134,6 +141,7 @@ describe.each(CASES)("$type", ({ type, content, prompt, right, wrong, success, f
     const onComplete = renderTask();
     fireEvent.click(screen.getByRole("radio", { name: right }));
     expect(screen.getByText(success)).toBeTruthy();
+    expect(haptic).toHaveBeenCalledWith("correct");
 
     fireEvent.click(screen.getByRole("button", { name: "Next" }));
     expect(onComplete).toHaveBeenCalledWith(undefined);
@@ -143,6 +151,7 @@ describe.each(CASES)("$type", ({ type, content, prompt, right, wrong, success, f
     renderTask();
     fireEvent.click(screen.getByRole("radio", { name: wrong }));
     expect(screen.getByText(fail)).toBeTruthy();
+    expect(haptic).toHaveBeenCalledWith("wrong");
     expect(screen.getByRole("radio", { name: right }).getAttribute("aria-disabled")).toBe("true");
   });
 });

@@ -5,6 +5,7 @@ import type { CrosswordContent, CrosswordEntry } from "@slay/core";
 import { alpha, colors, fontFamilyByWeight, withAlpha } from "@slay/tokens";
 
 import { SlayButton, SlayText } from "~/components/ui";
+import { haptic } from "~/lib/haptics";
 
 import type { TaskProps } from "../taskContract";
 import { NO_HELP_KEYBOARD } from "./AnswerInput";
@@ -224,7 +225,14 @@ export function CrosswordTask({ content, onComplete, actionLabel }: TaskProps<Cr
           {actionLabel}
         </SlayButton>
       ) : (
-        <SlayButton variant="pink" size="lg" onPress={() => setChecked(true)}>
+        <SlayButton
+          variant="pink"
+          size="lg"
+          onPress={() => {
+            haptic(allCorrect ? "correct" : "wrong");
+            setChecked(true);
+          }}
+        >
           Check
         </SlayButton>
       )}

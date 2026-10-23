@@ -5,6 +5,7 @@ import { normalizeAnswer, type FillBlankContent } from "@slay/core";
 import { alpha, colors, radii, typeScale, withAlpha } from "@slay/tokens";
 
 import { SlayButton, SlayPressable, SlayText } from "~/components/ui";
+import { haptic } from "~/lib/haptics";
 
 import type { TaskProps } from "../taskContract";
 import { AnswerInput } from "./AnswerInput";
@@ -40,7 +41,9 @@ export function FillBlankTask({ content, onComplete, actionLabel }: TaskProps<Fi
   const blankColor = checked ? (isCorrect ? colors.limeGreen : colors.neonPink) : colors.cyan;
 
   const check = () => {
-    if (canCheck) setChecked(true);
+    if (!canCheck) return;
+    haptic(isCorrect ? "correct" : "wrong");
+    setChecked(true);
   };
 
   const retry = () => {
