@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { loadPlacementScreen } from "@slay/data";
-import { alpha, colors } from "@slay/tokens";
+import { alpha } from "@slay/tokens";
 
 import { AppContainer } from "~/components/layout";
-import { SlayButton, SlayText } from "~/components/ui";
+import { FullScreenLoader, SlayButton, SlayText } from "~/components/ui";
 import { supabase } from "~/lib/supabase";
 
 import { PlacementTest } from "./PlacementTest";
@@ -19,8 +19,8 @@ export function PlacementLoader() {
 
   if (screen.isPending) {
     return (
-      <AppContainer style={styles.center}>
-        <ActivityIndicator size="large" color={colors.limeGreen} accessibilityLabel="Loading the level test…" />
+      <AppContainer>
+        <FullScreenLoader label="Loading the level test…" />
       </AppContainer>
     );
   }

@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 
-import { alpha, colors } from "@slay/tokens";
+import { SlayTabBar, slayTabScreenOptions, tabIcon } from "~/components/navigation";
 
 /**
  * Mirrors the web teacher console's `BottomNav` (dashboard, map, profile; see
@@ -11,17 +11,10 @@ import { alpha, colors } from "@slay/tokens";
  */
 export default function TeacherLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: colors.limeGreen,
-        tabBarInactiveTintColor: alpha.white50,
-        tabBarStyle: { backgroundColor: colors.black, borderTopColor: alpha.white10 },
-      }}
-    >
-      <Tabs.Screen name="index" options={{ title: "Groups" }} />
-      <Tabs.Screen name="map" options={{ title: "Map" }} />
-      <Tabs.Screen name="profile" options={{ title: "Profile" }} />
+    <Tabs screenOptions={slayTabScreenOptions} tabBar={SlayTabBar}>
+      <Tabs.Screen name="index" options={{ title: "Groups", tabBarIcon: tabIcon("dashboard") }} />
+      <Tabs.Screen name="map" options={{ title: "Map", tabBarIcon: tabIcon("map") }} />
+      <Tabs.Screen name="profile" options={{ title: "Profile", tabBarIcon: tabIcon("profile") }} />
       {/* A group's topics and a topic's authoring are full-screen, as on the web: no tab, no tab bar. */}
       <Tabs.Screen name="groups/[groupId]/index" options={{ href: null, tabBarStyle: { display: "none" } }} />
       <Tabs.Screen name="groups/[groupId]/topics/[topicId]" options={{ href: null, tabBarStyle: { display: "none" } }} />

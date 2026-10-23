@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { ActivityIndicator } from "react-native";
 
 import { getAvailableLevels } from "@slay/data";
-import { colors } from "@slay/tokens";
 
+import { FullScreenLoader } from "~/components/ui";
 import { AuthScreen } from "~/features/auth";
 import { supabase } from "~/lib/supabase";
 
@@ -20,7 +19,7 @@ export function OnboardingScreen() {
   return (
     <AuthScreen>
       {levels.isPending ? (
-        <ActivityIndicator size="large" color={colors.limeGreen} accessibilityLabel="Loading levels…" />
+        <FullScreenLoader label="Loading levels…" />
       ) : (
         <OnboardingForm levels={levels.data ?? []} />
       )}

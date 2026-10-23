@@ -1,12 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 
 import { loadMapScreen, resetLocationProgress, restartMyLevel } from "@slay/data";
-import { alpha, colors } from "@slay/tokens";
+import { alpha } from "@slay/tokens";
 
 import { AppContainer } from "~/components/layout";
-import { SlayButton, SlayText } from "~/components/ui";
+import { FullScreenLoader, SlayButton, SlayText } from "~/components/ui";
 import { useSession } from "~/hooks/useSession";
 import { supabase } from "~/lib/supabase";
 
@@ -54,8 +54,8 @@ export function MapScreen() {
 
   if (map.isPending) {
     return (
-      <AppContainer edges={["top"]} style={styles.center}>
-        <ActivityIndicator size="large" color={colors.limeGreen} accessibilityLabel="Loading map…" />
+      <AppContainer edges={["top"]}>
+        <FullScreenLoader label="Loading map…" />
       </AppContainer>
     );
   }

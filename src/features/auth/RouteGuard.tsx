@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useGlobalSearchParams, usePathname, useRouter, type Href } from "expo-router";
 import { useEffect, type ReactNode } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { loadAccount } from "@slay/data";
 import { alpha, colors } from "@slay/tokens";
 
-import { SlayButton, SlayText } from "~/components/ui";
+import { FullScreenLoader, SlayButton, SlayText } from "~/components/ui";
 import { useSession } from "~/hooks/useSession";
 import { decideRoute, type GuardDecision } from "~/lib/routeGuard";
 import { supabase } from "~/lib/supabase";
@@ -67,7 +67,7 @@ export function RouteGuard({ children }: { children: ReactNode }) {
               <SignOutButton />
             </View>
           ) : (
-            <ActivityIndicator size="large" color={colors.white} />
+            <FullScreenLoader />
           )}
         </View>
       )}

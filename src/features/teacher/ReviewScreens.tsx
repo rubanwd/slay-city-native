@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { Redirect, useRouter, type Href } from "expo-router";
-import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 
 import { loadReviewLocation, loadReviewMission, loadTeacherMap, type ReviewLocationData } from "@slay/data";
 import { alpha, colors, radii } from "@slay/tokens";
 
 import { AppContainer } from "~/components/layout";
-import { SlayButton, SlayPressable, SlayText } from "~/components/ui";
+import { FullScreenLoader, SlayButton, SlayPressable, SlayText } from "~/components/ui";
 import { CityMapPreview } from "~/features/map";
 import { MissionScreen } from "~/features/mission";
 import { supabase } from "~/lib/supabase";
@@ -15,8 +15,8 @@ import { TeacherHeader } from "./TeacherHeader";
 
 function Loading({ label }: { label: string }) {
   return (
-    <AppContainer style={styles.centered}>
-      <ActivityIndicator size="large" color={colors.limeGreen} accessibilityLabel={label} />
+    <AppContainer>
+      <FullScreenLoader label={label} mascot={false} />
     </AppContainer>
   );
 }

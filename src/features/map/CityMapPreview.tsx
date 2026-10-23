@@ -1,6 +1,6 @@
 import { useRouter, type Href } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Image, StyleSheet, View, type LayoutRectangle } from "react-native";
+import { Image, StyleSheet, View, type LayoutRectangle } from "react-native";
 
 import {
   DEFAULT_LOCALE,
@@ -16,7 +16,7 @@ import {
 import { alpha, colors, withAlpha } from "@slay/tokens";
 
 import { AppContainer } from "~/components/layout";
-import { CoinAmount, SlayButton, SlayPressable, SlayText, XpAmount } from "~/components/ui";
+import { CoinAmount, FullScreenLoader, SlayButton, SlayPressable, SlayText, XpAmount } from "~/components/ui";
 import { imageSource } from "~/lib/imageSource";
 
 import { MapBackground } from "./MapBackground";
@@ -182,9 +182,7 @@ export function CityMapPreview({ districts, levelName, subtitle, progressLabel =
               </View>
             ) : null}
             {!backgroundLoaded ? (
-              <View style={styles.loader} accessibilityLabel={strings.loadingMap}>
-                <ActivityIndicator size="large" color={colors.limeGreen} />
-              </View>
+              <FullScreenLoader fullScreen={false} label={strings.loadingMap} />
             ) : null}
           </View>
 
@@ -272,7 +270,6 @@ const styles = StyleSheet.create({
   area: { flex: 1, minHeight: 0, overflow: "hidden", alignItems: "center" },
   backdrop: { ...StyleSheet.absoluteFill, opacity: 0.4, transform: [{ scale: 1.1 }] },
   frame: { overflow: "hidden" },
-  loader: { ...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center", backgroundColor: colors.black },
   panel: { gap: 4, paddingHorizontal: 20, paddingTop: 16, paddingBottom: 16, borderTopWidth: 1, borderTopColor: alpha.white10 },
   selectedRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 },
   countPill: { borderRadius: 999, backgroundColor: alpha.white10, paddingHorizontal: 10, paddingVertical: 4 },

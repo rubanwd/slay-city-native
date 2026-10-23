@@ -7,4 +7,5 @@ export { ProgressBar, type ProgressBarProps, type ProgressBarVariant } from "./P
 export { CoinAmount, XpAmount, type CurrencyAmountProps } from "./CurrencyAmount";
 export { StreakBadge, type StreakBadgeProps, type StreakBadgeSize } from "./StreakBadge";
 export { RewardModal, type RewardModalProps } from "./RewardModal";
+export { FullScreenLoader, type FullScreenLoaderProps } from "./FullScreenLoader";
 export { CoinIcon, XpIcon, ShareIcon, GoogleIcon, type IconProps } from "./icons";
