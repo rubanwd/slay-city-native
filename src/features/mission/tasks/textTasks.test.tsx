@@ -7,7 +7,7 @@ import { audioAdapter } from "~/lib/audio-adapter";
 import { TaskRunner } from "../TaskRunner";
 
 vi.mock("expo-speech", () => ({ speak: vi.fn(), stop: vi.fn() }));
-vi.mock("~/lib/audio-adapter", () => ({ audioAdapter: { createSoundPlayer: vi.fn() } }));
+vi.mock("~/lib/audio-adapter", () => ({ audioAdapter: { createSoundPlayer: vi.fn(), ensureAudioMode: vi.fn(() => Promise.resolve()) } }));
 
 afterEach(() => {
   vi.clearAllMocks();
@@ -31,9 +31,10 @@ function expectNoKeyboardHelp(field: HTMLElement) {
 }
 
 describe("spelling_bee", () => {
-  it("speaks the word when there is no clip", () => {
+  it("speaks the word when there is no clip, heard even on silent (WP-6.2)", async () => {
     run("spelling_bee", { word: "bread" });
-    press("Play the word");
+    await act(async () => press("Play the word"));
+    expect(audioAdapter.ensureAudioMode).toHaveBeenCalledWith("speech");
     expect(Speech.speak).toHaveBeenCalledWith("bread", expect.objectContaining({ language: "en-US" }));
   });
 
@@ -43,7 +44,7 @@ describe("spelling_bee", () => {
     run("spelling_bee", { word: "bread", audioUrl: "https://cdn/bread.mp3" });
 
     await act(async () => press("Play the word"));
-    expect(audioAdapter.createSoundPlayer).toHaveBeenCalledWith({ uri: "https://cdn/bread.mp3" });
+    expect(audioAdapter.createSoundPlayer).toHaveBeenCalledWith({ uri: "https://cdn/bread.mp3" }, "speech");
     expect(player.play).toHaveBeenCalled();
     expect(Speech.speak).not.toHaveBeenCalled();
   });

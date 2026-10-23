@@ -115,7 +115,8 @@ describe("HomeworkTopicScreen", () => {
     expect(screen.getByText("Word 1 of 2")).toBeTruthy();
     expect(screen.getByText("/kæt/")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Listen to cat" }));
-    expect(Speech.speak).toHaveBeenCalledWith("cat", expect.anything());
+    // Speech waits for the audio session to switch to speech mode (WP-6.2).
+    await vi.waitFor(() => expect(Speech.speak).toHaveBeenCalledWith("cat", expect.anything()));
     fireEvent.click(screen.getByRole("button", { name: "Next" }));
     fireEvent.click(screen.getByRole("button", { name: "Start Test" }));
 
