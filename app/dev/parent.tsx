@@ -2,7 +2,7 @@ import { Redirect, useLocalSearchParams } from "expo-router";
 
 import type { ParentDashboardData } from "@slay/data";
 
-import { ParentDashboard } from "~/features/parent";
+import { ParentDashboard, ParentProfileScreen } from "~/features/parent";
 
 const DASHBOARD: ParentDashboardData = {
   student: {
@@ -66,12 +66,26 @@ const DASHBOARD: ParentDashboardData = {
 
 /**
  * The parent dashboard with a made-up student and no backend; `?locale=uk|ru`
- * to see it translated, `?screen=pending` for the not-linked state. Dev-only.
+ * to see it translated, `?screen=pending` for the not-linked state,
+ * `?screen=profile` for the parent's profile (`&student=none` before a link).
+ * Dev-only.
  */
 export default function ParentPreviewScreen() {
-  const { screen, locale } = useLocalSearchParams<{ screen?: string; locale?: string }>();
+  const { screen, locale, student } = useLocalSearchParams<{ screen?: string; locale?: string; student?: string }>();
   if (!__DEV__) return <Redirect href="/" />;
   const language = locale === "uk" || locale === "ru" ? locale : "en";
+  if (screen === "profile")
+    return (
+      <ParentProfileScreen
+        username="mum"
+        email="mum@home.org"
+        student={student === "none" ? null : { username: "anna", level: "elementary" }}
+        locale={language}
+        manualLocale={language !== "en"}
+        detectedLocale="en"
+        onChooseLocale={() => {}}
+      />
+    );
   if (screen === "pending")
     return (
       <ParentDashboard

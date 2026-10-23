@@ -1,1 +1,5 @@
-export { default } from "~/features/teacher/ProfilePlaceholder";
+import { TeacherProfileLoader } from "~/features/teacher";
+
+export default function TeacherProfileRoute() {
+  return <TeacherProfileLoader />;
+}

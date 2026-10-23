@@ -55,6 +55,8 @@ export function ProfileLevelCard({ current, available, hint, locale = DEFAULT_LO
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: [PROFILE_QUERY_KEY] }),
         queryClient.invalidateQueries({ queryKey: [MAP_QUERY_KEY] }),
+        // A teacher's level picks which city their map previews.
+        queryClient.invalidateQueries({ queryKey: ["teacher-map"] }),
       ]);
     },
     onError: (err) => {

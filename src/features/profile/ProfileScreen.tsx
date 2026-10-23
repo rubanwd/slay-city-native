@@ -16,18 +16,27 @@ import { LogoutButton } from "./LogoutButton";
 import { ProfileLevelCard } from "./ProfileLevelCard";
 import { ProfileUsernameCard } from "./ProfileUsernameCard";
 
-export interface ProfileScreenProps extends ProfileData {
+export interface ProfileScreenProps extends Omit<ProfileData, "latestPlacement"> {
   /** Language for this screen's own chrome; defaults to the student's own choice. */
   locale?: Locale;
+  /** A badge under the name — "Teacher" on the teacher console. */
+  roleLabel?: string;
+  /** What the level controls for this viewer, under the level card. */
+  levelHint?: string;
+  /** The language picker — students only; the teacher console is English throughout. */
+  showLanguagePicker?: boolean;
+  /** The level test card — students only: their latest attempt, or null; undefined hides it. */
+  latestPlacement?: ProfileData["latestPlacement"];
   refreshing?: boolean;
   onRefresh?: () => void;
 }
 
 /**
- * Port of upstream's `profile/ProfileScreen.tsx` as the student page renders
+ * Port of upstream's `profile/ProfileScreen.tsx`. As the student page renders
  * it: the player's dressed snake as the avatar, their name and email, the
  * rename and level cards, the level test card, the language picker,
- * Feedback & Bugs, and Log Out.
+ * Feedback & Bugs, and Log Out. The teacher console uses the same screen with
+ * a role badge, a level hint, the plain snake, and no picker or level test.
  */
 export function ProfileScreen({
   username,
@@ -37,6 +46,9 @@ export function ProfileScreen({
   availableLevels,
   latestPlacement,
   locale: localeOverride,
+  roleLabel,
+  levelHint,
+  showLanguagePicker = true,
   refreshing = false,
   onRefresh,
 }: ProfileScreenProps) {
@@ -77,16 +89,23 @@ export function ProfileScreen({
               <SlayText variant="small" color={alpha.white50} style={styles.center}>
                 {email ?? messages.signedIn}
               </SlayText>
+              {roleLabel ? (
+                <View style={styles.role}>
+                  <SlayText variant="label" weight="700" color={alpha.white60}>
+                    {roleLabel}
+                  </SlayText>
+                </View>
+              ) : null}
             </View>
           </View>
 
           <ProfileUsernameCard username={username} messages={messages} />
           {/* Keyed by the stored level, so a level changed elsewhere and refetched resets the card. */}
-          <ProfileLevelCard key={level} current={level} available={availableLevels} locale={locale} />
+          <ProfileLevelCard key={level} current={level} available={availableLevels} hint={levelHint} locale={locale} />
 
-          <PlacementTestCard latest={latestPlacement} messages={messages} />
+          {latestPlacement !== undefined ? <PlacementTestCard latest={latestPlacement} messages={messages} /> : null}
 
-          <LocalePicker locale={locale} title={messages.languageTitle} hint={messages.languageHint} onChoose={choose} />
+          {showLanguagePicker ? <LocalePicker locale={locale} title={messages.languageTitle} hint={messages.languageHint} onChoose={choose} /> : null}
 
           <View style={styles.footer}>
             {/* Reporting a bug or sending an idea — reaches the admin console's inbox. */}
@@ -126,5 +145,6 @@ const styles = StyleSheet.create({
   mascot: { width: "100%", height: "100%" },
   names: { alignItems: "center", gap: 4 },
   center: { textAlign: "center" },
+  role: { marginTop: 4, borderRadius: 999, borderWidth: 1, borderColor: alpha.white15, paddingHorizontal: 12, paddingVertical: 4 },
   footer: { marginTop: "auto", gap: 12 },
 });

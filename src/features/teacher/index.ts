@@ -1,4 +1,3 @@
-export { default as ProfilePlaceholder } from "./ProfilePlaceholder";
 export { GroupTopicsScreen, type GroupTopicsScreenProps } from "./GroupTopicsScreen";
 export { StudentCard } from "./StudentCard";
 export { TeacherDashboard, type TeacherDashboardProps } from "./TeacherDashboard";
@@ -11,3 +10,4 @@ export { TestPreviewRunner, type PreviewTask } from "./TestPreviewRunner";
 export { TopicContentImporter } from "./TopicContentImporter";
 export { GrammarManager, type GrammarManagerProps } from "./GrammarManager";
 export { ReviewLocationLoader, ReviewLocationScreen, ReviewMissionLoader, TeacherMapLoader } from "./ReviewScreens";
+export { TeacherProfileLoader } from "./TeacherProfileLoader";

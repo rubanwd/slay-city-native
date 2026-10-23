@@ -1,1 +1,5 @@
-export { default } from "~/features/parent/ProfilePlaceholder";
+import { ParentProfileLoader } from "~/features/parent";
+
+export default function ParentProfileRoute() {
+  return <ParentProfileLoader />;
+}
