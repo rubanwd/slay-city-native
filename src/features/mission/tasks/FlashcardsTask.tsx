@@ -95,7 +95,7 @@ export function FlashcardsTask({ content, onComplete, actionLabel }: TaskProps<F
             <SlayText variant="h1" weight="900" style={styles.center}>
               {card.front}
             </SlayText>
-            <SlayText variant="label" color={alpha.white40} style={styles.caption}>
+            <SlayText variant="label" color={alpha.white50} style={styles.caption}>
               Tap to flip
             </SlayText>
           </LinearGradient>
@@ -115,7 +115,7 @@ export function FlashcardsTask({ content, onComplete, actionLabel }: TaskProps<F
             <SlayText variant="h1" weight="900" style={styles.center}>
               {card.back}
             </SlayText>
-            <SlayText variant="label" color={alpha.white40} style={styles.caption}>
+            <SlayText variant="label" color={alpha.white50} style={styles.caption}>
               Answer
             </SlayText>
           </LinearGradient>

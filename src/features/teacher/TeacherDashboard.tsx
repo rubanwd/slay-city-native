@@ -82,7 +82,7 @@ export function TeacherDashboard({ groups, username, email, refreshing = false, 
               {section.title}
             </SlayText>
             <View style={styles.sectionRight}>
-              <SlayText variant="small" weight="700" color={alpha.white40}>
+              <SlayText variant="small" weight="700" color={alpha.white50}>
                 {plural(section.data.length, "student", "students")}
               </SlayText>
               <SlayPressable

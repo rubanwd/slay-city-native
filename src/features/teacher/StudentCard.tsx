@@ -14,7 +14,7 @@ function StatChip({ label, value }: { label: string; value: string | number }) {
       <SlayText variant="bodyStrong" weight="900">
         {value}
       </SlayText>
-      <SlayText variant="label" color={alpha.white40} style={styles.chipLabel}>
+      <SlayText variant="label" color={alpha.white50} style={styles.chipLabel}>
         {label}
       </SlayText>
     </View>
@@ -68,12 +68,12 @@ export function StudentCard({ student }: { student: TeacherGroupStudent }) {
             )}
           </SlayText>
           {!hasTopics ? (
-            <SlayText variant="label" color={alpha.white40} style={styles.plain}>
+            <SlayText variant="label" color={alpha.white50} style={styles.plain}>
               No homework topics yet.
             </SlayText>
           ) : (
             <View style={styles.topics}>
-              <SlayText variant="label" weight="700" color={alpha.white40}>
+              <SlayText variant="label" weight="700" color={alpha.white50}>
                 Topics passed {passedCount}/{totalTopics}
               </SlayText>
               <View style={styles.pills}>

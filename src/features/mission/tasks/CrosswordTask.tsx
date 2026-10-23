@@ -165,6 +165,8 @@ export function CrosswordTask({ content, onComplete, actionLabel }: TaskProps<Cr
                   return (
                     <View key={key} style={{ width: size, height: size }}>
                       <TextInput
+                        // A fixed-size grid cell: the letter must fit it (WP-6.6).
+                        maxFontSizeMultiplier={1}
                         ref={(input) => {
                           if (input) inputs.current.set(key, input);
                           else inputs.current.delete(key);

@@ -77,7 +77,7 @@ function FeedbackSheet({ onClose }: { onClose: () => void }) {
   return (
     <Modal visible transparent animationType="slide" onRequestClose={onClose} statusBarTranslucent>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.fill}>
-        <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel="Close feedback">
+        <Pressable style={styles.backdrop} accessibilityRole="button" onPress={onClose} accessibilityLabel="Close feedback">
           <Pressable
             style={[styles.sheet, { paddingBottom: 32 + insets.bottom }]}
             onPress={() => {}}
@@ -136,10 +136,11 @@ function FeedbackSheet({ onClose }: { onClose: () => void }) {
                     What happened?
                   </SlayText>
                   <TextInput
+                    maxFontSizeMultiplier={1.5}
                     value={message}
                     onChangeText={(text) => setMessage(text.slice(0, MAX_MESSAGE_LENGTH))}
                     placeholder={PLACEHOLDER[kind]}
-                    placeholderTextColor={withAlpha(colors.white, 0.3)}
+                    placeholderTextColor={alpha.white50}
                     selectionColor={colors.cyan}
                     accessibilityLabel="What happened?"
                     multiline
@@ -152,7 +153,7 @@ function FeedbackSheet({ onClose }: { onClose: () => void }) {
                     textAlignVertical="top"
                     style={styles.input}
                   />
-                  <SlayText variant="label" color={withAlpha(colors.white, 0.3)} style={styles.counter}>
+                  <SlayText variant="label" color={alpha.white50} style={styles.counter}>
                     {`${message.length}/${MAX_MESSAGE_LENGTH}`}
                   </SlayText>
                 </View>

@@ -22,7 +22,7 @@ export function CauseEffectTask({ content, onComplete, actionLabel }: TaskProps<
       header={() => (
         <View style={styles.header}>
           <View style={styles.card}>
-            <SlayText variant="label" color={alpha.white40} style={styles.center}>
+            <SlayText variant="label" color={alpha.white50} style={styles.center}>
               If this happens…
             </SlayText>
             <SlayText variant="h3" weight="900" style={[styles.center, styles.cause]}>

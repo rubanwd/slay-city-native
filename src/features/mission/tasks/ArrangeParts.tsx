@@ -20,7 +20,7 @@ export function Tray({ children, style }: { children: ReactNode; style?: StylePr
 /** The grey line shown in an empty tray. */
 export function TrayPlaceholder({ children }: { children: string }) {
   return (
-    <SlayText variant="body" color={alpha.white40}>
+    <SlayText variant="body" color={alpha.white50}>
       {children}
     </SlayText>
   );

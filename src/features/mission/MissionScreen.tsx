@@ -277,7 +277,7 @@ export function MissionScreen({
           // Hidden once the run is over — there is no task left to skip.
           <View style={styles.footer}>
             <SlayPressable accessibilityRole="button" hitSlop={12} onPress={handleSkip}>
-              <SlayText variant="small" color={alpha.white40} style={styles.underline}>
+              <SlayText variant="small" color={alpha.white50} style={styles.underline}>
                 Skip this task
               </SlayText>
             </SlayPressable>

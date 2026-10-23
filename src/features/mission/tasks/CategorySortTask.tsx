@@ -97,7 +97,7 @@ export function CategorySortTask({ content, onComplete, actionLabel }: TaskProps
               </SlayText>
               <View style={styles.sorted}>
                 {contents.length === 0 ? (
-                  <SlayText variant="small" color={alpha.white25}>
+                  <SlayText variant="small" color={alpha.white50}>
                     Drop words here…
                   </SlayText>
                 ) : (

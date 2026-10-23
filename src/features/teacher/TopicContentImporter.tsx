@@ -33,7 +33,7 @@ export function TopicContentImporter({ sources, kind, disabled = false, loading 
         Copy from another topic
       </SlayText>
       {sources.length === 0 ? (
-        <SlayText variant="label" color={alpha.white40} style={styles.plain}>
+        <SlayText variant="label" color={alpha.white50} style={styles.plain}>
           None of your other topics has {noun} yet — publish one and you can reuse it here.
         </SlayText>
       ) : (
@@ -60,7 +60,7 @@ export function TopicContentImporter({ sources, kind, disabled = false, loading 
           <SlayButton variant="ghost" loading={loading} disabled={disabled || loading || !selected} onPress={() => selected && onImport(selected)}>
             {`Copy ${noun} here`}
           </SlayButton>
-          <SlayText variant="label" color={withAlpha(colors.white, 0.3)} style={styles.plain}>
+          <SlayText variant="label" color={alpha.white50} style={styles.plain}>
             Loads that topic&apos;s {noun} into the list below for review — publish to apply it.
           </SlayText>
         </>

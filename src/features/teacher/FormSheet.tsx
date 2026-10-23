@@ -16,7 +16,7 @@ export function FormSheet({ title, onClose, children }: { title: string; onClose
   return (
     <Modal visible transparent animationType="slide" onRequestClose={onClose} statusBarTranslucent>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.fill}>
-        <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel={`Close ${title}`}>
+        <Pressable style={styles.backdrop} accessibilityRole="button" onPress={onClose} accessibilityLabel={`Close ${title}`}>
           <Pressable style={[styles.sheet, { paddingBottom: 24 + insets.bottom }]} onPress={() => {}} accessibilityViewIsModal accessibilityLabel={title}>
             <View style={styles.header}>
               <SlayText variant="h3" weight="900" accessibilityRole="header">

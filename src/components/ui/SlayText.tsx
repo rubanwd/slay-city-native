@@ -20,7 +20,24 @@ export interface SlayTextProps extends TextProps {
  * with `fluidFontSize(variant, width)` from `@slay/tokens`, reproducing the web's
  * `clamp(min, vw, max)` type scale — at the 390pt design width every variant
  * renders at its minimum.
+ *
+ * It follows the phone's text-size setting (Dynamic Type, Android font scale),
+ * up to a ceiling per variant: body text may grow by half, headings less, the
+ * display numerals barely — past that, the 390pt layouts stop fitting
+ * (WP-6.6). A caller can lower or raise it with `maxFontSizeMultiplier`.
  */
+/** How far the phone's text size may scale each variant before the layouts break. */
+const MAX_FONT_SCALE: Record<TextVariant, number> = {
+  display: 1.15,
+  h1: 1.2,
+  h2: 1.3,
+  h3: 1.4,
+  body: 1.5,
+  bodyStrong: 1.5,
+  small: 1.5,
+  label: 1.5,
+};
+
 export function SlayText({ variant = "body", weight, color = colors.white, style, ...rest }: SlayTextProps) {
   const { width } = useWindowDimensions();
   const scale = typeScale[variant];
@@ -35,5 +52,5 @@ export function SlayText({ variant = "body", weight, color = colors.white, style
     textTransform: scale.uppercase ? "uppercase" : undefined,
   };
 
-  return <Text style={[textStyle, style]} {...rest} />;
+  return <Text style={[textStyle, style]} maxFontSizeMultiplier={MAX_FONT_SCALE[variant]} {...rest} />;
 }

@@ -72,7 +72,7 @@ function TopicCard({ groupId, topic, onEdit }: { groupId: string; topic: Teacher
             {plural(topic.wordCount, "word", "words")} · {plural(topic.grammarCount, "rule", "rules")}
           </SlayText>
           {hasExtra ? (
-            <SlayText variant="label" color={alpha.white40} accessibilityLabel="Has extra info for students">
+            <SlayText variant="label" color={alpha.white50} accessibilityLabel="Has extra info for students">
               📎
             </SlayText>
           ) : null}

@@ -16,8 +16,9 @@ export function SmallField({ label, style, ...rest }: TextInputProps & { label: 
         {label}
       </SlayText>
       <TextInput
+        maxFontSizeMultiplier={1.5}
         accessibilityLabel={label}
-        placeholderTextColor={alpha.white40}
+        placeholderTextColor={alpha.white50}
         selectionColor={colors.neonPink}
         style={[authoringStyles.input, style]}
         {...rest}
@@ -95,7 +96,7 @@ export function TestPreviewPanel({
         </View>
       </View>
       {count === 0 ? (
-        <SlayText variant="label" color={alpha.white40} style={styles.plain}>
+        <SlayText variant="label" color={alpha.white50} style={styles.plain}>
           {empty}
         </SlayText>
       ) : (
@@ -112,7 +113,7 @@ export function TestPreviewPanel({
           </View>
         ))
       )}
-      <SlayText variant="label" color={withAlpha(colors.white, 0.3)} style={styles.plain}>
+      <SlayText variant="label" color={alpha.white50} style={styles.plain}>
         {footnote}
       </SlayText>
     </View>

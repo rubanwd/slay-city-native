@@ -127,7 +127,7 @@ export function TopicChat({ topicId, currentUserId, initialMessages }: TopicChat
         onContentSizeChange={() => list.current?.scrollToEnd({ animated: false })}
       >
         {messages.length === 0 ? (
-          <SlayText variant="small" color={alpha.white40} style={styles.center}>
+          <SlayText variant="small" color={alpha.white50} style={styles.center}>
             No messages yet. Ask a question or leave a note — everyone in the group will see it.
           </SlayText>
         ) : (
@@ -147,7 +147,7 @@ export function TopicChat({ topicId, currentUserId, initialMessages }: TopicChat
                       </SlayText>
                     </View>
                   ) : null}
-                  <SlayText variant="label" color={withAlpha(colors.white, 0.3)} style={styles.metaText}>
+                  <SlayText variant="label" color={alpha.white50} style={styles.metaText}>
                     {formatTime(m.createdAt)}
                   </SlayText>
                 </View>
@@ -177,10 +177,11 @@ export function TopicChat({ topicId, currentUserId, initialMessages }: TopicChat
 
       <View style={styles.composer}>
         <TextInput
+          maxFontSizeMultiplier={1.5}
           value={draft}
           onChangeText={setDraft}
           placeholder="Write a message…"
-          placeholderTextColor={alpha.white40}
+          placeholderTextColor={alpha.white50}
           selectionColor={colors.neonPink}
           accessibilityLabel="Message"
           multiline

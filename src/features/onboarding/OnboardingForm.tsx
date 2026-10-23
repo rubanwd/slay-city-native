@@ -113,7 +113,7 @@ export function OnboardingForm({ levels }: OnboardingFormProps) {
         onPress={() => leave.mutate()}
         style={styles.leave}
       >
-        <SlayText variant="small" color={alpha.white40} style={styles.underline}>
+        <SlayText variant="small" color={alpha.white50} style={styles.underline}>
           {leave.isPending ? "Signing out…" : "Not you? Log out"}
         </SlayText>
       </SlayPressable>

@@ -331,7 +331,7 @@ export function PlacementTest({ questions, currentLevel, availableLevels, mascot
         </ScrollView>
 
         <View style={styles.footer} accessibilityLiveRegion="polite">
-          <SlayText variant="small" color={alpha.white40}>
+          <SlayText variant="small" color={alpha.white50}>
             {submitting ? "Checking your answers…" : `${answeredCount} answered`}
           </SlayText>
           {error ? (
@@ -381,7 +381,7 @@ export function PlacementTest({ questions, currentLevel, availableLevels, mascot
             labelRight={`${score.correct}/${score.total}`}
           />
         ))}
-        <SlayText variant="label" color={alpha.white40} style={styles.plain}>
+        <SlayText variant="label" color={alpha.white50} style={styles.plain}>
           A level counts as passed at {PLACEMENT_PASS_PERCENT}% or more.
         </SlayText>
       </View>

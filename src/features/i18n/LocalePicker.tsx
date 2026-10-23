@@ -87,7 +87,7 @@ export function LocalePicker({ locale, title, hint, onChoose, auto }: LocalePick
       </View>
 
       {auto?.selected ? (
-        <SlayText variant="small" color={alpha.white40}>
+        <SlayText variant="small" color={alpha.white50}>
           {auto.hint}
         </SlayText>
       ) : null}

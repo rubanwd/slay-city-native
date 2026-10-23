@@ -81,14 +81,15 @@ export function VocabWordEditor({ word, index, imageBusy, onChange, onRemove, on
 
       <View style={styles.fields}>
         <View style={styles.wordLine}>
-          <SlayText variant="label" weight="700" color={withAlpha(colors.white, 0.3)}>
+          <SlayText variant="label" weight="700" color={alpha.white50}>
             #{index + 1}
           </SlayText>
           <TextInput
+            maxFontSizeMultiplier={1.5}
             value={word.word}
             onChangeText={(text) => onChange({ word: text })}
             placeholder="word (English)"
-            placeholderTextColor={alpha.white40}
+            placeholderTextColor={alpha.white50}
             selectionColor={colors.neonPink}
             accessibilityLabel={`Word ${index + 1}`}
             style={[styles.input, styles.wordInput]}
@@ -101,20 +102,22 @@ export function VocabWordEditor({ word, index, imageBusy, onChange, onRemove, on
           </SlayPressable>
         </View>
         <TextInput
+          maxFontSizeMultiplier={1.5}
           value={word.transcription}
           onChangeText={(text) => onChange({ transcription: text })}
           placeholder="/trænˈskrɪp.ʃən/"
-          placeholderTextColor={alpha.white40}
+          placeholderTextColor={alpha.white50}
           selectionColor={colors.neonPink}
           accessibilityLabel={`Transcription ${index + 1}`}
           style={styles.input}
           {...FIELD}
         />
         <TextInput
+          maxFontSizeMultiplier={1.5}
           value={word.translation}
           onChangeText={(text) => onChange({ translation: text })}
           placeholder="translation"
-          placeholderTextColor={alpha.white40}
+          placeholderTextColor={alpha.white50}
           selectionColor={colors.neonPink}
           accessibilityLabel={`Translation ${index + 1}`}
           style={styles.input}

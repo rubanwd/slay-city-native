@@ -21,6 +21,8 @@ export interface SlayCardProps {
   /** Removes the card's padding, for full-bleed media. */
   flush?: boolean;
   onPress?: () => void;
+  /** What a screen reader announces for a pressable card; its text is read when left out. */
+  accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
   children?: ReactNode;
 }
@@ -74,7 +76,7 @@ function glowShadow(color: string | null, pressed: boolean): ViewStyle {
  * INNER view, because iOS clips a shadow drawn by the same view that clips its
  * children.
  */
-function SlayCard({ variant = "pink", pressable = false, flush = false, onPress, style, children }: SlayCardProps) {
+function SlayCard({ variant = "pink", pressable = false, flush = false, onPress, accessibilityLabel, style, children }: SlayCardProps) {
   const config = CARD_VARIANTS[variant];
 
   const renderInner = (pressed: boolean) => (
@@ -95,6 +97,8 @@ function SlayCard({ variant = "pink", pressable = false, flush = false, onPress,
   if (pressable) {
     return (
       <SlayPressable
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel}
         onPress={onPress}
         style={({ pressed }: PressableStateCallbackType) => [
           styles.outer,

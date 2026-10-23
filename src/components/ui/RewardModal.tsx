@@ -38,7 +38,7 @@ export interface RewardModalProps {
 export function RewardModal({ open, onClose, title, image, description, rewards, action }: RewardModalProps) {
   return (
     <Modal visible={open} transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent>
-      <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel="Close reward">
+      <Pressable style={styles.backdrop} accessibilityRole="button" onPress={onClose} accessibilityLabel="Close reward">
         {/* A press inside the panel must not reach the backdrop. */}
         <Pressable style={styles.panel} onPress={() => {}} accessibilityViewIsModal accessibilityLabel="Reward">
           <SlayPressable

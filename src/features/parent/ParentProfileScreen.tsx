@@ -2,7 +2,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "re
 
 import { getMessages, KNOWLEDGE_LEVEL_LABELS, LOCALE_LABELS, type Locale } from "@slay/core";
 import type { ParentProfileData } from "@slay/data";
-import { alpha, colors, radii, withAlpha } from "@slay/tokens";
+import { alpha, colors, radii } from "@slay/tokens";
 
 import { AppContainer } from "~/components/layout";
 import { SlayText } from "~/components/ui";
@@ -80,7 +80,7 @@ export function ParentProfileScreen({ username, email, student, locale, manualLo
                     {KNOWLEDGE_LEVEL_LABELS[student.level]}
                   </SlayText>
                 </SlayText>
-                <SlayText variant="small" color={withAlpha(colors.white, 0.35)}>
+                <SlayText variant="small" color={alpha.white50}>
                   {messages.profile.studentLevelHint}
                 </SlayText>
               </>

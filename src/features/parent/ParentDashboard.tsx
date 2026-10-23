@@ -52,7 +52,7 @@ function SectionHeading({ title, hint }: { title: string; hint?: string }) {
         {title}
       </SlayText>
       {hint ? (
-        <SlayText variant="small" color={withAlpha(colors.white, 0.35)}>
+        <SlayText variant="small" color={alpha.white50}>
           {hint}
         </SlayText>
       ) : null}
@@ -127,7 +127,7 @@ function StudentCard({ locale, strings, data, fallbackName }: { locale: Locale; 
           <XpAmount value={student.xp} label={`${student.xp} ${strings.dashboard.xp}`} variant="small" />
           <CoinAmount value={student.coins} label={`${student.coins} ${strings.dashboard.coins}`} variant="small" />
         </View>
-        <SlayText variant="small" color={alpha.white40}>
+        <SlayText variant="small" color={alpha.white50}>
           {strings.dashboard.lastActive}: {student.lastActivityDate ? formatDate(locale, student.lastActivityDate) : strings.common.never}
         </SlayText>
       </View>
@@ -153,7 +153,7 @@ function PlacementSection({ locale, strings, placement }: { locale: Locale; stri
                 {m.placementScore(placement.totalCorrect, placement.totalQuestions)}
               </SlayText>
             </View>
-            <SlayText variant="small" color={alpha.white40}>
+            <SlayText variant="small" color={alpha.white50}>
               {m.placementTaken(formatDate(locale, placement.takenAt))}
             </SlayText>
           </View>
@@ -207,7 +207,7 @@ function StudyTimeSection({ locale, strings, studyTime }: { locale: Locale; stri
                 <View style={styles.barTrack}>
                   <View style={[styles.bar, { height: `${Math.round((day.seconds / peak) * 100)}%` }]} />
                 </View>
-                <SlayText variant="label" color={withAlpha(colors.white, 0.35)} style={styles.barLabel}>
+                <SlayText variant="label" color={alpha.white50} style={styles.barLabel}>
                   {m.weekdayInitials[(new Date(`${day.day}T00:00:00.000Z`).getUTCDay() + 6) % 7]}
                 </SlayText>
               </View>
@@ -280,7 +280,7 @@ function HomeworkSection({ strings, topics }: { strings: Strings; topics: readon
                   <SlayText variant="bodyStrong" numberOfLines={1}>
                     {topic.title}
                   </SlayText>
-                  <SlayText variant="small" color={alpha.white40} numberOfLines={1}>
+                  <SlayText variant="small" color={alpha.white50} numberOfLines={1}>
                     {topic.groupName}
                     {topic.teacherUsername ? ` · ${m.homeworkTeacher(topic.teacherUsername)}` : ""}
                   </SlayText>

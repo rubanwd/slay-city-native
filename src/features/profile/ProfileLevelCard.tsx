@@ -97,7 +97,7 @@ export function ProfileLevelCard({ current, available, hint, locale = DEFAULT_LO
       />
 
       {hint ? (
-        <SlayText variant="small" color={alpha.white40}>
+        <SlayText variant="small" color={alpha.white50}>
           {hint}
         </SlayText>
       ) : null}
@@ -105,7 +105,7 @@ export function ProfileLevelCard({ current, available, hint, locale = DEFAULT_LO
       {open ? <LevelPicker levels={available} value={optimistic} onChange={pick} disabled={pending} /> : null}
 
       {!canChange ? (
-        <SlayText variant="small" color={alpha.white40}>
+        <SlayText variant="small" color={alpha.white50}>
           {messages.levelOnlyOne}
         </SlayText>
       ) : null}

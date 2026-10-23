@@ -93,7 +93,7 @@ export function SocialSignIn({ mode }: { mode: "login" | "register" }) {
     <View style={styles.wrap}>
       <View style={styles.divider} accessible={false} importantForAccessibility="no-hide-descendants">
         <View style={styles.rule} />
-        <SlayText variant="label" color={alpha.white40}>
+        <SlayText variant="label" color={alpha.white50}>
           or
         </SlayText>
         <View style={styles.rule} />

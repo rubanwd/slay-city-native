@@ -1,6 +1,6 @@
 import { StyleSheet, TextInput, View } from "react-native";
 
-import { alpha, colors, radii, withAlpha } from "@slay/tokens";
+import { alpha, colors, radii } from "@slay/tokens";
 
 import { SlayPressable, SlayText } from "~/components/ui";
 
@@ -30,14 +30,15 @@ export function GrammarPointEditor({ point, index, onChange, onRemove }: Grammar
   return (
     <View style={styles.row}>
       <View style={styles.titleLine}>
-        <SlayText variant="label" weight="700" color={withAlpha(colors.white, 0.3)}>
+        <SlayText variant="label" weight="700" color={alpha.white50}>
           #{index + 1}
         </SlayText>
         <TextInput
+          maxFontSizeMultiplier={1.5}
           value={point.title}
           onChangeText={(text) => onChange({ title: text })}
           placeholder="rule title (e.g. Present Simple: he/she/it + s)"
-          placeholderTextColor={alpha.white40}
+          placeholderTextColor={alpha.white50}
           selectionColor={colors.neonPink}
           accessibilityLabel={`Rule ${index + 1} title`}
           style={[authoringStyles.input, styles.grow]}
@@ -50,10 +51,11 @@ export function GrammarPointEditor({ point, index, onChange, onRemove }: Grammar
         </SlayPressable>
       </View>
       <TextInput
+        maxFontSizeMultiplier={1.5}
         value={point.explanation}
         onChangeText={(text) => onChange({ explanation: text })}
         placeholder="short, kid-friendly explanation"
-        placeholderTextColor={alpha.white40}
+        placeholderTextColor={alpha.white50}
         selectionColor={colors.neonPink}
         accessibilityLabel={`Rule ${index + 1} explanation`}
         multiline
@@ -61,10 +63,11 @@ export function GrammarPointEditor({ point, index, onChange, onRemove }: Grammar
         {...PROSE}
       />
       <TextInput
+        maxFontSizeMultiplier={1.5}
         value={point.example}
         onChangeText={(text) => onChange({ example: text })}
         placeholder="example sentence"
-        placeholderTextColor={alpha.white40}
+        placeholderTextColor={alpha.white50}
         selectionColor={colors.neonPink}
         accessibilityLabel={`Rule ${index + 1} example`}
         style={authoringStyles.input}

@@ -103,7 +103,7 @@ export function MemoryCardsTask({ content, onComplete, actionLabel }: TaskProps<
                   </SlayText>
                 )
               ) : (
-                <SlayText variant="h3" weight="900" color={alpha.white40}>
+                <SlayText variant="h3" weight="900" color={alpha.white50}>
                   ?
                 </SlayText>
               )}

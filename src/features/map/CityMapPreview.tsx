@@ -131,7 +131,7 @@ export function CityMapPreview({ districts, levelName, subtitle, progressLabel =
                 ) : null}
                 {district?.name}
               </SlayText>
-              <SlayText variant="label" color={alpha.white40}>
+              <SlayText variant="label" color={alpha.white50}>
                 {strings.districtOf(districtIndex + 1, districts.length)}
               </SlayText>
             </View>
