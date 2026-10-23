@@ -291,8 +291,8 @@ that re-checks the caller's role in SQL.
 | ID | Package | Owner | Notes |
 | --- | --- | --- | --- |
 | `WP-7.1` | Developer accounts | **you** | Apple $99/yr, Google $25 once. **Start week 1** — Apple organisation verification can take weeks. |
-| `WP-7.2` | EAS Build & Submit | agent | Production profiles for both platforms; signing credentials managed by EAS; a signed build installs on a physical device |
-| `WP-7.3` | Identifiers & versioning | agent | Stable bundle IDs; a documented version/build-number scheme; release channels |
+| `WP-7.2` | EAS Build & Submit | agent | Production profiles for both platforms; signing credentials managed by EAS; a signed build installs on a physical device — **profiles ready**: `preview` builds an installable APK for testers, `production` an AAB/IPA with EAS-incremented build numbers, and `eas submit` sends Android to the internal track as a draft. **Waiting on you** (`WP-7.1`): `eas init`, store apps, `eas credentials`, `ascAppId`/`appleTeamId` — the list is in [RELEASES.md](RELEASES.md) |
+| `WP-7.3` | Identifiers & versioning | agent | Stable bundle IDs; a documented version/build-number scheme; release channels — **done**: [RELEASES.md](RELEASES.md) — `app.slaycity.mobile` on both stores, semver `version` by hand, build numbers owned by EAS, `preview`/`production` channels (OTA itself is `WP-8.5`) |
 | `WP-7.4` | Legal & privacy | **you** + agent | Privacy policy and terms hosted on the live site; Apple privacy nutrition labels and Google data-safety form completed truthfully against what the app actually collects |
 | `WP-7.5` | Kids compliance | **you** + agent | Per OD-3. Parental gate if entering the Kids Category; analytics decision per OD-4; COPPA and GDPR-K posture documented |
 | `WP-7.6` | Store listings | **you** + agent | Screenshots at every required size, descriptions, keywords, age rating questionnaires |
