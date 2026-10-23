@@ -182,6 +182,24 @@ describe("TopicChat", () => {
     expect(supabase.removeChannel).toHaveBeenCalledWith(channel);
   });
 
+  it("shows the latest 50 of a long thread, and pages back on request (WP-6.5)", () => {
+    const long: TopicMessage[] = Array.from({ length: 120 }, (_, i) => ({
+      ...messages[0],
+      id: `m${i}`,
+      body: `Message ${i}`,
+    }));
+    render(<TopicChat topicId="t1" currentUserId="u1" initialMessages={long} />);
+    expect(screen.queryByText("Message 69")).toBeNull();
+    expect(screen.getByText("Message 70")).toBeTruthy();
+    expect(screen.getByText("Message 119")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Show earlier messages (70)" }));
+    expect(screen.getByText("Message 20")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Show earlier messages (20)" }));
+    expect(screen.getByText("Message 0")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /Show earlier/ })).toBeNull();
+  });
+
   it("labels the teacher and the student's own messages", () => {
     render(<TopicChat topicId="t1" currentUserId="u1" initialMessages={messages} />);
     expect(screen.getByText("Teacher")).toBeTruthy();

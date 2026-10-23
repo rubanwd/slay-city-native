@@ -1,7 +1,8 @@
 import * as Crypto from "expo-crypto";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
-import { ActivityIndicator, Image, Linking, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { ActivityIndicator, Linking, StyleSheet, View } from "react-native";
 import Svg, { Circle, Path, Rect } from "react-native-svg";
 
 import { FEEDBACK_IMAGE_FOLDER, MAX_IMAGES } from "@slay/core";
@@ -90,7 +91,7 @@ export function FeedbackImagePicker({ value, onChange, disabled = false, onUploa
       <View style={styles.row}>
         {value.map((url, index) => (
           <View key={url} style={styles.thumb}>
-            <Image source={{ uri: url }} style={styles.thumbImage} resizeMode="cover" accessibilityLabel={`Screenshot ${index + 1}`} />
+            <Image source={{ uri: url }} style={styles.thumbImage} contentFit="cover" accessibilityLabel={`Screenshot ${index + 1}`} />
             <SlayPressable
               accessibilityRole="button"
               accessibilityLabel={`Remove screenshot ${index + 1}`}

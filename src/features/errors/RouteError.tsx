@@ -1,6 +1,7 @@
+import { Image } from "expo-image";
 import { useRouter, type ErrorBoundaryProps } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import type { Locale } from "@slay/core";
 import { alpha } from "@slay/tokens";
@@ -58,7 +59,7 @@ export function RouteError({ error, retry, where, locale = "en" }: RouteErrorPro
   return (
     <AppContainer style={styles.center}>
       <View style={styles.body} accessibilityRole="alert">
-        <Image source={require("../../../assets/mascot/slay-base.webp")} style={styles.mascot} resizeMode="contain" accessibilityIgnoresInvertColors />
+        <Image source={require("../../../assets/mascot/slay-base.webp")} style={styles.mascot} contentFit="contain" />
         <SlayText variant="h2" weight="900" accessibilityRole="header" style={styles.text}>
           {strings.title}
         </SlayText>

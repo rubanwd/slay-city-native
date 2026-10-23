@@ -1,4 +1,5 @@
-import { Image, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { StyleSheet, View } from "react-native";
 
 import type { HomeworkGrammarPoint, HomeworkWord } from "@slay/core";
 import { alpha, colors, radii } from "@slay/tokens";
@@ -33,7 +34,7 @@ export function WordCard({ word, onNext, actionLabel }: CardProps & { word: Home
             <Image
               source={picture}
               style={styles.picture}
-              resizeMode="cover"
+              contentFit="cover"
               accessibilityLabel={word.word}
             />
           ) : null}

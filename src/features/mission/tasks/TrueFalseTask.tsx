@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Image, StyleSheet, View, type ViewStyle } from "react-native";
+import { Image } from "expo-image";
+import { StyleSheet, View, type ViewStyle } from "react-native";
 
 import type { TrueFalseContent } from "@slay/core";
 import { alpha, colors, radii, withAlpha } from "@slay/tokens";
@@ -42,7 +43,7 @@ export function TrueFalseTask({ content, onComplete, actionLabel }: TaskProps<Tr
     <View style={styles.wrap}>
       {image ? (
         <View style={styles.frame}>
-          <Image source={image} style={styles.image} resizeMode="cover" accessible={false} />
+          <Image source={image} style={styles.image} contentFit="cover" accessible={false} />
         </View>
       ) : null}
       <TaskPrompt>{statement}</TaskPrompt>

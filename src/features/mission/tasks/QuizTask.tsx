@@ -1,4 +1,5 @@
-import { Image, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { StyleSheet, View } from "react-native";
 
 import type { QuizContent } from "@slay/core";
 import { alpha, radii } from "@slay/tokens";
@@ -31,7 +32,7 @@ export function QuizTask({ content, onComplete, actionLabel }: TaskProps<QuizCon
           <TaskPrompt>{question}</TaskPrompt>
           {image ? (
             <View style={styles.imageFrame}>
-              <Image source={image} style={styles.image} resizeMode="cover" accessible={false} />
+              <Image source={image} style={styles.image} contentFit="cover" accessible={false} />
             </View>
           ) : null}
         </View>

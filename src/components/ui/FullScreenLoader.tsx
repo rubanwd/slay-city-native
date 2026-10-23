@@ -1,4 +1,5 @@
-import { Image, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { StyleSheet, View } from "react-native";
 import Animated from "react-native-reanimated";
 
 import { DEFAULT_MASCOT_IMAGE } from "@slay/core";
@@ -72,7 +73,7 @@ function BobbingMascot({ source }: { source: NonNullable<ReturnType<typeof image
         style={({ pressed }) => pressed && styles.pressed}
       >
         <Animated.View style={[styles.glow, bob]}>
-          <Image source={source} style={styles.image} resizeMode="contain" />
+          <Image source={source} style={styles.image} contentFit="contain" />
         </Animated.View>
       </SlayPressable>
       <Animated.View style={[styles.shadow, shadow]} />

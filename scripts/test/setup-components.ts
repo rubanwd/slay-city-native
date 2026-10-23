@@ -101,6 +101,22 @@ vi.mock("~/lib/sfxSources", () => ({
 }));
 
 /*
+ * `expo-image` pulls in expo's native-module runtime, which has no jsdom build.
+ * The stand-in is React Native's own `Image` with `contentFit` read as
+ * `resizeMode`: tests assert which picture shows and what it is called, not
+ * how it is cached.
+ */
+vi.mock("expo-image", async () => {
+  const { createElement } = await import("react");
+  const { Image: RNImage } = await import("react-native");
+  function Image({ contentFit, cachePolicy: _cachePolicy, ...rest }: { contentFit?: string; cachePolicy?: string } & Record<string, unknown>) {
+    const resizeMode = (contentFit === "fill" ? "stretch" : contentFit) as "contain" | "cover" | "stretch" | undefined;
+    return createElement(RNImage, { ...rest, resizeMode });
+  }
+  return { Image };
+});
+
+/*
  * The photo library, the image re-encoder and `expo-crypto` are native modules
  * too. A test that picks a screenshot drives these mocks itself (see
  * `feedback.test.tsx`).

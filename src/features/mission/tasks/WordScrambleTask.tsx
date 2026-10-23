@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { StyleSheet, View } from "react-native";
 
 import { isSpelledCorrectly, scrambleWord, shuffle, slotGroups, type WordScrambleContent } from "@slay/core";
 import { alpha, colors, radii, withAlpha } from "@slay/tokens";
@@ -38,7 +39,7 @@ export function WordScrambleTask({ content, onComplete, actionLabel }: TaskProps
       <View style={styles.head}>
         {image ? (
           <View style={styles.frame}>
-            <Image source={image} style={styles.image} resizeMode="cover" accessible={false} />
+            <Image source={image} style={styles.image} contentFit="cover" accessible={false} />
           </View>
         ) : null}
         {translation ? (

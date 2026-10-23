@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { FlatList, Image, RefreshControl, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import Animated from "react-native-reanimated";
 
 import { WARDROBE_CATEGORIES, wardrobeCategoryEmoji, wardrobeCategoryLabel } from "@slay/core";
@@ -76,7 +77,7 @@ function ItemCard({
     >
       <View style={styles.art}>
         {picture ? (
-          <Image source={picture} style={styles.artImage} resizeMode="contain" accessible={false} />
+          <Image source={picture} style={styles.artImage} contentFit="contain" accessible={false} />
         ) : (
           <SlayText variant="h1" accessible={false}>
             {wardrobeCategoryEmoji(item.category)}
@@ -204,7 +205,7 @@ export function WardrobeScreen({
           <View style={styles.preview}>
             <View style={styles.mascotRing}>
               <Animated.View style={[styles.mascotFloat, float]}>
-                {mascot ? <Image source={mascot} style={styles.mascot} resizeMode="contain" accessibilityLabel="Your mascot" /> : null}
+                {mascot ? <Image source={mascot} style={styles.mascot} contentFit="contain" accessibilityLabel="Your mascot" /> : null}
               </Animated.View>
             </View>
             <SlayText variant="label" weight="600" color={alpha.white50}>

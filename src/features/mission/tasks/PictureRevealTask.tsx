@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { StyleSheet, View } from "react-native";
 
 import type { PictureRevealContent } from "@slay/core";
 import { alpha, colors, radii } from "@slay/tokens";
@@ -41,7 +42,7 @@ export function PictureRevealTask({ content, onComplete, actionLabel }: TaskProp
                 source={image}
                 blurRadius={answered ? 0 : BLUR_STAGES[stage]}
                 style={styles.image}
-                resizeMode="cover"
+                contentFit="cover"
                 accessible={false}
               />
             ) : null}

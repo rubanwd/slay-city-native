@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { Image, StyleSheet, useWindowDimensions, View, type ImageSourcePropType } from "react-native";
+import { Image } from "expo-image";
+import { StyleSheet, useWindowDimensions, View, type ImageSourcePropType } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 import { colors, withAlpha } from "@slay/tokens";
@@ -61,7 +62,7 @@ export function MascotMarker({ x, y, source }: MascotMarkerProps) {
         style={({ pressed }) => pressed && styles.pressed}
       >
         <Animated.View style={[styles.glow, bob]}>
-          <Image source={source} style={{ width: size, height: size }} resizeMode="contain" />
+          <Image source={source} style={{ width: size, height: size }} contentFit="contain" />
         </Animated.View>
       </SlayPressable>
       <View pointerEvents="none" style={styles.shadowSlot}>

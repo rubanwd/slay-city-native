@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { Image, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import Svg, { Circle, Line, Path, Polyline } from "react-native-svg";
 
 import { formatDate, formatDuration, getMessages, KNOWLEDGE_LEVEL_LABELS, percent, type HomeworkTopicProgress, type Locale } from "@slay/core";
@@ -112,7 +113,7 @@ function StudentCard({ locale, strings, data, fallbackName }: { locale: Locale; 
   const look = imageSource(student.mascotImageUrl);
   return (
     <Card style={styles.studentCard}>
-      <View style={styles.avatar}>{look ? <Image source={look} style={styles.fill} resizeMode="contain" accessibilityLabel={strings.dashboard.lookLabel} /> : null}</View>
+      <View style={styles.avatar}>{look ? <Image source={look} style={styles.fill} contentFit="contain" accessibilityLabel={strings.dashboard.lookLabel} /> : null}</View>
       <View style={styles.studentText}>
         <SlayText variant="h3" weight="900" numberOfLines={1}>
           {student.username ?? fallbackName}

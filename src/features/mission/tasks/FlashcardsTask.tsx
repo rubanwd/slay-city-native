@@ -1,6 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { StyleSheet, View } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 import type { FlashcardsContent } from "@slay/core";
@@ -91,7 +92,7 @@ export function FlashcardsTask({ content, onComplete, actionLabel }: TaskProps<F
             end={{ x: 1, y: 1 }}
             style={[styles.card, styles.front]}
           >
-            {picture ? <Image source={picture} style={styles.picture} resizeMode="cover" accessible={false} /> : null}
+            {picture ? <Image source={picture} style={styles.picture} contentFit="cover" accessible={false} /> : null}
             <SlayText variant="h1" weight="900" style={styles.center}>
               {card.front}
             </SlayText>
