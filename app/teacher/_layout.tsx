@@ -1,6 +1,7 @@
-import { Tabs } from "expo-router";
+import { Tabs, type ErrorBoundaryProps } from "expo-router";
 
 import { SlayTabBar, slayTabScreenOptions, tabIcon } from "~/components/navigation";
+import { RouteError } from "~/features/errors";
 
 /**
  * Mirrors the web teacher console's `BottomNav` (dashboard, map, profile; see
@@ -23,4 +24,9 @@ export default function TeacherLayout() {
       <Tabs.Screen name="mission/[missionId]" options={{ href: null, tabBarStyle: { display: "none" } }} />
     </Tabs>
   );
+}
+
+/** A crash in any teacher screen lands here instead of closing the app (WP-6.7). */
+export function ErrorBoundary(props: ErrorBoundaryProps) {
+  return <RouteError {...props} where="teacher" />;
 }
