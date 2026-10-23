@@ -1,17 +1,12 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import * as Haptics from "expo-haptics";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { haptic } from "~/lib/haptics";
 import { playSfx } from "~/lib/sfx";
 
 import { RewardScreen, type RewardScreenProps } from "./RewardScreen";
 
-vi.mock("expo-haptics", () => ({
-  notificationAsync: vi.fn(() => Promise.resolve()),
-  impactAsync: vi.fn(() => Promise.resolve()),
-  NotificationFeedbackType: { Success: "success" },
-  ImpactFeedbackStyle: { Light: "light" },
-}));
+vi.mock("~/lib/haptics", () => ({ haptic: vi.fn() }));
 vi.mock("~/lib/sfx", () => ({ playSfx: vi.fn() }));
 vi.mock("./assets", () => ({ HERO_IMAGE: { uri: "hero.webp" } }));
 
@@ -42,11 +37,22 @@ describe("RewardScreen", () => {
     expect(onContinue).toHaveBeenCalled();
   });
 
-  it("celebrates once with applause and a success haptic (AC2)", async () => {
+  it("celebrates once with applause and the reward haptic (AC2)", async () => {
     await renderReward();
-    expect(Haptics.notificationAsync).toHaveBeenCalledTimes(1);
+    expect(haptic).toHaveBeenCalledTimes(1);
+    expect(haptic).toHaveBeenCalledWith("reward");
     expect(playSfx).toHaveBeenCalledTimes(1);
     expect(playSfx).toHaveBeenCalledWith("rewardApplause");
+  });
+
+  it("buzzes the bigger level-unlock pattern when a district or level is cleared (WP-6.3)", async () => {
+    await renderReward({ milestone: "district" });
+    expect(haptic).toHaveBeenCalledWith("levelUnlock");
+  });
+
+  it("keeps the plain reward pattern for a finished location", async () => {
+    await renderReward({ milestone: "location", locationName: "Café" });
+    expect(haptic).toHaveBeenCalledWith("reward");
   });
 
   it("says a replay earns nothing instead of showing rewards (AC4)", async () => {

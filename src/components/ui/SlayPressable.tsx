@@ -1,4 +1,3 @@
-import * as Haptics from "expo-haptics";
 import {
   Pressable,
   type GestureResponderEvent,
@@ -9,6 +8,8 @@ import {
 } from "react-native";
 
 import { alpha } from "@slay/tokens";
+
+import { haptic as playHaptic } from "~/lib/haptics";
 
 /**
  * The one pressed-state primitive the rest of the design system builds on
@@ -23,7 +24,7 @@ import { alpha } from "@slay/tokens";
  */
 export interface SlayPressableProps extends Omit<PressableProps, "style"> {
   style?: StyleProp<ViewStyle> | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>);
-  /** Plays a light impact haptic on press-in. Native only; no-ops on web. */
+  /** Plays the light `tap` haptic on press-in, unless haptics are switched off. Native only. */
   haptic?: boolean;
   /** Opt-in Android ripple, `rgba(255,255,255,0.10)`. Never set this on pink or green buttons. */
   ripple?: boolean;
@@ -38,7 +39,7 @@ export function SlayPressable({
 }: SlayPressableProps) {
   const handlePressIn = (event: GestureResponderEvent) => {
     if (haptic) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      playHaptic("tap");
     }
     onPressIn?.(event);
   };

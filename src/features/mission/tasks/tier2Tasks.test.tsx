@@ -1,12 +1,13 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import * as Haptics from "expo-haptics";
 import { AppState, type AppStateStatus } from "react-native";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { haptic } from "~/lib/haptics";
 
 import { TaskRunner } from "../TaskRunner";
 
 vi.mock("~/lib/imageSource", () => ({ imageSource: (url: string | null) => (url ? { uri: url } : null) }));
-vi.mock("expo-haptics", () => ({ impactAsync: vi.fn(() => Promise.resolve()), ImpactFeedbackStyle: { Light: "light" } }));
+vi.mock("~/lib/haptics", () => ({ haptic: vi.fn() }));
 // Deterministic order: every shuffle reverses.
 vi.mock("@slay/core", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@slay/core")>()),
@@ -31,7 +32,7 @@ beforeEach(() => {
 afterEach(() => {
   vi.useRealTimers();
   vi.restoreAllMocks();
-  vi.mocked(Haptics.impactAsync).mockClear();
+  vi.mocked(haptic).mockClear();
 });
 
 function run(taskType: Parameters<typeof TaskRunner>[0]["taskType"], content: Parameters<typeof TaskRunner>[0]["content"]) {
@@ -189,17 +190,17 @@ describe("simon_sequence", () => {
 
     tick(0);
     expect(lit()).toEqual(["Green"]);
-    expect(Haptics.impactAsync).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(haptic).mock.calls.filter(([p]) => p === "tick")).toHaveLength(1);
 
     tick(450);
     expect(lit()).toEqual([]);
     tick(250);
     expect(lit()).toEqual(["Red"]);
-    expect(Haptics.impactAsync).toHaveBeenCalledTimes(2);
+    expect(vi.mocked(haptic).mock.calls.filter(([p]) => p === "tick")).toHaveLength(2);
 
     tick(700);
     expect(lit()).toEqual(["Purple"]);
-    expect(Haptics.impactAsync).toHaveBeenCalledTimes(3);
+    expect(vi.mocked(haptic).mock.calls.filter(([p]) => p === "tick")).toHaveLength(3);
 
     tick(700);
     expect(screen.getByText("Your turn — tile 1 of 3")).toBeTruthy();

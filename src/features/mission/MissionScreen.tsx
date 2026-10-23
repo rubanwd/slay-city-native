@@ -18,6 +18,7 @@ import { alpha, colors, withAlpha } from "@slay/tokens";
 import { AppContainer, Section } from "~/components/layout";
 import { ProgressBar, SlayButton, SlayPressable, SlayText } from "~/components/ui";
 import { imageSource } from "~/lib/imageSource";
+import { haptic } from "~/lib/haptics";
 import { supabase } from "~/lib/supabase";
 
 import { HowToPlayButton } from "./HowToPlayButton";
@@ -87,6 +88,7 @@ export function MissionScreen({
     mutationFn: (rewardFraction: number) => submitMissionCompletion(supabase, mission.id, rewardFraction),
     onSuccess: async (result) => {
       if (!result.ok) return;
+      haptic("missionComplete");
       await queryClient.invalidateQueries({ queryKey: [MAP_QUERY_KEY] });
       // The reward screen shows exactly what `complete_mission` granted — a
       // replay grants nothing, and says so (WP-3.7 AC3–4).

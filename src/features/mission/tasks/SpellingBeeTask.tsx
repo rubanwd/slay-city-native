@@ -5,6 +5,7 @@ import { normalizeAnswer, type SpellingBeeContent } from "@slay/core";
 import { alpha, colors, withAlpha } from "@slay/tokens";
 
 import { SlayButton, SlayPressable, SlayText } from "~/components/ui";
+import { haptic } from "~/lib/haptics";
 
 import type { TaskProps } from "../taskContract";
 import { useSpokenWord } from "../useSpokenWord";
@@ -28,7 +29,9 @@ export function SpellingBeeTask({ content, onComplete, actionLabel }: TaskProps<
   const canCheck = typed.trim() !== "";
 
   const check = () => {
-    if (canCheck) setChecked(true);
+    if (!canCheck) return;
+    haptic(isCorrect ? "correct" : "wrong");
+    setChecked(true);
   };
 
   const retry = () => {

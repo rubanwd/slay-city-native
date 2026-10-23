@@ -1,4 +1,3 @@
-import * as Haptics from "expo-haptics";
 import { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, View } from "react-native";
 import Animated from "react-native-reanimated";
@@ -8,6 +7,7 @@ import { alpha, artwork, colors, radii, withAlpha } from "@slay/tokens";
 
 import { AppContainer } from "~/components/layout";
 import { CoinIcon, SlayButton, SlayText, XpIcon } from "~/components/ui";
+import { haptic } from "~/lib/haptics";
 import { playSfx } from "~/lib/sfx";
 
 import { HERO_IMAGE } from "./assets";
@@ -72,14 +72,18 @@ function pickGreetingTheme(): GreetingTheme {
 }
 
 /**
- * The one payoff moment of the loop: a round of applause and a success
+ * The one payoff moment of the loop: a round of applause and the reward
  * haptic, once, as the screen lands — upstream plays `playRewardApplauseSfx`
- * on mount and never re-fires it.
+ * on mount and never re-fires it. A cleared district or level, which unlocks
+ * new ground, gets the bigger `levelUnlock` pattern instead.
  */
-function useCelebration() {
+function useCelebration(milestone: RewardMilestone | null) {
+  const unlocked = milestone === "district" || milestone === "level";
   useEffect(() => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    haptic(unlocked ? "levelUnlock" : "reward");
     playSfx("rewardApplause");
+    // Once, on landing — a later prop change is not a second celebration.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }
 
@@ -122,7 +126,7 @@ export function RewardScreen({
   advancedToLevelName = null,
 }: RewardScreenProps) {
   const [theme] = useState(pickGreetingTheme);
-  useCelebration();
+  useCelebration(milestone);
 
   const headline = useRewardPop(0, 500, true);
   const mascot = useRewardPop(100, 600);

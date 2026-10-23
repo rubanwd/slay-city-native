@@ -12,6 +12,7 @@ import { PlacementTestCard } from "~/features/placement";
 import { imageSource } from "~/lib/imageSource";
 import { useLocalePreference, useStudentLocale } from "~/lib/locale";
 
+import { HapticsCard } from "./HapticsCard";
 import { LogoutButton } from "./LogoutButton";
 import { ProfileLevelCard } from "./ProfileLevelCard";
 import { ProfileUsernameCard } from "./ProfileUsernameCard";
@@ -106,6 +107,8 @@ export function ProfileScreen({
           {latestPlacement !== undefined ? <PlacementTestCard latest={latestPlacement} messages={messages} /> : null}
 
           {showLanguagePicker ? <LocalePicker locale={locale} title={messages.languageTitle} hint={messages.languageHint} onChoose={choose} /> : null}
+
+          <HapticsCard locale={locale} />
 
           <View style={styles.footer}>
             {/* Reporting a bug or sending an idea — reaches the admin console's inbox. */}

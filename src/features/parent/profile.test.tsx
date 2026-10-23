@@ -78,6 +78,8 @@ describe("ParentProfileLoader", () => {
     await act(async () => fireEvent.click(screen.getByRole("button", { name: "Українська" })));
     expect(screen.getByRole("heading", { name: "Профіль" })).toBeTruthy();
     expect(screen.getByText("Батьки")).toBeTruthy();
+    // The native-only vibration switch follows the console's language too.
+    expect(screen.getByRole("switch", { name: "Вібрація" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Українська" }).getAttribute("aria-pressed")).toBe("true");
     expect(storage.locale).toBe("uk");
 

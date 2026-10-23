@@ -4,6 +4,7 @@ import { StyleSheet, View, type TextStyle, type ViewStyle } from "react-native";
 import { alpha, colors, radii, withAlpha } from "@slay/tokens";
 
 import { SlayButton, SlayPressable, SlayText } from "~/components/ui";
+import { haptic } from "~/lib/haptics";
 
 import type { TaskProps } from "../taskContract";
 
@@ -71,7 +72,10 @@ export function ChoiceTask({
               accessibilityState={{ checked: selected === index, disabled: answered }}
               accessibilityLabel={option}
               disabled={answered}
-              onPress={() => setSelected(index)}
+              onPress={() => {
+                haptic(index === correctIndex ? "correct" : "wrong");
+                setSelected(index);
+              }}
               style={({ pressed }) => [
                 styles.option,
                 look.option,

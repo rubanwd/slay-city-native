@@ -1,10 +1,10 @@
-import * as Haptics from "expo-haptics";
 import { useEffect, useState } from "react";
 import { StyleSheet, View, type ViewStyle } from "react-native";
 
 import type { SimonSequenceContent } from "@slay/core";
 import { alpha, colors, radii, withAlpha } from "@slay/tokens";
 
+import { haptic } from "~/lib/haptics";
 import { SlayButton, SlayPressable, SlayText } from "~/components/ui";
 import { useAppActive } from "~/hooks/useAppStateAwareInterval";
 
@@ -41,9 +41,7 @@ const HUES: { idle: ViewStyle; lit: ViewStyle; litText: string }[] = [
 type Phase = "watching" | "input" | "wrong" | "done";
 
 /** The light's companion: a haptic tick fired in the same callback that lights the tile. */
-const tick = () => {
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-};
+const tick = () => haptic("tick");
 
 /**
  * Port of upstream's `SimonSequenceTask`: the tiles light up in sequence, then
