@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { StyleSheet, View } from "react-native";
 
 import { shuffle, type StorySequencingContent } from "@slay/core";
 import { alpha, colors, radii, withAlpha } from "@slay/tokens";
@@ -62,7 +63,7 @@ export function StorySequencingTask({ content, onComplete, actionLabel }: TaskPr
               </View>
               {image ? (
                 <View style={styles.thumb}>
-                  <Image source={image} style={styles.image} resizeMode="cover" accessible={false} />
+                  <Image source={image} style={styles.image} contentFit="cover" accessible={false} />
                 </View>
               ) : null}
               <SlayText variant="small" style={styles.text}>

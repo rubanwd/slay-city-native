@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { StyleSheet, View } from "react-native";
 
 import { shuffle, type MatchingContent, type MatchingPair } from "@slay/core";
 import { alpha, colors, radii, withAlpha } from "@slay/tokens";
@@ -99,7 +100,7 @@ export function MatchingTask({ content, onComplete, actionLabel }: TaskProps<Mat
                 style={[styles.tile, styles.matchTile, isResolved ? styles.resolved : isWrong ? styles.wrong : styles.idle]}
               >
                 {mode === "word-to-image" ? (
-                  picture ? <Image source={picture} style={styles.picture} resizeMode="cover" /> : null
+                  picture ? <Image source={picture} style={styles.picture} contentFit="cover" /> : null
                 ) : (
                   <SlayText variant="bodyStrong" weight="700" style={styles.center}>
                     {pair.match}

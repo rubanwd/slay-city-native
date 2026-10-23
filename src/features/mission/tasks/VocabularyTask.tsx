@@ -1,4 +1,5 @@
-import { Image, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { StyleSheet, View } from "react-native";
 
 import type { VocabularyContent } from "@slay/core";
 import { alpha, colors, radii } from "@slay/tokens";
@@ -22,7 +23,7 @@ export function VocabularyTask({ content, onComplete, actionLabel }: TaskProps<V
       <SlayCard variant="cyan" style={styles.card}>
         {image ? (
           <View style={styles.frame}>
-            <Image source={image} style={styles.image} resizeMode="cover" accessibilityLabel={word} />
+            <Image source={image} style={styles.image} contentFit="cover" accessibilityLabel={word} />
           </View>
         ) : null}
         <View style={styles.words}>

@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Image, KeyboardAvoidingView, Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { KeyboardAvoidingView, Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
 
 import type { HomeworkTopicData, HomeworkTopicNote } from "@slay/data";
 import { alpha, colors, radii, withAlpha } from "@slay/tokens";
@@ -18,7 +19,7 @@ function TopicNoteCard({ note }: { note: HomeworkTopicNote }) {
   if (!note.text && !note.linkUrl && !picture) return null;
   return (
     <View style={styles.card}>
-      {picture ? <Image source={picture} style={styles.noteImage} resizeMode="cover" accessible={false} /> : null}
+      {picture ? <Image source={picture} style={styles.noteImage} contentFit="cover" accessible={false} /> : null}
       {note.text ? (
         <SlayText variant="small" color={alpha.white70}>
           {note.text}

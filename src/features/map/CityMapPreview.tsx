@@ -1,6 +1,7 @@
 import { useRouter, type Href } from "expo-router";
 import { useState } from "react";
-import { Image, StyleSheet, View, type LayoutRectangle } from "react-native";
+import { Image } from "expo-image";
+import { StyleSheet, View, type LayoutRectangle } from "react-native";
 
 import {
   DEFAULT_LOCALE,
@@ -152,15 +153,17 @@ export function CityMapPreview({ districts, levelName, subtitle, progressLabel =
           ) : null}
 
           <View style={styles.area} onLayout={(event) => setArea(event.nativeEvent.layout)}>
-            {background ? <Image source={background} blurRadius={24} style={styles.backdrop} resizeMode="cover" accessible={false} /> : null}
+            {background ? <Image source={background} blurRadius={24} style={styles.backdrop} contentFit="cover" accessible={false} /> : null}
             {frame ? (
               <View style={[styles.frame, frame]}>
                 {background ? (
                   <Image
                     source={background}
                     style={[StyleSheet.absoluteFill, { opacity: backgroundLoaded ? 1 : 0 }]}
-                    resizeMode="cover"
+                    contentFit="cover"
                     accessible={false}
+                    // The district art is large and revisited every time the map opens: keep it in memory too.
+                    cachePolicy="memory-disk"
                     onLoad={() => setLoadedBackground(district?.backgroundUrl ?? null)}
                   />
                 ) : (

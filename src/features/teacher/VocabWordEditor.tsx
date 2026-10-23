@@ -1,4 +1,5 @@
-import { ActivityIndicator, Image, StyleSheet, TextInput, View } from "react-native";
+import { Image } from "expo-image";
+import { ActivityIndicator, StyleSheet, TextInput, View } from "react-native";
 
 import { alpha, colors, fontFamilyByWeight, radii, typeScale, withAlpha } from "@slay/tokens";
 
@@ -46,7 +47,7 @@ export function VocabWordEditor({ word, index, imageBusy, onChange, onRemove, on
           {imageBusy ? (
             <ActivityIndicator color={colors.purple} accessibilityLabel={`Making a picture for ${label}`} />
           ) : picture ? (
-            <Image source={picture} style={styles.fill} resizeMode="cover" accessibilityLabel={word.word} />
+            <Image source={picture} style={styles.fill} contentFit="cover" accessibilityLabel={word.word} />
           ) : (
             <SlayText variant="h3" accessible={false}>
               🖼️

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Image, StyleSheet, View, type LayoutRectangle } from "react-native";
+import { Image } from "expo-image";
+import { StyleSheet, View, type LayoutRectangle } from "react-native";
 import Animated from "react-native-reanimated";
 
 import {
@@ -140,7 +141,7 @@ export function CityMap({
 
       <View style={styles.area} onLayout={(event) => setArea(event.nativeEvent.layout)}>
         {background ? (
-          <Image source={background} blurRadius={24} style={styles.backdrop} resizeMode="cover" accessible={false} />
+          <Image source={background} blurRadius={24} style={styles.backdrop} contentFit="cover" accessible={false} />
         ) : null}
 
         {frame ? (
@@ -149,8 +150,10 @@ export function CityMap({
               <Image
                 source={background}
                 style={[StyleSheet.absoluteFill, { opacity: backgroundLoaded ? 1 : 0 }]}
-                resizeMode="cover"
+                contentFit="cover"
                 accessible={false}
+                // The district art is large and revisited every time the map opens: keep it in memory too.
+                cachePolicy="memory-disk"
                 onLoad={() => setLoadedBackground(district?.backgroundUrl ?? null)}
               />
             ) : (

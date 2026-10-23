@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { BackHandler, Image, ScrollView, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { BackHandler, ScrollView, StyleSheet, View } from "react-native";
 import Animated from "react-native-reanimated";
 
 import {
@@ -75,7 +76,7 @@ function Mascot({ url, compact }: { url: string; compact?: boolean }) {
   const size = compact ? 72 : 112;
   return (
     <Animated.View style={float}>
-      <Image source={source} style={{ width: size, height: size }} resizeMode="contain" accessibilityLabel="Slay" />
+      <Image source={source} style={{ width: size, height: size }} contentFit="contain" accessibilityLabel="Slay" />
     </Animated.View>
   );
 }

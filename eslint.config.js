@@ -28,7 +28,13 @@ module.exports = [
   {
     files: ["app/**/*.tsx", "src/**/*.{ts,tsx}"],
     rules: {
-      "no-restricted-imports": ["error", { patterns: [{ group: ["next", "next/*", "../upstream/*", "upstream/*"], message: "The upstream checkout is read-only reference. Never import from it." }] }],
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [{ group: ["next", "next/*", "../upstream/*", "upstream/*"], message: "The upstream checkout is read-only reference. Never import from it." }],
+          paths: [{ name: "react-native", importNames: ["Image"], message: "Use Image from expo-image: it caches artwork on disk (WP-6.5)." }],
+        },
+      ],
     },
   },
 ];

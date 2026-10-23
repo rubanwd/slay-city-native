@@ -1,4 +1,5 @@
-import { Image, KeyboardAvoidingView, Platform, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { KeyboardAvoidingView, Platform, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 
 import { getMessages, type Locale } from "@slay/core";
 import type { ProfileData } from "@slay/data";
@@ -78,7 +79,7 @@ export function ProfileScreen({
           <View style={styles.identity}>
             <View style={styles.avatar}>
               {mascot ? (
-                <Image source={mascot} style={styles.mascot} resizeMode="contain" accessibilityLabel={messages.characterLabel} />
+                <Image source={mascot} style={styles.mascot} contentFit="contain" accessibilityLabel={messages.characterLabel} />
               ) : null}
             </View>
             <View style={styles.names}>

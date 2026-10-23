@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ActivityIndicator, Image, Linking, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { ActivityIndicator, Linking, StyleSheet, View } from "react-native";
 
 import type { ContentImageFolder } from "@slay/data";
 import { alpha, colors, radii } from "@slay/tokens";
@@ -54,7 +55,7 @@ export function ImageUploadField({ label, folder, value, onChange, disabled = fa
       <SlayText variant="label" color={alpha.white50}>
         {label}
       </SlayText>
-      {preview ? <Image source={preview} style={styles.preview} resizeMode="cover" accessibilityLabel={label} /> : null}
+      {preview ? <Image source={preview} style={styles.preview} contentFit="cover" accessibilityLabel={label} /> : null}
       <View style={styles.actions}>
         <SlayButton variant="ghost" size="sm" loading={uploading} disabled={disabled} onPress={() => void pick()}>
           {value ? "Replace picture" : "Add picture"}

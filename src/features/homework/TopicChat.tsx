@@ -10,6 +10,8 @@ import { supabase } from "~/lib/supabase";
 
 /** Longest a single message may be — upstream's `MAX_BODY_LENGTH`, which the database re-checks. */
 const MAX_BODY_LENGTH = 2000;
+/** How many of the latest messages show; "Show earlier" adds this many more. */
+const THREAD_PAGE = 50;
 
 export interface TopicChatProps {
   topicId: string;
@@ -42,6 +44,10 @@ export function TopicChat({ topicId, currentUserId, initialMessages }: TopicChat
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const list = useRef<ScrollView>(null);
+  // Only the latest messages render: the thread sits in a scrolling screen, where
+  // a virtualised list can't, so a long thread is paged instead (WP-6.5).
+  const [shown, setShown] = useState(THREAD_PAGE);
+  const hidden = Math.max(0, messages.length - shown);
   const active = useAppActive();
 
   const refetch = useCallback(async () => {
@@ -131,41 +137,54 @@ export function TopicChat({ topicId, currentUserId, initialMessages }: TopicChat
             No messages yet. Ask a question or leave a note — everyone in the group will see it.
           </SlayText>
         ) : (
-          messages.map((m) => {
-            const mine = m.authorId === currentUserId;
-            const author = mine ? "You" : m.authorUsername;
-            return (
-              <View key={m.id} style={[styles.message, mine ? styles.mine : styles.theirs]}>
-                <View style={styles.meta}>
-                  <SlayText variant="label" weight="700" color={alpha.white50} style={styles.metaText}>
-                    {author}
-                  </SlayText>
-                  {m.authorIsTeacher ? (
-                    <View style={styles.teacher}>
-                      <SlayText variant="label" weight="700" color={colors.neonPink} style={styles.teacherText}>
-                        Teacher
-                      </SlayText>
-                    </View>
-                  ) : null}
-                  <SlayText variant="label" color={alpha.white50} style={styles.metaText}>
-                    {formatTime(m.createdAt)}
-                  </SlayText>
+          <>
+            {hidden > 0 ? (
+              <SlayPressable
+                accessibilityRole="button"
+                onPress={() => setShown((count) => count + THREAD_PAGE)}
+                style={styles.earlier}
+              >
+                <SlayText variant="label" weight="700" color={colors.cyan}>
+                  {`Show earlier messages (${hidden})`}
+                </SlayText>
+              </SlayPressable>
+            ) : null}
+            {messages.slice(hidden).map((m) => {
+              const mine = m.authorId === currentUserId;
+              const author = mine ? "You" : m.authorUsername;
+              return (
+                <View key={m.id} style={[styles.message, mine ? styles.mine : styles.theirs]}>
+                  <View style={styles.meta}>
+                    <SlayText variant="label" weight="700" color={alpha.white50} style={styles.metaText}>
+                      {author}
+                    </SlayText>
+                    {m.authorIsTeacher ? (
+                      <View style={styles.teacher}>
+                        <SlayText variant="label" weight="700" color={colors.neonPink} style={styles.teacherText}>
+                          Teacher
+                        </SlayText>
+                      </View>
+                    ) : null}
+                    <SlayText variant="label" color={alpha.white50} style={styles.metaText}>
+                      {formatTime(m.createdAt)}
+                    </SlayText>
+                  </View>
+                  <SlayPressable
+                    accessibilityRole={mine ? "button" : undefined}
+                    accessibilityLabel={`${author}: ${m.body}`}
+                    accessibilityHint={mine ? "Long-press to delete" : undefined}
+                    disabled={!mine}
+                    onLongPress={mine ? () => remove(m) : undefined}
+                    style={[styles.bubble, mine ? styles.bubbleMine : m.authorIsTeacher ? styles.bubbleTeacher : styles.bubbleTheirs]}
+                  >
+                    <SlayText variant="small" color={mine || m.authorIsTeacher ? colors.white : alpha.white80}>
+                      {m.body}
+                    </SlayText>
+                  </SlayPressable>
                 </View>
-                <SlayPressable
-                  accessibilityRole={mine ? "button" : undefined}
-                  accessibilityLabel={`${author}: ${m.body}`}
-                  accessibilityHint={mine ? "Long-press to delete" : undefined}
-                  disabled={!mine}
-                  onLongPress={mine ? () => remove(m) : undefined}
-                  style={[styles.bubble, mine ? styles.bubbleMine : m.authorIsTeacher ? styles.bubbleTeacher : styles.bubbleTheirs]}
-                >
-                  <SlayText variant="small" color={mine || m.authorIsTeacher ? colors.white : alpha.white80}>
-                    {m.body}
-                  </SlayText>
-                </SlayPressable>
-              </View>
-            );
-          })
+              );
+            })}
+          </>
         )}
       </ScrollView>
 
@@ -197,6 +216,7 @@ export function TopicChat({ topicId, currentUserId, initialMessages }: TopicChat
 }
 
 const styles = StyleSheet.create({
+  earlier: { alignSelf: "center", paddingVertical: 8, paddingHorizontal: 12 },
   box: {
     gap: 12,
     borderRadius: radii.lg,

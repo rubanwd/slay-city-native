@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { ScrollView, StyleSheet, View } from "react-native";
 import Animated from "react-native-reanimated";
 
 import type { RewardMilestone } from "@slay/data";
@@ -161,7 +162,7 @@ export function RewardScreen({
           ]}
         >
           <Animated.View style={wiggle}>
-            <Image source={HERO_IMAGE} style={styles.hero} resizeMode="contain" accessibilityLabel="Slay celebrating" />
+            <Image source={HERO_IMAGE} style={styles.hero} contentFit="contain" accessibilityLabel="Slay celebrating" />
           </Animated.View>
         </Animated.View>
 

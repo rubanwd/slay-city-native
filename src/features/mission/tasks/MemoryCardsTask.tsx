@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
+import { StyleSheet, View } from "react-native";
 
 import { shuffle, type MemoryCardsContent } from "@slay/core";
 import { alpha, colors, radii, withAlpha } from "@slay/tokens";
@@ -91,7 +92,7 @@ export function MemoryCardsTask({ content, onComplete, actionLabel }: TaskProps<
             >
               {isUp ? (
                 isPicture ? (
-                  picture ? <Image source={picture} style={styles.picture} resizeMode="cover" /> : null
+                  picture ? <Image source={picture} style={styles.picture} contentFit="cover" /> : null
                 ) : (
                   <SlayText
                     variant="small"
