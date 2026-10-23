@@ -22,7 +22,7 @@ export function LockedLevelsNote({ available, locale = DEFAULT_LOCALE }: LockedL
   if (locked.length === 0) return null;
 
   return (
-    <SlayText variant="small" color={alpha.white40}>
+    <SlayText variant="small" color={alpha.white50}>
       {getMessages(locale).student.profile.levelComingSoon(locked.map((level) => KNOWLEDGE_LEVEL_LABELS[level]).join(", "))}
     </SlayText>
   );

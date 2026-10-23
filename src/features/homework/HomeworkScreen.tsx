@@ -33,7 +33,7 @@ function TopicCard({ topic }: { topic: HomeworkTopicSummary }) {
       onPress={() => router.push({ pathname: "/homework/[topicId]", params: { topicId: topic.id } })}
       style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
     >
-      <SlayText variant="label" weight="700" color={alpha.white40}>
+      <SlayText variant="label" weight="700" color={alpha.white50}>
         By {topic.teacherUsername}
       </SlayText>
       <View style={styles.titleRow}>

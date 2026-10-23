@@ -94,7 +94,7 @@ export function GrammarCard({
           </SlayText>
           {point.example ? (
             <View style={styles.example}>
-              <SlayText variant="label" weight="700" color={alpha.white40}>
+              <SlayText variant="label" weight="700" color={alpha.white50}>
                 Example
               </SlayText>
               <SlayText variant="h3" weight="600" color={colors.cyan}>

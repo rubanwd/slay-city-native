@@ -207,7 +207,7 @@ export function WardrobeScreen({
                 {mascot ? <Image source={mascot} style={styles.mascot} resizeMode="contain" accessibilityLabel="Your mascot" /> : null}
               </Animated.View>
             </View>
-            <SlayText variant="label" weight="600" color={alpha.white40}>
+            <SlayText variant="label" weight="600" color={alpha.white50}>
               Your look
             </SlayText>
             {error ? (
@@ -220,7 +220,7 @@ export function WardrobeScreen({
           </View>
         }
         ListEmptyComponent={
-          <SlayText variant="small" color={alpha.white40} style={styles.empty}>
+          <SlayText variant="small" color={alpha.white50} style={styles.empty}>
             No items in the shop yet. Check back soon!
           </SlayText>
         }

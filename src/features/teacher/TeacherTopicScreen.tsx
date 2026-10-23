@@ -27,7 +27,7 @@ const plural = (count: number, one: string, many: string) => `${count} ${count =
 function ReadOnlyList({ empty, lines, summary }: { empty: string; lines: { key: string; main: string; sub?: string | null }[]; summary: string }) {
   if (lines.length === 0) {
     return (
-      <SlayText variant="small" color={alpha.white40}>
+      <SlayText variant="small" color={alpha.white50}>
         {empty}
       </SlayText>
     );

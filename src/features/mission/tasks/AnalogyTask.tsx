@@ -22,10 +22,10 @@ export function AnalogyTask({ content, onComplete, actionLabel }: TaskProps<Anal
       header={() => (
         <View>
           <SlayText variant="h3" weight="900" style={{ textAlign: "center" }}>
-            {wordA} <SlayText variant="h3" weight="900" color={alpha.white40}>is to</SlayText> {wordB}
+            {wordA} <SlayText variant="h3" weight="900" color={alpha.white50}>is to</SlayText> {wordB}
           </SlayText>
           <SlayText variant="h3" weight="900" color={colors.cyan} style={{ textAlign: "center", marginTop: 4 }}>
-            {wordC} <SlayText variant="h3" weight="900" color={alpha.white40}>is to</SlayText> ___?
+            {wordC} <SlayText variant="h3" weight="900" color={alpha.white50}>is to</SlayText> ___?
           </SlayText>
         </View>
       )}

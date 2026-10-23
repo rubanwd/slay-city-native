@@ -28,7 +28,7 @@ export function DialogueChoiceTask({ content, onComplete, actionLabel }: TaskPro
           </View>
           <View style={styles.speech}>
             {speaker ? (
-              <SlayText variant="label" color={alpha.white40}>
+              <SlayText variant="label" color={alpha.white50}>
                 {speaker}
               </SlayText>
             ) : null}

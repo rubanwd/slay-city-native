@@ -271,7 +271,7 @@ export function VocabularyManager({ topicId, groupId, initialWords, initialTaskC
             <SlayText variant="small" weight="600">
               Generate images for all words
             </SlayText>
-            <SlayText variant="label" color={alpha.white40} style={styles.plain}>
+            <SlayText variant="label" color={alpha.white50} style={styles.plain}>
               Off — words come without pictures; add one per word with its AI button.
             </SlayText>
           </View>
@@ -341,7 +341,7 @@ export function VocabularyManager({ topicId, groupId, initialWords, initialTaskC
         ) : null}
       </View>
       {busyImages.size > 0 ? (
-        <SlayText variant="label" color={alpha.white40} style={[styles.plain, styles.center]}>
+        <SlayText variant="label" color={alpha.white50} style={[styles.plain, styles.center]}>
           Finish generating images before publishing…
         </SlayText>
       ) : null}

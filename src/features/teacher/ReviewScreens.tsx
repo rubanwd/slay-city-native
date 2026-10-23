@@ -80,7 +80,7 @@ export function ReviewLocationScreen({ location, missions }: ReviewLocationData)
           <View style={styles.head}>
             <TeacherHeader title={location.name} backHref="/teacher/map" />
             {location.districtName ? (
-              <SlayText variant="label" color={alpha.white40}>
+              <SlayText variant="label" color={alpha.white50}>
                 {location.districtName}
               </SlayText>
             ) : null}
@@ -101,7 +101,7 @@ export function ReviewLocationScreen({ location, missions }: ReviewLocationData)
             onPress={() => router.push({ pathname: "/teacher/mission/[missionId]", params: { missionId: item.id } })}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
-            <SlayText variant="label" weight="700" color={alpha.white40}>
+            <SlayText variant="label" weight="700" color={alpha.white50}>
               Mission {index + 1}
             </SlayText>
             <SlayText variant="bodyStrong">{item.title}</SlayText>

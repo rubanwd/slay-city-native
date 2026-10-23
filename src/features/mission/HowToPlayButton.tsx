@@ -33,7 +33,7 @@ export function HowToPlayButton({ text }: { text: string }) {
       </SlayPressable>
 
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setOpen(false)} accessibilityLabel="Close">
+        <Pressable style={styles.backdrop} accessibilityRole="button" onPress={() => setOpen(false)} accessibilityLabel="Close">
           <View style={styles.card} accessibilityViewIsModal>
             <SlayText variant="label" color={colors.cyan} style={styles.title}>
               How to play

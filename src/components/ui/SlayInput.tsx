@@ -52,13 +52,14 @@ export const SlayInput = forwardRef<TextInput, SlayInputProps>(function SlayInpu
         </SlayText>
       ) : null}
       <TextInput
+        maxFontSizeMultiplier={1.5}
         ref={ref}
         // The visible label is a sibling Text, which a screen reader does not
         // associate with the field — name the field after it unless told otherwise.
         accessibilityLabel={label}
         editable={editable}
         selectionColor={colors.neonPink}
-        placeholderTextColor={alpha.white40}
+        placeholderTextColor={alpha.white50}
         onFocus={handleFocus}
         onBlur={handleBlur}
         style={[styles.field, focused && styles.fieldFocused, disabled && styles.fieldDisabled, style]}
@@ -73,7 +74,7 @@ export const SlayInput = forwardRef<TextInput, SlayInputProps>(function SlayInpu
           {success}
         </SlayText>
       ) : hint ? (
-        <SlayText variant="small" color={alpha.white40} style={styles.message}>
+        <SlayText variant="small" color={alpha.white50} style={styles.message}>
           {hint}
         </SlayText>
       ) : null}

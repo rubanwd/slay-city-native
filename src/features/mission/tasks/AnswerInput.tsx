@@ -37,10 +37,11 @@ export const AnswerInput = forwardRef<TextInput, AnswerInputProps>(function Answ
   const [focused, setFocused] = useState(false);
   return (
     <TextInput
+      maxFontSizeMultiplier={1.5}
       ref={ref}
       {...NO_HELP_KEYBOARD}
       selectionColor={colors.neonPink}
-      placeholderTextColor={alpha.white40}
+      placeholderTextColor={alpha.white50}
       onFocus={(event) => {
         setFocused(true);
         onFocus?.(event);

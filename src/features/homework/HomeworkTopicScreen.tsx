@@ -156,7 +156,7 @@ export function HomeworkTopicScreen({ topic, note, currentUserId, messages, voca
             <SlayText variant="label" color={alpha.white50} accessibilityRole="header">
               Q&amp;A
             </SlayText>
-            <SlayText variant="small" color={alpha.white40}>
+            <SlayText variant="small" color={alpha.white50}>
               Ask your teacher or leave a note — everyone in your group can see it.
             </SlayText>
             <TopicChat topicId={topic.id} currentUserId={currentUserId} initialMessages={messages} />
