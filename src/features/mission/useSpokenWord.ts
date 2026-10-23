@@ -12,7 +12,8 @@ import { audioAdapter } from "~/lib/audio-adapter";
  * so the speaker button is never silent.
  *
  * Sound stops when the app leaves the foreground and when the task unmounts
- * (AGENTS.md "Timers and app lifecycle").
+ * (AGENTS.md "Timers and app lifecycle"). It plays even with the silent
+ * switch on — the student asked to hear the word (`AudioKind` "speech").
  */
 export function useSpokenWord(word: string, audioUrl: string | null): () => void {
   const player = useRef<AudioPlayer | null>(null);
@@ -37,7 +38,11 @@ export function useSpokenWord(word: string, audioUrl: string | null): () => void
 
   const speak = useCallback(() => {
     Speech.stop();
-    Speech.speak(word, { language: "en-US", rate: 0.9 });
+    // Speech synthesis shares the app's audio session: put it in speech mode
+    // first, so the word is heard on silent too (WP-6.2).
+    void audioAdapter.ensureAudioMode("speech").then(() => {
+      if (!disposed.current) Speech.speak(word, { language: "en-US", rate: 0.9 });
+    });
   }, [word]);
 
   return useCallback(() => {
@@ -48,7 +53,7 @@ export function useSpokenWord(word: string, audioUrl: string | null): () => void
     void (async () => {
       try {
         if (!player.current) {
-          const created = await audioAdapter.createSoundPlayer({ uri: audioUrl });
+          const created = await audioAdapter.createSoundPlayer({ uri: audioUrl }, "speech");
           // The task closed while the clip was loading.
           if (disposed.current) {
             created.remove();
@@ -56,6 +61,7 @@ export function useSpokenWord(word: string, audioUrl: string | null): () => void
           }
           player.current = created;
         }
+        await audioAdapter.ensureAudioMode("speech");
         await player.current.seekTo(0);
         player.current.play();
       } catch {

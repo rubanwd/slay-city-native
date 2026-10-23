@@ -45,6 +45,8 @@ export function playSfx(name: SfxName): void {
 
   player
     .then(async (p) => {
+      // A word read aloud may have left the session in speech mode.
+      await audioAdapter.ensureAudioMode("effect");
       await p.seekTo(0);
       p.play();
     })

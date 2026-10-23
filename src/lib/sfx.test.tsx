@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { audioAdapter } from "./audio-adapter";
 
-vi.mock("./audio-adapter", () => ({ audioAdapter: { createSoundPlayer: vi.fn() } }));
+vi.mock("./audio-adapter", () => ({ audioAdapter: { createSoundPlayer: vi.fn(), ensureAudioMode: vi.fn(() => Promise.resolve()) } }));
 
 const makePlayer = () => ({ play: vi.fn(), pause: vi.fn(), seekTo: vi.fn(() => Promise.resolve()) });
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -39,6 +39,8 @@ describe("playSfx", () => {
     expect(audioAdapter.createSoundPlayer).toHaveBeenCalledWith({ uri: "snake-hiss.m4a" });
     expect(player.seekTo).toHaveBeenCalledWith(0);
     expect(player.play).toHaveBeenCalledTimes(2);
+    // Decoration: back to the mode that obeys the silent switch before each play (WP-6.2).
+    expect(audioAdapter.ensureAudioMode).toHaveBeenCalledWith("effect");
   });
 
   it("stops every sound when the app leaves the foreground", async () => {
