@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import type { ReactNode } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { loadHomeworkList, loadHomeworkTopic } from "@slay/data";
-import { alpha, colors } from "@slay/tokens";
+import { alpha } from "@slay/tokens";
 
 import { AppContainer } from "~/components/layout";
-import { SlayButton, SlayText } from "~/components/ui";
+import { FullScreenLoader, SlayButton, SlayText } from "~/components/ui";
 import { supabase } from "~/lib/supabase";
 
 import { HomeworkScreen } from "./HomeworkScreen";
@@ -43,8 +43,8 @@ function Failed({ text, onRetry, retrying }: { text: string; onRetry?: () => voi
 
 function Loading({ label }: { label: string }) {
   return (
-    <AppContainer style={styles.center}>
-      <ActivityIndicator size="large" color={colors.limeGreen} accessibilityLabel={label} />
+    <AppContainer>
+      <FullScreenLoader label={label} />
     </AppContainer>
   );
 }

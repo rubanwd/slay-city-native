@@ -1,13 +1,13 @@
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
 import { completeAuthLink } from "@slay/data";
-import { alpha, colors } from "@slay/tokens";
+import { alpha } from "@slay/tokens";
 
 import { AppContainer, Section } from "~/components/layout";
-import { SlayButton, SlayText } from "~/components/ui";
+import { FullScreenLoader, SlayButton, SlayText } from "~/components/ui";
 import { isRecoveryLink, parseAuthCallbackUrl } from "~/lib/authRedirect";
 import { supabase } from "~/lib/supabase";
 
@@ -80,8 +80,8 @@ export default function AuthCallbackScreen() {
   }
 
   return (
-    <AppContainer style={styles.center}>
-      <ActivityIndicator size="large" color={colors.white} />
+    <AppContainer>
+      <FullScreenLoader />
     </AppContainer>
   );
 }

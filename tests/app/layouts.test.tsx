@@ -25,6 +25,8 @@ vi.mock("~/lib/secure-storage", () => ({
 vi.mock("~/lib/supabase", () => ({ supabase: {} }));
 vi.mock("@slay/data", async (importOriginal) => ({ ...(await importOriginal<typeof import("@slay/data")>()), hasAnyGroup }));
 
+// The custom tab bar renders react-navigation's own bar inside it; these tests never mount a navigator.
+vi.mock("expo-router/tabs", () => ({ BottomTabBar: () => null }));
 vi.mock("expo-router", () => {
   function Tabs({ children }: { children: React.ReactNode }) {
     return <>{children}</>;

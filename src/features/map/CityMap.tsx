@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Image, StyleSheet, View, type LayoutRectangle } from "react-native";
+import { Image, StyleSheet, View, type LayoutRectangle } from "react-native";
+import Animated from "react-native-reanimated";
 
 import {
   defaultSelectedLocation,
@@ -11,7 +12,8 @@ import {
 import type { MapScreenData } from "@slay/data";
 import { alpha, colors, radii, withAlpha } from "@slay/tokens";
 
-import { CoinAmount, SlayButton, SlayPressable, SlayText, XpAmount } from "~/components/ui";
+import { useBannerDrop } from "~/animations";
+import { CoinAmount, FullScreenLoader, SlayButton, SlayPressable, SlayText, XpAmount } from "~/components/ui";
 import { imageSource } from "~/lib/imageSource";
 import { playSfx } from "~/lib/sfx";
 
@@ -184,25 +186,11 @@ export function CityMap({
         ) : null}
 
         {!backgroundLoaded ? (
-          <View style={styles.loader} accessibilityLabel="Loading map…">
-            <ActivityIndicator size="large" color={colors.limeGreen} />
-          </View>
+          <FullScreenLoader fullScreen={false} label="Loading map…" mascotImageUrl={mascotImageUrl} />
         ) : null}
 
         {banner ? (
-          <View style={styles.bannerRow} pointerEvents="none">
-            <View style={styles.banner}>
-              <SlayText
-                variant="small"
-                weight="800"
-                color={colors.limeGreen}
-                accessibilityLiveRegion="polite"
-                style={styles.center}
-              >
-                {banner}
-              </SlayText>
-            </View>
-          </View>
+          <MilestoneBanner text={banner} />
         ) : null}
       </View>
 
@@ -298,6 +286,20 @@ export function CityMap({
   );
 }
 
+/** The milestone banner: drops in from above the map (`banner-drop`) when it mounts. */
+function MilestoneBanner({ text }: { text: string }) {
+  const drop = useBannerDrop();
+  return (
+    <View style={styles.bannerRow} pointerEvents="none">
+      <Animated.View style={[styles.banner, drop]}>
+        <SlayText variant="small" weight="800" color={colors.limeGreen} accessibilityLiveRegion="polite" style={styles.center}>
+          {text}
+        </SlayText>
+      </Animated.View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
@@ -343,12 +345,6 @@ const styles = StyleSheet.create({
   },
   frame: {
     overflow: "hidden",
-  },
-  loader: {
-    ...StyleSheet.absoluteFill,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.black,
   },
   bannerRow: {
     position: "absolute",

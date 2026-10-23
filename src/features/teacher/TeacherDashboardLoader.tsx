@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { loadTeacherDashboard } from "@slay/data";
-import { alpha, colors } from "@slay/tokens";
+import { alpha } from "@slay/tokens";
 
 import { AppContainer } from "~/components/layout";
-import { SlayButton, SlayText } from "~/components/ui";
+import { FullScreenLoader, SlayButton, SlayText } from "~/components/ui";
 import { SignOutButton } from "~/features/auth";
 import { supabase } from "~/lib/supabase";
 
@@ -27,8 +27,8 @@ export function TeacherDashboardLoader() {
 
   if (dashboard.isPending) {
     return (
-      <AppContainer style={styles.center}>
-        <ActivityIndicator size="large" color={colors.limeGreen} accessibilityLabel="Loading dashboard…" />
+      <AppContainer>
+        <FullScreenLoader label="Loading dashboard…" mascot={false} />
       </AppContainer>
     );
   }

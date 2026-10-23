@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { equipWardrobeItem, loadWardrobe, purchaseWardrobeItem, unequipWardrobeItem, type WardrobeItem } from "@slay/data";
-import { alpha, colors } from "@slay/tokens";
+import { alpha } from "@slay/tokens";
 
 import { AppContainer } from "~/components/layout";
-import { SlayButton, SlayText } from "~/components/ui";
+import { FullScreenLoader, SlayButton, SlayText } from "~/components/ui";
 import { MAP_QUERY_KEY } from "~/features/map";
 import { supabase } from "~/lib/supabase";
 
@@ -42,8 +42,8 @@ export function WardrobeLoader() {
 
   if (wardrobe.isPending) {
     return (
-      <AppContainer style={styles.center}>
-        <ActivityIndicator size="large" color={colors.limeGreen} accessibilityLabel="Loading wardrobe…" />
+      <AppContainer>
+        <FullScreenLoader label="Loading wardrobe…" />
       </AppContainer>
     );
   }

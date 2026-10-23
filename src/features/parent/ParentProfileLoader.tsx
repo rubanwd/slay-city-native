@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
+import { getMessages } from "@slay/core";
 import { loadParentProfile } from "@slay/data";
-import { alpha, colors } from "@slay/tokens";
+import { alpha } from "@slay/tokens";
 
 import { AppContainer } from "~/components/layout";
-import { SlayButton, SlayText } from "~/components/ui";
+import { FullScreenLoader, SlayButton, SlayText } from "~/components/ui";
 import { SignOutButton } from "~/features/auth";
 import { useLocalePreference, useParentLocale } from "~/lib/locale";
 import { supabase } from "~/lib/supabase";
@@ -21,8 +22,8 @@ export function ParentProfileLoader() {
 
   if (profile.isPending) {
     return (
-      <AppContainer style={styles.center}>
-        <ActivityIndicator size="large" color={colors.limeGreen} />
+      <AppContainer>
+        <FullScreenLoader label={getMessages(locale).common.loading} mascot={false} />
       </AppContainer>
     );
   }

@@ -1,8 +1,8 @@
 import { Tabs } from "expo-router";
 
 import { getMessages } from "@slay/core";
-import { alpha, colors } from "@slay/tokens";
 
+import { SlayTabBar, slayTabScreenOptions, tabIcon } from "~/components/navigation";
 import { useParentLocale } from "~/lib/locale";
 
 /**
@@ -16,17 +16,10 @@ import { useParentLocale } from "~/lib/locale";
 export default function ParentLayout() {
   const nav = getMessages(useParentLocale().locale).nav;
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: colors.limeGreen,
-        tabBarInactiveTintColor: alpha.white50,
-        tabBarStyle: { backgroundColor: colors.black, borderTopColor: alpha.white10 },
-      }}
-    >
-      <Tabs.Screen name="index" options={{ title: nav.dashboard }} />
-      <Tabs.Screen name="map" options={{ title: nav.map }} />
-      <Tabs.Screen name="profile" options={{ title: nav.profile }} />
+    <Tabs screenOptions={slayTabScreenOptions} tabBar={SlayTabBar}>
+      <Tabs.Screen name="index" options={{ title: nav.dashboard, tabBarIcon: tabIcon("dashboard") }} />
+      <Tabs.Screen name="map" options={{ title: nav.map, tabBarIcon: tabIcon("map") }} />
+      <Tabs.Screen name="profile" options={{ title: nav.profile, tabBarIcon: tabIcon("profile") }} />
     </Tabs>
   );
 }

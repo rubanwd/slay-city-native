@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { Redirect, useRouter, type Href } from "expo-router";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { sourcesForKind } from "@slay/core";
 import { loadGroupTopics, loadTeacherTopic } from "@slay/data";
-import { alpha, colors } from "@slay/tokens";
+import { alpha } from "@slay/tokens";
 
 import { AppContainer } from "~/components/layout";
-import { SlayButton, SlayText } from "~/components/ui";
+import { FullScreenLoader, SlayButton, SlayText } from "~/components/ui";
 import { supabase } from "~/lib/supabase";
 
 import { GroupTopicsScreen } from "./GroupTopicsScreen";
@@ -18,8 +18,8 @@ import { VocabularyManager } from "./VocabularyManager";
 
 function Loading({ label }: { label: string }) {
   return (
-    <AppContainer style={styles.center}>
-      <ActivityIndicator size="large" color={colors.limeGreen} accessibilityLabel={label} />
+    <AppContainer>
+      <FullScreenLoader label={label} mascot={false} />
     </AppContainer>
   );
 }

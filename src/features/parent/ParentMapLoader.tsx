@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { getMessages, KNOWLEDGE_LEVEL_LABELS } from "@slay/core";
 import { loadParentMap } from "@slay/data";
-import { alpha, colors } from "@slay/tokens";
+import { alpha } from "@slay/tokens";
 
 import { AppContainer } from "~/components/layout";
-import { SlayButton, SlayText } from "~/components/ui";
+import { FullScreenLoader, SlayButton, SlayText } from "~/components/ui";
 import { CityMapPreview } from "~/features/map";
 import { useParentLocale } from "~/lib/locale";
 import { supabase } from "~/lib/supabase";
@@ -23,8 +23,8 @@ export function ParentMapLoader() {
 
   if (map.isPending) {
     return (
-      <AppContainer style={styles.center}>
-        <ActivityIndicator size="large" color={colors.limeGreen} accessibilityLabel={strings.map.loadingMap} />
+      <AppContainer>
+        <FullScreenLoader label={strings.map.loadingMap} mascot={false} />
       </AppContainer>
     );
   }

@@ -228,7 +228,9 @@ Nunito ships as a bundled font asset loaded with `expo-font`, rather than fetche
 `loader-shadow`, `loader-dot`, `label-float`, `watermark-breathe` and
 `banner-drop`. Each becomes a Reanimated hook in
 `src/animations/`, keeping the same name so the two platforms stay
-reviewable against each other.
+reviewable against each other. `logo-shimmer-sweep` is the exception while
+`OD-7` stands: it animates only the `WelcomeScreen` logo, and that screen is
+not ported (WP-6.1).
 
 ## 6. Mission task types — the good news
 
