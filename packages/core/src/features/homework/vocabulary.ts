@@ -60,6 +60,19 @@ export function defaultTestTaskCount(wordCount: number): number {
   return Math.max(1, Math.round(wordCount / 2));
 }
 
+/**
+ * Test size to keep after a fresh word list arrives (e.g. an AI draft). A count
+ * the teacher typed is theirs and stays as is; only an untouched field follows
+ * the new word list's default.
+ */
+export function testTaskCountAfterDraft(
+  current: number,
+  editedByTeacher: boolean,
+  wordCount: number
+): number {
+  return editedByTeacher ? current : defaultTestTaskCount(wordCount);
+}
+
 /** Clamp a requested word count into the allowed range. */
 export function clampWordCount(requested: number): number {
   if (!Number.isFinite(requested)) return MIN_VOCAB_WORDS;

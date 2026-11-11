@@ -18,6 +18,20 @@ export interface TeacherDashboardProps extends TeacherDashboardData {
   onRefresh?: () => void;
 }
 
+interface DashboardRow {
+  student: TeacherGroupStudent;
+  groupId: string;
+}
+
+interface DashboardSection {
+  key: string;
+  title: string;
+  individual: boolean;
+  data: DashboardRow[];
+}
+
+const INDIVIDUAL_SECTION = "individual-students";
+
 const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
 
 function LogOutPill() {
@@ -46,13 +60,38 @@ function LogOutPill() {
 /**
  * Port of upstream's `teacher/TeacherDashboard.tsx`: one section per group,
  * with a Homework link into its topics, and each student a compact expandable
- * row. No per-student activity list — a
+ * row; 1-on-1 students come last, in their own "Individual students"
+ * section, each with their own Homework link. No per-student activity list — a
  * class-sized group has to stay scannable. A virtualised `SectionList`, so a
  * large school's groups scroll smoothly; pull to refresh for the latest
  * progress.
  */
 export function TeacherDashboard({ groups, username, email, refreshing = false, onRefresh }: TeacherDashboardProps) {
   const router = useRouter();
+  const openGroup = (groupId: string) => router.push({ pathname: "/teacher/groups/[groupId]", params: { groupId } });
+  const classGroups = groups.filter((group) => !group.isIndividual);
+  // A 1-on-1 whose student's account was deleted has nobody left to show.
+  const individuals = groups.filter((group) => group.isIndividual && group.students.length > 0);
+  const summary = [
+    classGroups.length > 0 && plural(classGroups.length, "group", "groups"),
+    individuals.length > 0 && `${individuals.length} individual ${individuals.length === 1 ? "student" : "students"}`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  const sections: DashboardSection[] = classGroups.map((group) => ({
+    key: group.id,
+    title: group.name,
+    individual: false,
+    data: group.students.map((student) => ({ student, groupId: group.id })),
+  }));
+  if (individuals.length > 0) {
+    sections.push({
+      key: INDIVIDUAL_SECTION,
+      title: "Individual students",
+      individual: true,
+      data: individuals.map((group) => ({ student: group.students[0], groupId: group.id })),
+    });
+  }
   const header = (
     <View style={styles.header}>
       <View style={styles.headerText}>
@@ -63,7 +102,7 @@ export function TeacherDashboard({ groups, username, email, refreshing = false, 
           {username ?? email ?? "Teacher"}
         </SlayText>
         <SlayText variant="small" color={alpha.white50}>
-          {groups.length === 0 ? "No groups yet" : plural(groups.length, "group", "groups")}
+          {summary || "No groups yet"}
         </SlayText>
       </View>
       <LogOutPill />
@@ -73,9 +112,11 @@ export function TeacherDashboard({ groups, username, email, refreshing = false, 
   return (
     <AppContainer edges={["top"]}>
       <SectionList
-        sections={groups.map((group) => ({ key: group.id, title: group.name, data: group.students }))}
-        keyExtractor={(student: TeacherGroupStudent, index) => `${student.id}:${index}`}
-        renderItem={({ item }) => <StudentCard student={item} />}
+        sections={sections}
+        keyExtractor={(row: DashboardRow, index) => `${row.groupId}:${row.student.id}:${index}`}
+        renderItem={({ item, section }) => (
+          <StudentCard student={item.student} onHomework={section.individual ? () => openGroup(item.groupId) : undefined} />
+        )}
         renderSectionHeader={({ section }) => (
           <View style={styles.sectionHeader} accessibilityRole="header">
             <SlayText variant="label" color={alpha.white50} numberOfLines={1} style={styles.shrink}>
@@ -85,17 +126,19 @@ export function TeacherDashboard({ groups, username, email, refreshing = false, 
               <SlayText variant="small" weight="700" color={alpha.white50}>
                 {plural(section.data.length, "student", "students")}
               </SlayText>
-              <SlayPressable
-                accessibilityRole="link"
-                accessibilityLabel={`${section.title} homework`}
-                hitSlop={8}
-                onPress={() => router.push({ pathname: "/teacher/groups/[groupId]", params: { groupId: section.key } })}
-                style={({ pressed }) => [styles.homework, pressed && styles.homeworkPressed]}
-              >
-                <SlayText variant="label" weight="900" color={colors.limeGreen}>
-                  Homework
-                </SlayText>
-              </SlayPressable>
+              {section.individual ? null : (
+                <SlayPressable
+                  accessibilityRole="link"
+                  accessibilityLabel={`${section.title} homework`}
+                  hitSlop={8}
+                  onPress={() => openGroup(section.key)}
+                  style={({ pressed }) => [styles.homework, pressed && styles.homeworkPressed]}
+                >
+                  <SlayText variant="label" weight="900" color={colors.limeGreen}>
+                    Homework
+                  </SlayText>
+                </SlayPressable>
+              )}
             </View>
           </View>
         )}
@@ -124,10 +167,10 @@ export function TeacherDashboard({ groups, username, email, refreshing = false, 
               </Svg>
             </View>
             <SlayText variant="h3" weight="700">
-              No groups assigned yet
+              No students assigned yet
             </SlayText>
             <SlayText variant="small" color={alpha.white60} style={styles.center}>
-              An admin will assign your groups of students. They&apos;ll appear here once set up.
+              An admin will assign your groups and individual students. They&apos;ll appear here once set up.
             </SlayText>
           </View>
         }

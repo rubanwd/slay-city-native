@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, Switch, View } from "react-native";
 
-import { buildVocabTest, clampWordCount, defaultTestTaskCount, describeVocabTask, MAX_VOCAB_WORDS, type TopicSource } from "@slay/core";
+import { buildVocabTest, clampWordCount, defaultTestTaskCount, describeVocabTask, MAX_VOCAB_WORDS, testTaskCountAfterDraft, type TopicSource } from "@slay/core";
 import { clearVocabulary, copyVocabularyFromTopic, generateVocabularyDraft, generateWordImage, publishVocabulary, type TeacherVocabWord } from "@slay/data";
 import { alpha, colors, radii, withAlpha } from "@slay/tokens";
 
@@ -72,6 +72,9 @@ export function VocabularyManager({ topicId, groupId, initialWords, initialTaskC
   // Counts stay raw text so a field can be emptied while typing.
   const initialTasks = initialTaskCount > 0 ? initialTaskCount : defaultTestTaskCount(initialWords.length);
   const [taskCount, setTaskCount] = useState(String(initialTasks));
+  // Set once the teacher types a test size; an AI draft then keeps it instead
+  // of resetting it to the default for the new word list (upstream #120).
+  const [taskCountEdited, setTaskCountEdited] = useState(false);
   const [wordCount, setWordCount] = useState(String(initialWords.length || 6));
   const [testSeed, setTestSeed] = useState(0);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -161,7 +164,7 @@ export function VocabularyManager({ topicId, groupId, initialWords, initialTaskC
     }
     const drafted = result.words.map((w) => toDraft({ ...w, imageUrl: null }, w.imagePrompt));
     setWords(drafted);
-    setTaskCount(String(defaultTestTaskCount(drafted.length)));
+    setTaskCount(String(testTaskCountAfterDraft(taskCountValue, taskCountEdited, drafted.length)));
     setTestSeed(0);
     if (!autoImages) {
       setStatus({ kind: "success", text: `Drafted ${drafted.length} words. Use the AI button on a word to illustrate it.` });
@@ -255,7 +258,14 @@ export function VocabularyManager({ topicId, groupId, initialWords, initialTaskC
         </SlayText>
         <View style={styles.pair}>
           <CountField label="Words" value={wordCount} onChange={setWordCount} />
-          <CountField label="Test tasks" value={taskCount} onChange={setTaskCount} />
+          <CountField
+            label="Test tasks"
+            value={taskCount}
+            onChange={(value) => {
+              setTaskCount(value);
+              setTaskCountEdited(true);
+            }}
+          />
         </View>
         <SmallField
           label="Extra instructions (optional)"
