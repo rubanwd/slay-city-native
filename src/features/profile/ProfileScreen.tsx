@@ -13,6 +13,7 @@ import { PlacementTestCard } from "~/features/placement";
 import { imageSource } from "~/lib/imageSource";
 import { useLocalePreference, useStudentLocale } from "~/lib/locale";
 
+import { DeleteAccountCard } from "./DeleteAccountCard";
 import { HapticsCard } from "./HapticsCard";
 import { LogoutButton } from "./LogoutButton";
 import { ProfileLevelCard } from "./ProfileLevelCard";
@@ -115,6 +116,7 @@ export function ProfileScreen({
             {/* Reporting a bug or sending an idea — reaches the admin console's inbox. */}
             <FeedbackButton />
             <LogoutButton label={messages.logOut} pendingLabel={messages.loggingOut} />
+            <DeleteAccountCard messages={getMessages(locale).common.deleteAccount} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

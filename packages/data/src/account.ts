@@ -1,4 +1,5 @@
 import type { SupabaseClient, User } from "@supabase/supabase-js";
+import { deleteAccountProblem, type DeleteAccountProblem } from "@slay/core";
 import type { Database } from "@slay/core/types";
 
 /**
@@ -100,4 +101,28 @@ export async function loadAccount(db: SupabaseClient<Database>): Promise<Account
     return { kind: "profile", role: "parent" };
   }
   return { kind: "needs-onboarding" };
+}
+
+export type DeleteMyAccountResult = { ok: true } | { ok: false; problem: DeleteAccountProblem };
+
+/**
+ * Deletes the signed-in account (`delete_my_account`, the same RPC the web
+ * profile calls) — both stores require it. Everything the account owns
+ * cascades off the auth row. On success the session is dropped from this
+ * phone only (`scope: "local"`): the server no longer knows the user, so a
+ * global sign-out has nothing left to revoke. The sign-out event then clears
+ * the query cache and the route guard sends the user to login.
+ *
+ * The RPC refuses an admin and a teacher who still has groups; those come back
+ * as a problem for the profile screen to explain.
+ */
+export async function deleteMyAccount(db: SupabaseClient<Database>): Promise<DeleteMyAccountResult> {
+  const { data, error } = await db.rpc("delete_my_account");
+  if (error) return { ok: false, problem: "unknown" };
+
+  const problem = deleteAccountProblem(data?.[0]?.reason);
+  if (problem) return { ok: false, problem };
+
+  await db.auth.signOut({ scope: "local" });
+  return { ok: true };
 }

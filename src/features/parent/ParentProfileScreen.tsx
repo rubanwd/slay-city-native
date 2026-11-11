@@ -7,7 +7,7 @@ import { alpha, colors, radii } from "@slay/tokens";
 import { AppContainer } from "~/components/layout";
 import { SlayText } from "~/components/ui";
 import { LocalePicker } from "~/features/i18n";
-import { HapticsCard, LogoutButton, ProfileUsernameCard } from "~/features/profile";
+import { DeleteAccountCard, HapticsCard, LogoutButton, ProfileUsernameCard } from "~/features/profile";
 
 export interface ParentProfileScreenProps extends ParentProfileData {
   /** The console's language, and where it came from. */
@@ -93,6 +93,7 @@ export function ParentProfileScreen({ username, email, student, locale, manualLo
 
           <View style={styles.footer}>
             <LogoutButton label={messages.common.logOut} pendingLabel={messages.common.loggingOut} />
+            <DeleteAccountCard messages={messages.common.deleteAccount} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -108,5 +109,5 @@ const styles = StyleSheet.create({
   center: { textAlign: "center" },
   role: { marginTop: 4, borderRadius: 999, borderWidth: 1, borderColor: alpha.white15, paddingHorizontal: 12, paddingVertical: 4 },
   card: { gap: 4, borderRadius: radii.lg, borderWidth: 1, borderColor: alpha.white10, backgroundColor: colors.surface, padding: 16 },
-  footer: { marginTop: "auto" },
+  footer: { marginTop: "auto", gap: 12 },
 });
