@@ -29,6 +29,7 @@ const groups: TeacherGroup[] = [
   {
     id: "g1",
     name: "5-A",
+    isIndividual: false,
     students: [
       {
         id: "s1",
@@ -43,8 +44,15 @@ const groups: TeacherGroup[] = [
       { id: "s2", username: "bo", missionsCompleted: 0, topicResults: [], placement: null },
     ],
   },
-  { id: "g2", name: "6-B", students: [] },
+  { id: "g2", name: "6-B", isIndividual: false, students: [] },
 ];
+
+const solo = (id: string, username: string | null): TeacherGroup => ({
+  id,
+  name: username ?? "gone",
+  isIndividual: true,
+  students: username ? [{ id: `s-${id}`, username, missionsCompleted: 3, topicResults: [], placement: null }] : [],
+});
 
 describe("TeacherDashboard", () => {
   it("shows each group with its students' key numbers", () => {
@@ -78,7 +86,26 @@ describe("TeacherDashboard", () => {
   it("says when no groups are assigned", () => {
     withQueries(<TeacherDashboard groups={[]} username={null} email="kate@school.org" />);
     expect(screen.getByText("kate@school.org")).toBeTruthy();
-    expect(screen.getByText("No groups assigned yet")).toBeTruthy();
+    expect(screen.getByText("No groups yet")).toBeTruthy();
+    expect(screen.getByText("No students assigned yet")).toBeTruthy();
+  });
+
+  it("lists 1-on-1 students last, each with their own Homework link", () => {
+    // i3's student was deleted: an empty 1-on-1 has nobody to show.
+    withQueries(<TeacherDashboard groups={[solo("i1", "dana"), ...groups, solo("i2", "eli"), solo("i3", null)]} username="ms_kate" email={null} />);
+    expect(screen.getByText("2 groups · 2 individual students")).toBeTruthy();
+    expect(screen.getByText("Individual students")).toBeTruthy();
+    expect(screen.queryByRole("link", { name: "Individual students homework" })).toBeNull();
+    expect(screen.queryByText("gone")).toBeNull();
+    fireEvent.click(screen.getByRole("link", { name: "eli homework" }));
+    expect(nav.push).toHaveBeenCalledWith({ pathname: "/teacher/groups/[groupId]", params: { groupId: "i2" } });
+  });
+
+  it("shows a teacher with only 1-on-1 students, not the empty state", () => {
+    withQueries(<TeacherDashboard groups={[solo("i1", "dana")]} username="ms_kate" email={null} />);
+    expect(screen.getByText("1 individual student")).toBeTruthy();
+    expect(screen.queryByText("No students assigned yet")).toBeNull();
+    expect(screen.getByRole("link", { name: "dana homework" })).toBeTruthy();
   });
 
   it("logs out", async () => {

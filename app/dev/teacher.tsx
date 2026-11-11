@@ -9,6 +9,7 @@ const GROUPS: TeacherGroup[] = [
   {
     id: "g1",
     name: "5-A · Monday",
+    isIndividual: false,
     students: [
       {
         id: "s1",
@@ -25,7 +26,13 @@ const GROUPS: TeacherGroup[] = [
       { id: "s3", username: "sam_k", missionsCompleted: 27, topicResults: [], placement: null },
     ],
   },
-  { id: "g2", name: "6-B · Thursday", students: [] },
+  { id: "g2", name: "6-B · Thursday", isIndividual: false, students: [] },
+  {
+    id: "g3",
+    name: "dana",
+    isIndividual: true,
+    students: [{ id: "s4", username: "dana", missionsCompleted: 9, topicResults: [{ topicId: "t4", title: "Weather", passed: true }], placement: null }],
+  },
 ];
 
 const summary = (id: string, title: string, extra: Partial<GroupTopicsData["topics"][number]> = {}) => ({

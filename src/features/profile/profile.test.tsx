@@ -15,6 +15,7 @@ const data = vi.hoisted(() => ({
   changeMyUsername: vi.fn(),
   changeMyLevel: vi.fn(),
   signOut: vi.fn(),
+  deleteMyAccount: vi.fn(),
 }));
 const supabase = vi.hoisted(() => ({}));
 const nav = vi.hoisted(() => ({ push: vi.fn(), navigate: vi.fn() }));
@@ -69,6 +70,41 @@ describe("ProfileScreen", () => {
     withQueries(<ProfileScreen {...profile} />);
     fireEvent.click(screen.getByRole("button", { name: "Log Out" }));
     await waitFor(() => expect(data.signOut).toHaveBeenCalledWith(supabase));
+  });
+});
+
+describe("DeleteAccountCard", () => {
+  it("asks before deleting, and cancelling deletes nothing", () => {
+    withQueries(<ProfileScreen {...profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "Delete account" }));
+    expect(screen.getByText("Delete your account?")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(screen.queryByText("Delete your account?")).toBeNull();
+    expect(data.deleteMyAccount).not.toHaveBeenCalled();
+  });
+
+  it("deletes on 'Delete forever'", async () => {
+    data.deleteMyAccount.mockResolvedValue({ ok: true });
+    withQueries(<ProfileScreen {...profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "Delete account" }));
+    fireEvent.click(screen.getByRole("button", { name: "Delete forever" }));
+    await waitFor(() => expect(data.deleteMyAccount).toHaveBeenCalledWith(supabase));
+  });
+
+  it("explains a refusal", async () => {
+    data.deleteMyAccount.mockResolvedValue({ ok: false, problem: "teacher_has_groups" });
+    withQueries(<ProfileScreen {...profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "Delete account" }));
+    fireEvent.click(screen.getByRole("button", { name: "Delete forever" }));
+    expect(await screen.findByText(/You still have groups or individual students/)).toBeTruthy();
+  });
+
+  it("says so when the call fails", async () => {
+    data.deleteMyAccount.mockRejectedValue(new Error("offline"));
+    withQueries(<ProfileScreen {...profile} />);
+    fireEvent.click(screen.getByRole("button", { name: "Delete account" }));
+    fireEvent.click(screen.getByRole("button", { name: "Delete forever" }));
+    expect(await screen.findByText("Couldn't delete your account. Try again.")).toBeTruthy();
   });
 });
 

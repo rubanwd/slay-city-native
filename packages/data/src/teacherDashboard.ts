@@ -26,6 +26,8 @@ export interface TeacherGroupStudent {
 export interface TeacherGroup {
   id: string;
   name: string;
+  /** A 1-on-1 with a single student rather than a class group. */
+  isIndividual: boolean;
   students: TeacherGroupStudent[];
 }
 
@@ -43,7 +45,7 @@ export interface TeacherGroup {
 export async function getTeacherGroups(db: SupabaseClient<Database>, teacherId: string): Promise<TeacherGroup[]> {
   const { data: groups, error } = await db
     .from("teacher_groups")
-    .select("id, name, created_at")
+    .select("id, name, is_individual, created_at")
     .eq("teacher_id", teacherId)
     .order("created_at", { ascending: true });
   // A failed read must not look like a teacher with no groups.
@@ -119,6 +121,7 @@ export async function getTeacherGroups(db: SupabaseClient<Database>, teacherId: 
   return groups.map((group) => ({
     id: group.id,
     name: group.name,
+    isIndividual: group.is_individual,
     students: (membersByGroup.get(group.id) ?? []).map((member) => ({
       id: member.studentId,
       username: member.username,

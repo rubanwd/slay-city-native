@@ -969,18 +969,21 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          is_individual: boolean
           name: string
           teacher_id: string
         }
         Insert: {
           created_at?: string
           id?: string
+          is_individual?: boolean
           name: string
           teacher_id: string
         }
         Update: {
           created_at?: string
           id?: string
+          is_individual?: boolean
           name?: string
           teacher_id?: string
         }
@@ -1404,6 +1407,13 @@ export type Database = {
       delete_homework_topic: {
         Args: { p_topic_id: string }
         Returns: undefined
+      }
+      delete_my_account: {
+        Args: never
+        Returns: {
+          reason: string
+          success: boolean
+        }[]
       }
       delete_topic_message: {
         Args: { p_message_id: string }

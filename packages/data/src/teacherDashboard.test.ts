@@ -21,7 +21,10 @@ function client(tables: Record<string, Result>, user: { id: string; email?: stri
 }
 
 const tables: Record<string, Result> = {
-  teacher_groups: { data: [{ id: "g1", name: "5-A", created_at: "2026-09-01" }, { id: "g2", name: "6-B", created_at: "2026-09-02" }] },
+  teacher_groups: { data: [
+      { id: "g1", name: "5-A", is_individual: false, created_at: "2026-09-01" },
+      { id: "g2", name: "dana", is_individual: true, created_at: "2026-09-02" },
+    ], },
   teacher_group_members: {
     data: [
       { group_id: "g1", student_id: "s1", profiles: { username: "anna" } },
@@ -51,9 +54,9 @@ describe("getTeacherGroups", () => {
   it("lists each group's students with their missions, topic passes and level test", async () => {
     const groups = await getTeacherGroups(client(tables).db, "t1");
 
-    expect(groups.map((g) => [g.name, g.students.length])).toEqual([
-      ["5-A", 2],
-      ["6-B", 0],
+    expect(groups.map((g) => [g.name, g.isIndividual, g.students.length])).toEqual([
+      ["5-A", false, 2],
+      ["dana", true, 0],
     ]);
     const [anna, unknown] = groups[0].students;
     expect(anna).toMatchObject({ id: "s1", username: "anna", missionsCompleted: 1 });

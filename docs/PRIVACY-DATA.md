@@ -78,11 +78,20 @@ Functionality** — none for tracking, advertising or analytics.
 activity → App interactions, Other user-generated content. Collected, not
 shared; encrypted in transit; account deletion must be offered — see below.
 
-## Owed before submission
+## Account deletion
 
-- **Account deletion in the app.** Both stores require a way to delete the
-  account from inside the app (Apple 5.1.1(v)). Neither the web nor this app
-  has one yet; it needs an RPC upstream that removes the profile, progress and
-  messages, and a button on all three profiles.
+"Delete account" sits at the foot of all three profiles, in the app and on
+the web (`delete_my_account`, upstream migration `20261111000001`). It
+removes the auth row; profile, progress, stats, wardrobe, streaks, study time,
+homework results, Q&A messages, feedback reports and parent links cascade with
+it. Two accounts are refused: an admin, and a teacher who still has groups or
+1-on-1 students (an admin moves those first, so students keep their homework).
+
+For Google Play's "delete account" URL, give the web profile page: sign in,
+Profile, Delete account. Say in the policy that feedback screenshots are kept
+— they live in a shared public folder, not keyed to the account, so deletion
+does not reach them.
+
+## Owed before submission
 - **Children.** Students may be under 13: the policy must cover consent
   (`OD-3`, `WP-7.5`).
