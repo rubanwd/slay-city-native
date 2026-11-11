@@ -1408,6 +1408,13 @@ export type Database = {
         Args: { p_topic_id: string }
         Returns: undefined
       }
+      delete_my_account: {
+        Args: never
+        Returns: {
+          reason: string
+          success: boolean
+        }[]
+      }
       delete_topic_message: {
         Args: { p_message_id: string }
         Returns: undefined
