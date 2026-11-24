@@ -969,18 +969,21 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          is_individual: boolean
           name: string
           teacher_id: string
         }
         Insert: {
           created_at?: string
           id?: string
+          is_individual?: boolean
           name: string
           teacher_id: string
         }
         Update: {
           created_at?: string
           id?: string
+          is_individual?: boolean
           name?: string
           teacher_id?: string
         }
@@ -1502,6 +1505,7 @@ export type Database = {
           student_id: string
         }[]
       }
+      my_feedback_upload_paths: { Args: never; Returns: string[] }
       my_groups: {
         Args: never
         Returns: {

@@ -115,7 +115,7 @@ SLAY CITY перетворює англійську на місто, яке хо
 | App access | Sign-in required — give a **test student, teacher and parent** account (email + password) with instructions; the reviewer cannot use the app without them |
 | Content rating (IARC) | Education; no violence, sexuality, gambling, drugs or profanity. User-generated content: **yes** — Q&A messages between a group and its teacher, visible only to that group |
 | Data safety | Exactly as [PRIVACY-DATA.md](PRIVACY-DATA.md) §"How it maps to the store forms" — collected, not shared, encrypted in transit, deletion offered |
-| Account deletion URL | the web profile page: sign in → Profile → Delete account (also in the app) |
+| Account deletion URL | https://slay-city.vercel.app/account/delete — public; explains the steps and lets a signed-in visitor delete (also in the app, Profile → Delete account) |
 | Government / financial / health features | None |
 
 ## 4. Target audience — the owner's decision

@@ -41,6 +41,26 @@ export interface Messages {
       cancel: string;
       deleting: string;
       problems: Record<DeleteAccountProblem, string>;
+      /**
+       * The public `/account/delete` page: the URL the store listings give for
+       * deleting an account without the app. Reachable signed out.
+       */
+      page: {
+        metaTitle: string;
+        title: string;
+        intro: string;
+        whatTitle: string;
+        whatBody: string;
+        appTitle: string;
+        appSteps: readonly string[];
+        webTitle: string;
+        signedInAs: (email: string) => string;
+        signedOutBody: string;
+        logIn: string;
+        forgotPassword: string;
+        exceptionsTitle: string;
+        exceptionsBody: string;
+      };
     };
   };
 
