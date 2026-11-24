@@ -8,6 +8,7 @@ import {
   MAX_VOCAB_WORDS,
   normalizeWordKey,
   parseGeneratedWords,
+  testTaskCountAfterDraft,
   VOCAB_TEST_TASK_TYPES,
 } from "./vocabulary";
 
@@ -30,6 +31,18 @@ describe("defaultTestTaskCount", () => {
 
   it("is zero with no words", () => {
     expect(defaultTestTaskCount(0)).toBe(0);
+  });
+});
+
+describe("testTaskCountAfterDraft", () => {
+  it("keeps the count the teacher typed, whatever the new word count", () => {
+    expect(testTaskCountAfterDraft(12, true, 6)).toBe(12);
+    expect(testTaskCountAfterDraft(0, true, 6)).toBe(0);
+  });
+
+  it("follows the new word list's default while the field is untouched", () => {
+    expect(testTaskCountAfterDraft(0, false, 6)).toBe(3);
+    expect(testTaskCountAfterDraft(3, false, 10)).toBe(5);
   });
 });
 
