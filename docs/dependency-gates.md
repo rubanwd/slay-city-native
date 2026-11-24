@@ -64,7 +64,7 @@ without opening any other document.
 | **`P5`** | `OD-2` answered | **No** — `OD-2` closed 2026-09-30. `P5` is gated only by the ordinary `P4` completion, not by an open cross-cutting gate. |
 | **`P7`** | `OD-1` answered | **No** — `OD-1` closed 2026-09-29. `P7` is gated only by ordinary `P6` completion. |
 | **`P8`** | `P5` done **and** `WP-2.3` merged upstream | **Partly.** The RPCs `P8`'s teacher authoring writes through are live since `#115` merged (2026-10-09), so `WP-5.1`, `WP-5.2`, `WP-5.5` and the manual paths of `WP-5.3`/`WP-5.4` can build against the real backend once `P5` is done. AI drafting (`WP-5.6`, and the drafting and word-image parts of `WP-5.3`/`WP-5.4`) still waits on the `WP-5.6` PR, and `WP-2.3`'s lockdown PR #2 must merge before the teacher console ships. |
-| **`P10`** | `P9` done **and** `WP-7.1` accounts active | **Unverified — treat as blocked until confirmed.** Nothing in the repo proves the Apple/Google accounts exist. Ask the owner; do not assume. |
+| **`P10`** | `P9` done **and** `WP-7.1` accounts active | **Android: open.** The owner's Google Play Console account is active and verified (confirmed 2026-11-24, personal account — production needs a closed test of ≥12 testers for 14 days first). **iOS: blocked** — no Apple Developer membership confirmed yet. |
 
 ## 4. Weekly standup checklist
 

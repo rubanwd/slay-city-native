@@ -75,7 +75,14 @@ in an Edge Function (`OD-1`).
 
 ## What the owner does once
 
-These need accounts this repository can't hold:
+These need accounts this repository can't hold.
+
+> **Status 2026-11-24 (Android):** steps 1 and 4 are done — project
+> `@rubanwd/slay-city` is linked, the three variables exist for `preview` and
+> `production` (Supabase project `rzncmswttzexajbgnjqz`, web origin
+> `https://slay-city.vercel.app`), and EAS holds the Android upload keystore.
+> Step 3 (Play Console app, first manual AAB upload, service account) is next.
+> Apple (step 2) is not started.
 
 1. `eas init` — writes `expo.extra.eas.projectId` (and `owner`) into `app.json`.
 2. Apple: an App Store Connect app for `app.slaycity.mobile`, then
