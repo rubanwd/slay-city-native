@@ -42,7 +42,14 @@ session, the chosen language (`slay_locale`) and the vibration switch
 | Photo library | a screenshot on a feedback report; a picture on teacher content | the person taps "add a picture" |
 
 Camera and microphone are declared **off** in `app.json`
-(`expo-image-picker` plugin). Nothing runs in the background. No push
+(`expo-image-picker` and `expo-audio` plugins), and `android.blockedPermissions`
+strips `RECORD_AUDIO`, `CAMERA`, `SYSTEM_ALERT_WINDOW` and the
+`FOREGROUND_SERVICE*` pair from the merged manifest — `expo-audio` adds them by
+default, and Play would ask for a foreground-service declaration the app has no
+use for (sound stops when the app is backgrounded). What remains on Android:
+`INTERNET`, `VIBRATE`, `MODIFY_AUDIO_SETTINGS` and the legacy
+`READ`/`WRITE_EXTERNAL_STORAGE` pair. Check with
+`npx expo config --type introspect` after adding any native module. Nothing runs in the background. No push
 notifications (`OD-6`).
 
 ## Not in the app
