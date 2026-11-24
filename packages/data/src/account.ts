@@ -1,4 +1,5 @@
 import type { SupabaseClient, User } from "@supabase/supabase-js";
+import { deleteAccountProblem, type DeleteAccountProblem } from "@slay/core";
 import type { Database } from "@slay/core/types";
 
 /**
@@ -100,4 +101,56 @@ export async function loadAccount(db: SupabaseClient<Database>): Promise<Account
     return { kind: "profile", role: "parent" };
   }
   return { kind: "needs-onboarding" };
+}
+
+export type DeleteMyAccountResult = { ok: true } | { ok: false; problem: DeleteAccountProblem };
+
+/**
+ * Deletes the signed-in account (`delete_my_account`, the same RPC the web
+ * profile calls) — both stores require it. Everything the account owns
+ * cascades off the auth row. On success the session is dropped from this
+ * phone only (`scope: "local"`): the server no longer knows the user, so a
+ * global sign-out has nothing left to revoke. The sign-out event then clears
+ * the query cache and the route guard sends the user to login.
+ *
+ * The caller's own feedback screenshots are removed from Storage first (same
+ * order as the web action). The RPC refuses an admin and a teacher who still
+ * has groups; those come back as a problem for the profile screen to explain.
+ */
+export async function deleteMyAccount(db: SupabaseClient<Database>): Promise<DeleteMyAccountResult> {
+  // Feedback screenshots are files, which no foreign key cascades into, so
+  // they go first, while the session still exists. A failure stops here:
+  // better "try again" than an account deleted with its pictures left behind.
+  if (!(await removeMyFeedbackUploads(db))) return { ok: false, problem: "unknown" };
+
+  const { data, error } = await db.rpc("delete_my_account");
+  if (error) return { ok: false, problem: "unknown" };
+
+  const problem = deleteAccountProblem(data?.[0]?.reason);
+  if (problem) return { ok: false, problem };
+
+  await db.auth.signOut({ scope: "local" });
+  return { ok: true };
+}
+
+/** Paths per Storage `remove` call; the API takes a bounded list. */
+const FEEDBACK_REMOVE_BATCH = 100;
+
+/**
+ * Removes the caller's own `feedback/` uploads from the `content` bucket
+ * (upstream `my_feedback_upload_paths` and the `content_delete_own_feedback`
+ * policy). True when nothing of theirs is left there.
+ */
+async function removeMyFeedbackUploads(db: SupabaseClient<Database>): Promise<boolean> {
+  const { data: paths, error } = await db.rpc("my_feedback_upload_paths");
+  if (error) return false;
+
+  const pending = paths ?? [];
+  for (let i = 0; i < pending.length; i += FEEDBACK_REMOVE_BATCH) {
+    const { error: removeError } = await db.storage
+      .from("content")
+      .remove(pending.slice(i, i + FEEDBACK_REMOVE_BATCH));
+    if (removeError) return false;
+  }
+  return true;
 }

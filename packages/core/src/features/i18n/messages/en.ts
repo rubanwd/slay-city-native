@@ -22,6 +22,40 @@ export const en: Messages = {
       return `${hours} h ${minutes} min`;
     },
     never: "Never",
+    deleteAccount: {
+      button: "Delete account",
+      confirmTitle: "Delete your account?",
+      confirmBody:
+        "Your account and everything in it — profile, progress, coins, wardrobe, homework results and messages — are deleted for good. This can't be undone.",
+      confirm: "Delete forever",
+      cancel: "Cancel",
+      deleting: "Deleting…",
+      problems: {
+        admin_account: "An admin account can only be removed by another admin.",
+        teacher_has_groups:
+          "You still have groups or individual students. Ask an admin to move or remove them first.",
+        unknown: "Couldn't delete your account. Try again.",
+      },
+      page: {
+        metaTitle: "Delete your account — Slay City",
+        title: "Delete your Slay City account",
+        intro:
+          "You can delete your account and everything in it at any time — in the app, or here on the web.",
+        whatTitle: "What is deleted",
+        whatBody:
+          "Your profile, progress, coins, wardrobe, homework results, study time, questions and answers, feedback reports with their screenshots, and any parent–child link. It happens straight away and can't be undone. Nothing is kept.",
+        appTitle: "In the app",
+        appSteps: ["Open your Profile.", "Tap “Delete account” at the bottom.", "Tap “Delete forever” to confirm."],
+        webTitle: "On the web",
+        signedInAs: (email: string) => `You're logged in as ${email}.`,
+        signedOutBody: "Log in with the account you want to delete, then come back to this page.",
+        logIn: "Log in",
+        forgotPassword: "Forgot your password?",
+        exceptionsTitle: "Teachers and admins",
+        exceptionsBody:
+          "If you still teach groups or individual students, an admin has to move or remove them first. An admin account is removed by another admin.",
+      },
+    },
   },
 
   dashboard: {

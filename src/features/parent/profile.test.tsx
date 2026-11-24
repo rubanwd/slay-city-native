@@ -7,7 +7,7 @@ import { LocaleProvider } from "~/lib/locale";
 
 import { ParentProfileLoader } from "./ParentProfileLoader";
 
-const data = vi.hoisted(() => ({ loadParentProfile: vi.fn(), changeMyUsername: vi.fn(), signOut: vi.fn() }));
+const data = vi.hoisted(() => ({ loadParentProfile: vi.fn(), changeMyUsername: vi.fn(), signOut: vi.fn(), deleteMyAccount: vi.fn() }));
 const supabase = vi.hoisted(() => ({}));
 const storage = vi.hoisted(() => ({ locale: null as string | null }));
 

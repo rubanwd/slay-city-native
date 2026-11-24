@@ -1,4 +1,5 @@
 import type { TaskFamily } from "@/features/parent/taskFamilies";
+import type { DeleteAccountProblem } from "@/features/profile/deleteAccount";
 import type { UsernameProblem } from "@/features/profile/username";
 
 /**
@@ -28,6 +29,39 @@ export interface Messages {
     /** Hours + minutes, e.g. "2 h 15 min" — units differ per language. */
     duration: (hours: number, minutes: number) => string;
     never: string;
+    /**
+     * "Delete account" on every profile — the students', the teachers' and the
+     * parents'. Both app stores require it (`delete_my_account`).
+     */
+    deleteAccount: {
+      button: string;
+      confirmTitle: string;
+      confirmBody: string;
+      confirm: string;
+      cancel: string;
+      deleting: string;
+      problems: Record<DeleteAccountProblem, string>;
+      /**
+       * The public `/account/delete` page: the URL the store listings give for
+       * deleting an account without the app. Reachable signed out.
+       */
+      page: {
+        metaTitle: string;
+        title: string;
+        intro: string;
+        whatTitle: string;
+        whatBody: string;
+        appTitle: string;
+        appSteps: readonly string[];
+        webTitle: string;
+        signedInAs: (email: string) => string;
+        signedOutBody: string;
+        logIn: string;
+        forgotPassword: string;
+        exceptionsTitle: string;
+        exceptionsBody: string;
+      };
+    };
   };
 
   dashboard: {

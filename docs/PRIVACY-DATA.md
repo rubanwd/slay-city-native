@@ -78,11 +78,29 @@ Functionality** — none for tracking, advertising or analytics.
 activity → App interactions, Other user-generated content. Collected, not
 shared; encrypted in transit; account deletion must be offered — see below.
 
+## Account deletion
+
+"Delete account" sits at the foot of all three profiles, in the app and on
+the web, behind a two-step confirmation (`delete_my_account`, upstream
+migration `20261111000001`). It removes the auth row; profile, progress,
+stats, wardrobe, streaks, study time, homework results, Q&A messages,
+feedback reports and parent links cascade with it. Before that, the person's
+own feedback screenshots are removed from the `content` bucket
+(`my_feedback_upload_paths` and the `content_delete_own_feedback` policy,
+upstream migration `20261124000001`); if that fails, nothing is deleted and
+the button says to try again. Nothing is kept.
+
+Two accounts are refused: an admin (another admin removes them), and a
+teacher who still has groups or 1-on-1 students (an admin moves those first,
+so the students keep their homework). A teacher's `homework/` pictures stay
+in the bucket for the same reason.
+
+**Google Play's "Delete account" URL:**
+<https://slay-city.vercel.app/account/delete>. It opens signed out, says what
+is deleted and how to do it in the app, and lets a signed-in visitor delete
+the account there.
+
 ## Owed before submission
 
-- **Account deletion in the app.** Both stores require a way to delete the
-  account from inside the app (Apple 5.1.1(v)). Neither the web nor this app
-  has one yet; it needs an RPC upstream that removes the profile, progress and
-  messages, and a button on all three profiles.
 - **Children.** Students may be under 13: the policy must cover consent
   (`OD-3`, `WP-7.5`).

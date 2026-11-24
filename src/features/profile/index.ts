@@ -5,3 +5,4 @@ export { ProfileLevelCard, type ProfileLevelCardProps } from "./ProfileLevelCard
 export { ProfileUsernameCard, type ProfileUsernameCardProps } from "./ProfileUsernameCard";
 export { HapticsCard } from "./HapticsCard";
 export { LogoutButton } from "./LogoutButton";
+export { DeleteAccountCard } from "./DeleteAccountCard";
