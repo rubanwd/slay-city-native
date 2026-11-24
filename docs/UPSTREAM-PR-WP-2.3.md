@@ -4,11 +4,26 @@
 > [rubanwd/slay-city#115](https://github.com/rubanwd/slay-city/pull/115)**
 > (opened and merged 2026-10-09 as upstream `fdbbf1f`, `SCN-61`; upstream's
 > `migrate` job applies migrations on every push to `main`, so 1/4–3/4 are
-> live). The lockdown half (PR #2, migration 4/4) is **not opened yet**. It carries migrations 1/4–3/4, the five thin
+> live). **The lockdown half (PR #2, migration 4/4) is OPEN as a draft —
+> [rubanwd/slay-city#129](https://github.com/rubanwd/slay-city/pull/129)**
+> (opened 2026-11-24, not merged; the owner reviews and merges because merging
+> applies the revoke to production through `migrate`). Rebased onto upstream
+> `c88ee45`: 4/4 became `20261124000001_revoke_direct_write_grants.sql` (after
+> upstream's `20261025000001`), its rollback sits in
+> `supabase/rollbacks/wp-2.3/`, the tests in `supabase/tests/wp-2.3/`, and
+> `ci-database-tests.yml` became a `database-tests` job in `ci.yml` that
+> `migrate` now `needs:`. A sweep of every write on the nine tables at
+> `c88ee45` found no web path still writing directly; the redundant parent
+> `user_stats` insert in `features/auth/roleRouting.ts` was removed in the same
+> PR. U-1 (live grants vs. the timeline) is on #129's pre-merge checklist.
+> The native app's own copy of that insert (`packages/data/src/account.ts`)
+> is harmless (its result is ignored) but dead once #129 merges.
+>
+> PR #1 carried migrations 1/4–3/4, the five thin
 > callers, the regenerated `src/types/database.ts` entries and the 1/4–3/4
 > rollbacks (upstream keeps those in `supabase/rollbacks/wp-2.3/`, outside
 > `migrations/`, so `db push` never applies them). Migration 4/4 and
-> `ci-database-tests.yml` are the second PR, still to open — see
+> `ci-database-tests.yml` are the second PR (#129, above) — see
 > [Deployment](#deployment--this-must-ship-as-two-pull-requests). Two things
 > changed on the way in: the optional RPC arguments are passed as
 > `?? undefined` rather than `null` (the regenerated types make them
@@ -471,5 +486,5 @@ run.
 - [x] Upstream re-fetched and the base commit re-read — `SCN-61`: `7612da5` → `02630a3`, nine commits. See [Rebase onto `02630a3`](#rebase-onto-02630a3).
 - [x] Native-side wrappers written — `SCN-61`: `packages/data/src/guardedWrites.ts` in `rubanwd/slay-city-native`, unused until this merges.
 - [ ] **Live database compared against the migration timeline (U-1).** Needs production database access, which no agent in the native repository has. The reading in [Evidence](#evidence-what-rls-does-and-does-not-stop) is from `supabase/migrations/` at `02630a3` and is only as good as the assumption that production matches the replayed timeline. Confirm with: `select * from pg_policies where tablename in ('homework_topics','homework_vocab_words','homework_vocab_tasks','homework_grammar_points','homework_grammar_tasks','vocab_image_cache','homework_topic_messages','homework_topic_reads','profiles','user_stats');` and `select grantee, privilege_type from information_schema.role_table_grants where table_name = 'user_stats';`
-- [x] **Split into PR #1 (additive) and PR #2 (the revoke)** — PR #1 opened as [rubanwd/slay-city#115](https://github.com/rubanwd/slay-city/pull/115) on `SCN-61` and merged 2026-10-09 (`fdbbf1f`); PR #2 not opened. — see [Deployment](#deployment--this-must-ship-as-two-pull-requests). Found on `SCN-61`: upstream's `migrate` job auto-applies migrations on every push to `main`, so a single PR cannot stage 4/4 behind a production verification pass.
+- [x] **Split into PR #1 (additive) and PR #2 (the revoke)** — PR #1 opened as [rubanwd/slay-city#115](https://github.com/rubanwd/slay-city/pull/115) on `SCN-61` and merged 2026-10-09 (`fdbbf1f`); PR #2 opened 2026-11-24 as draft [rubanwd/slay-city#129](https://github.com/rubanwd/slay-city/pull/129), not merged. — see [Deployment](#deployment--this-must-ship-as-two-pull-requests). Found on `SCN-61`: upstream's `migrate` job auto-applies migrations on every push to `main`, so a single PR cannot stage 4/4 behind a production verification pass.
 - [ ] **Forged `user_stats` values audited (U-3) and a clean-up decided.** A product call on what counts as an implausible `xp`/`coins`, and it needs the production data to make. The migration backfills only *missing* rows and never touches an existing one, so opening this PR does not depend on the answer — but `MIGRATIONS-NEEDED.md` §10 step 1 asks for finding F1 to be decided explicitly rather than merged silently, because it is live today.
