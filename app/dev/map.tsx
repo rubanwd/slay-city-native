@@ -42,7 +42,8 @@ export default function MapPreviewScreen() {
             stop("cafe", "Café", 24, 30, 3, 3),
             stop("library", "Library", 70, 26, 1, 4),
             stop("park", "City Park", 40, 55, 0, 3),
-            stop("market", "Market", 76, 66, 0, 2),
+            stop("market", "Market", 76, 66, 2, 5),
+            stop("hall", "Town Hall", 22, 72, 5, 12),
           ],
         }}
         hud={{ xp: 340, coins: 125, level: 4, currentStreak: 3 }}

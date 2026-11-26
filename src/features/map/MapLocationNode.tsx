@@ -48,8 +48,8 @@ export function MapLocationNode({
   const float = useLabelFloat(((mapX + mapY) % 5) * 400);
   const glow = useGlowPulse();
   const completed = state === "completed";
-  // A location only earns its ✓ once every mission is done; until then the
-  // label carries the count so progress made here is visible on the map.
+  // A location only earns its ✓ once every mission is done; until then a thin
+  // bar along the bottom of the label shows the progress made here.
   const inProgress = !completed && totalMissions > 0 && missionsCompleted > 0;
   const progress = inProgress ? `${missionsCompleted}/${totalMissions}` : null;
 
@@ -90,13 +90,35 @@ export function MapLocationNode({
           >
             {completed ? `✓ ${name}` : name}
           </SlayText>
-          {progress ? (
-            <SlayText variant="small" weight="800" color={colors.limeGreen} style={styles.label}>
-              {progress}
-            </SlayText>
-          ) : null}
+          {inProgress ? <ProgressLines done={missionsCompleted} total={totalMissions} /> : null}
         </SlayPressable>
       </Animated.View>
+    </View>
+  );
+}
+
+/** Past this many missions the segments get too short to read: draw one continuous bar. */
+const MAX_SEGMENTS = 8;
+
+/**
+ * The location's progress as thin lines under its name: one segment per
+ * mission (lit once done), or a single filling bar when there are many.
+ */
+function ProgressLines({ done, total }: { done: number; total: number }) {
+  if (total > MAX_SEGMENTS) {
+    return (
+      <View testID="location-progress" style={styles.progress}>
+        <View style={[styles.segment, styles.track]}>
+          <View style={[styles.fill, { width: `${(done / total) * 100}%` }]} />
+        </View>
+      </View>
+    );
+  }
+  return (
+    <View testID="location-progress" style={styles.progress}>
+      {Array.from({ length: total }, (_, i) => (
+        <View key={i} style={[styles.segment, i < done ? styles.segmentDone : styles.track]} />
+      ))}
     </View>
   );
 }
@@ -136,6 +158,27 @@ const styles = StyleSheet.create({
   },
   pressed: {
     transform: [{ scale: 0.95 }],
+  },
+  progress: {
+    flexDirection: "row",
+    gap: 2,
+    marginTop: 4,
+  },
+  segment: {
+    flex: 1,
+    height: 3,
+    borderRadius: 2,
+    overflow: "hidden",
+  },
+  segmentDone: {
+    backgroundColor: colors.limeGreen,
+  },
+  track: {
+    backgroundColor: alpha.white25,
+  },
+  fill: {
+    height: "100%",
+    backgroundColor: colors.limeGreen,
   },
   label: {
     textAlign: "center",
