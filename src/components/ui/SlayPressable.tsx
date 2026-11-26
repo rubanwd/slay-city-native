@@ -50,6 +50,9 @@ export function SlayPressable({
 }: SlayPressableProps) {
   const [pressed, setPressed] = useState(false);
   const [hovered, setHovered] = useState(false);
+  // React Native's own type has only `pressed`; Expo's react-native-web
+  // augmentation adds `hovered`. A variable (not a literal) satisfies both.
+  const callbackState = { pressed, hovered };
 
   const handlePressIn = (event: GestureResponderEvent) => {
     setPressed(true);
@@ -77,7 +80,7 @@ export function SlayPressable({
         setHovered(false);
         onHoverOut?.(event);
       }}
-      style={typeof style === "function" ? style({ pressed, hovered }) : style}
+      style={typeof style === "function" ? style(callbackState) : style}
       {...rest}
     />
   );
