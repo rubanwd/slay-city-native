@@ -122,6 +122,19 @@ describe("CityMap", () => {
     expect(playSfx).toHaveBeenLastCalledWith("missionStart");
   });
 
+  it("spans the full width on a tall, narrow phone instead of narrowing to the 5:7 ratio", () => {
+    renderMap(data([stop({ mapX: 50, mapY: 50 })]));
+    // 400 wide but only 500 tall: a ratio-kept frame would be 357 wide, leaving grey bars.
+    measure(400, 500);
+
+    // The positioned anchor is the nearest ancestor that carries `left`.
+    let node = screen.getByRole("button", { name: "Bakery" }) as HTMLElement;
+    while (node.parentElement && !node.style.left) node = node.parentElement;
+    // Centre of the frame: half the full width, half the clamped height.
+    expect(node.style.left).toBe("200px");
+    expect(node.style.top).toBe("250px");
+  });
+
   it("makes Slay hiss when tapped", () => {
     vi.mocked(playSfx).mockClear();
     renderMap({ ...data([stop({})]), mascotImageUrl: "/wardrobe/slay-base.webp" });
