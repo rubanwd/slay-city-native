@@ -47,22 +47,35 @@ Until the first store release the version stays `0.x`.
 ```bash
 eas build --profile preview --platform all      # a build testers install directly
 eas build --profile production --platform all   # a build for the stores
-eas submit --profile production --platform android   # lands as a draft on the internal track
+eas build --profile production --platform android --auto-submit   # build + straight to Play internal testing
 eas submit --profile production --platform ios       # lands in TestFlight
 ```
 
-Android submissions go to the **internal** track as **drafts**: nothing
-reaches the public until someone promotes it in the Play Console (`WP-7.7`,
-`WP-8.4`).
+Android submissions go to the **internal** track and roll out to its testers
+at once (`releaseStatus: completed`) — the internal track is closed to the
+public, so nothing reaches anyone else until someone promotes it in the Play
+Console (`WP-7.7`, `WP-8.4`). The upload uses a Google service account whose
+key lives in EAS (`eas credentials`), never in the repository.
 
 ### Channels
 
-`preview` and `production` are update channels, ready for over-the-air
-updates — which need `expo-updates` and are `WP-8.5`'s job. Until then a
-channel is only a label on the build. When OTA lands, pair it with
-`runtimeVersion: { policy: "appVersion" }`, so an update never reaches a build
-whose native code differs: every native change (a new Expo module, a config
-plugin) must come with a version bump.
+`preview` and `production` are EAS Update channels (`expo-updates`, `WP-8.5`).
+**Every merge to `main` publishes an over-the-air update to `production`**
+(`.github/workflows/ota.yml`, after lint, type-check and tests pass). An
+installed build checks on launch, downloads in the background and runs the new
+JavaScript on the **next** launch — so a tester closes and reopens the app
+twice to see a fix.
+
+`runtimeVersion` uses the `fingerprint` policy: the runtime is a hash of the
+native project, so an update is only offered to builds with the same native
+code. Nobody has to remember a version bump — a merge that adds an Expo
+module or changes native config simply publishes an update no installed build
+accepts, and the change reaches testers with the next
+`eas build --auto-submit`.
+
+Rule of thumb: screens, styles, logic, copy → just merge. New package with
+native code, `app.json` native fields, permissions → merge, then
+`eas build --profile production --platform android --auto-submit`.
 
 ## Environment
 
@@ -98,8 +111,8 @@ These need accounts this repository can't hold.
 
 1. Branch `release/x.y.z` from `main`; bump `app.json` → `version`.
 2. `npm run lint && npm run type-check && npm test && npm run upstream:check`.
-3. `eas build --profile production --platform all`.
-4. `eas submit --profile production --platform all`.
+3. `eas build --profile production --platform all --auto-submit`.
+4. (iOS only, until its submit profile exists) `eas submit --profile production --platform ios`.
 5. Smoke-test from TestFlight and the internal track: sign in as a student,
    a teacher and a parent; play one mission; open the reward.
 6. Promote in the stores; tag `vx.y.z` on the release commit.

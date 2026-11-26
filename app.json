@@ -69,6 +69,12 @@
         "projectId": "e9d150c5-6aa6-4160-83d9-8d98838184af"
       }
     },
-    "owner": "rubanwd"
+    "owner": "rubanwd",
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/e9d150c5-6aa6-4160-83d9-8d98838184af"
+    }
   }
 }
