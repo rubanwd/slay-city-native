@@ -1,0 +1,56 @@
+name: OTA update
+
+# Every merge to main ships its JavaScript to testers over the air: installed
+# builds on the `production` channel download it on launch and run it on the
+# next launch. No Play upload, no new build.
+#
+# Safe by construction: `runtimeVersion.policy` is `fingerprint` (app.json), so
+# an update is only offered to builds whose native code matches the commit it
+# was made from. A merge that changes native code (a new Expo module, a config
+# plugin, app.json native fields) publishes an update no installed build will
+# take — that change needs `eas build` (which auto-submits to Play's internal
+# track), see docs/RELEASES.md.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ota-production
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # Same gate as CI: never push a red commit to people's phones.
+      - run: npm run lint
+      - run: npm run type-check
+      - run: npm test
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      # `--environment production` pulls EXPO_PUBLIC_* from EAS, as builds do.
+      # The commit subject is passed through env, never spliced into the script.
+      - env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          MESSAGE="$(printf '%s' "${COMMIT_MESSAGE:-manual run}" | head -n 1)"
+          eas update \
+            --channel production \
+            --environment production \
+            --message "$MESSAGE" \
+            --non-interactive
