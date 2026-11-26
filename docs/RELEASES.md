@@ -47,15 +47,29 @@ Until the first store release the version stays `0.x`.
 ```bash
 eas build --profile preview --platform all      # a build testers install directly
 eas build --profile production --platform all   # a build for the stores
-eas build --profile production --platform android --auto-submit   # build + straight to Play internal testing
+eas build --profile production --platform android --auto-submit   # build + straight to Play closed testing
+eas build --profile production --platform android --auto-submit-with-profile=internal   # build + Play internal testing only
 eas submit --profile production --platform ios       # lands in TestFlight
 ```
 
-Android submissions go to the **internal** track and roll out to its testers
-at once (`releaseStatus: completed`) — the internal track is closed to the
-public, so nothing reaches anyone else until someone promotes it in the Play
-Console (`WP-7.7`, `WP-8.4`). The upload uses a Google service account whose
-key lives in EAS (`eas credentials`), never in the repository.
+Android submissions go to the **closed testing** track (`alpha` in the Play
+API) and roll out to its testers once Google has reviewed the release
+(`releaseStatus: completed`). Closed testing is the track that counts towards
+Google's rule for personal developer accounts: **at least 12 testers opted in
+for 14 days in a row** before production access can be requested. Internal
+testing does not count. How to run it, and the invitation to send, is in
+[`docs/store/closed-testing.md`](store/closed-testing.md).
+
+The `internal` submit profile still exists for a build only the team should
+see: internal testing skips Google's review and reaches testers within
+minutes. Neither track is public; nothing reaches anyone else until someone
+promotes a release in the Play Console (`WP-7.7`, `WP-8.4`).
+
+While the app has never been released on any track, the Play API only
+accepts draft releases. That is why the very first AAB goes up by hand
+(step 3 below); after that, `--auto-submit` works. The upload uses a Google
+service account whose key lives in EAS (`eas credentials`), never in the
+repository.
 
 ### Channels
 
@@ -113,6 +127,6 @@ These need accounts this repository can't hold.
 2. `npm run lint && npm run type-check && npm test && npm run upstream:check`.
 3. `eas build --profile production --platform all --auto-submit`.
 4. (iOS only, until its submit profile exists) `eas submit --profile production --platform ios`.
-5. Smoke-test from TestFlight and the internal track: sign in as a student,
+5. Smoke-test from TestFlight and the closed testing track: sign in as a student,
    a teacher and a parent; play one mission; open the reward.
 6. Promote in the stores; tag `vx.y.z` on the release commit.

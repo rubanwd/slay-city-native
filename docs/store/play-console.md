@@ -5,6 +5,9 @@ listing** of `app.slaycity.mobile`. Every answer comes from
 [`docs/PRIVACY-DATA.md`](../PRIVACY-DATA.md) and `app.json`. If those change,
 the answers change. Placeholders are in `[SQUARE BRACKETS]`.
 
+The closed test Google requires before production (12 testers, 14 days) is
+in [`closed-testing.md`](closed-testing.md).
+
 ## Open items before the production review
 
 | # | Item | Blocks |
