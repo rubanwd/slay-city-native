@@ -97,13 +97,12 @@ export function CityMap({
   }, [banner]);
 
   const [area, setArea] = useState<LayoutRectangle | null>(null);
-  // The largest MAP_ASPECT frame that fits the area, pinned to its top.
-  const frame = area
-    ? (() => {
-        const width = Math.min(area.width, area.height * MAP_ASPECT);
-        return { width, height: width / MAP_ASPECT };
-      })()
-    : null;
+  // Upstream's frame: `w-full max-h-full` with `aspect-ratio: MAP_ASPECT`,
+  // pinned to the top. It always spans the full width; on a tall, narrow phone
+  // the height is clamped to the area and the art is cropped by `cover`. It is
+  // never narrowed to keep the ratio — that left the blurred backdrop showing
+  // as grey bars down both sides.
+  const frame = area ? { width: area.width, height: Math.min(area.width / MAP_ASPECT, area.height) } : null;
 
   const background = imageSource(district?.backgroundUrl);
   const mascot = imageSource(mascotImageUrl);
