@@ -168,6 +168,8 @@ export function CityMap({
                 mapX={loc.mapX}
                 mapY={loc.mapY}
                 state={loc.state}
+                missionsCompleted={loc.missionsCompleted}
+                totalMissions={loc.totalMissions}
                 selected={loc.id === selected?.id}
                 onSelect={() => {
                   // Only worth a sound when the mascot actually walks somewhere new.

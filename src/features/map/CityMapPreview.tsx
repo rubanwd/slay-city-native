@@ -178,6 +178,8 @@ export function CityMapPreview({ districts, levelName, subtitle, progressLabel =
                     mapX={loc.mapX}
                     mapY={loc.mapY}
                     state={loc.state}
+                    missionsCompleted={loc.missionsCompleted}
+                    totalMissions={loc.totalMissions}
                     selected={loc.id === selected?.id}
                     onSelect={() => setSelectedId(loc.id)}
                   />

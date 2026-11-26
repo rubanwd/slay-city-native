@@ -17,6 +17,9 @@ export interface MapLocationNodeProps {
   mapX: number;
   mapY: number;
   state: LocationState;
+  /** Missions finished here and in total — an unfinished stop shows "2/5" once started. */
+  missionsCompleted?: number;
+  totalMissions?: number;
   /** The mascot stands here; Start plays this stop. */
   selected: boolean;
   onSelect: () => void;
@@ -28,12 +31,27 @@ export interface MapLocationNodeProps {
  * per location, as the web does) and lights up pink with a pulsing glow when
  * selected.
  */
-export function MapLocationNode({ name, x, y, mapX, mapY, state, selected, onSelect }: MapLocationNodeProps) {
+export function MapLocationNode({
+  name,
+  x,
+  y,
+  mapX,
+  mapY,
+  state,
+  missionsCompleted = 0,
+  totalMissions = 0,
+  selected,
+  onSelect,
+}: MapLocationNodeProps) {
   const { width: windowWidth } = useWindowDimensions();
   const [size, setSize] = useState<{ width: number; height: number } | null>(null);
   const float = useLabelFloat(((mapX + mapY) % 5) * 400);
   const glow = useGlowPulse();
   const completed = state === "completed";
+  // A location only earns its ✓ once every mission is done; until then the
+  // label carries the count so progress made here is visible on the map.
+  const inProgress = !completed && totalMissions > 0 && missionsCompleted > 0;
+  const progress = inProgress ? `${missionsCompleted}/${totalMissions}` : null;
 
   return (
     <View
@@ -54,7 +72,7 @@ export function MapLocationNode({ name, x, y, mapX, mapY, state, selected, onSel
         <SlayPressable
           accessibilityRole="button"
           accessibilityState={{ selected }}
-          accessibilityLabel={`${name}${completed ? " — completed" : ""}`}
+          accessibilityLabel={`${name}${completed ? " — completed" : progress ? ` — ${progress} missions` : ""}`}
           hitSlop={8}
           onPress={onSelect}
           style={({ pressed }) => [
@@ -72,6 +90,11 @@ export function MapLocationNode({ name, x, y, mapX, mapY, state, selected, onSel
           >
             {completed ? `✓ ${name}` : name}
           </SlayText>
+          {progress ? (
+            <SlayText variant="small" weight="800" color={colors.limeGreen} style={styles.label}>
+              {progress}
+            </SlayText>
+          ) : null}
         </SlayPressable>
       </Animated.View>
     </View>

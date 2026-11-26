@@ -156,4 +156,44 @@ describe("MapLocationNode", () => {
     expect(screen.getByText("✓ Park")).toBeTruthy();
     expect(onSelect).toHaveBeenCalled();
   });
+
+  it("shows progress on a started stop that is not finished yet", () => {
+    render(
+      <MapLocationNode
+        name="Town Centre"
+        x={10}
+        y={10}
+        mapX={10}
+        mapY={10}
+        state="unlocked"
+        missionsCompleted={2}
+        totalMissions={5}
+        selected={false}
+        onSelect={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Town Centre — 2/5 missions" })).toBeTruthy();
+    expect(screen.getByText("2/5")).toBeTruthy();
+  });
+
+  it("shows no count on a stop that has not been started", () => {
+    render(
+      <MapLocationNode
+        name="Job Street"
+        x={10}
+        y={10}
+        mapX={10}
+        mapY={10}
+        state="unlocked"
+        missionsCompleted={0}
+        totalMissions={3}
+        selected={false}
+        onSelect={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Job Street" })).toBeTruthy();
+    expect(screen.queryByText("0/3")).toBeNull();
+  });
 });
