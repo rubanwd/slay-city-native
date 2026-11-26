@@ -174,7 +174,8 @@ describe("MapLocationNode", () => {
     );
 
     expect(screen.getByRole("button", { name: "Town Centre — 2/5 missions" })).toBeTruthy();
-    expect(screen.getByText("2/5")).toBeTruthy();
+    expect(screen.getByTestId("location-progress").children).toHaveLength(5);
+    expect(screen.queryByText("2/5")).toBeNull();
   });
 
   it("shows no count on a stop that has not been started", () => {
@@ -194,6 +195,26 @@ describe("MapLocationNode", () => {
     );
 
     expect(screen.getByRole("button", { name: "Job Street" })).toBeTruthy();
-    expect(screen.queryByText("0/3")).toBeNull();
+    expect(screen.queryByTestId("location-progress")).toBeNull();
+  });
+
+  it("draws one continuous bar when a stop has many missions", () => {
+    render(
+      <MapLocationNode
+        name="Town Hall"
+        x={10}
+        y={10}
+        mapX={10}
+        mapY={10}
+        state="unlocked"
+        missionsCompleted={5}
+        totalMissions={12}
+        selected={false}
+        onSelect={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Town Hall — 5/12 missions" })).toBeTruthy();
+    expect(screen.getByTestId("location-progress").children).toHaveLength(1);
   });
 });
