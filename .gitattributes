@@ -1,0 +1,12 @@
+# One line ending everywhere. The EAS Update fingerprint hashes tracked files
+# (eas.json, .gitignore, ...); CRLF on a Windows checkout and LF on CI gave
+# builds and over-the-air updates different runtime versions, so updates
+# published by CI never reached builds made on Windows.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.webp binary
+*.m4a binary
+*.ttf binary
+*.otf binary
