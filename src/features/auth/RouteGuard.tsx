@@ -8,6 +8,7 @@ import { alpha, colors } from "@slay/tokens";
 
 import { FullScreenLoader, SlayButton, SlayText } from "~/components/ui";
 import { useSession } from "~/hooks/useSession";
+import { useBootHold } from "~/lib/boot";
 import { decideRoute, type GuardDecision } from "~/lib/routeGuard";
 import { supabase } from "~/lib/supabase";
 
@@ -45,6 +46,9 @@ export function RouteGuard({ children }: { children: ReactNode }) {
         account: account.data,
         allowDevRoutes: __DEV__,
       });
+
+  // Start-up waits for the decision; an account error lets the retry show.
+  useBootHold(decision.kind === "redirect" || (decision.kind === "wait" && !account.isError));
 
   const redirectTo = decision.kind === "redirect" ? decision.to : null;
   useEffect(() => {
