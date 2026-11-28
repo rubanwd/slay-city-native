@@ -2,19 +2,20 @@ import { act, render, screen } from "@testing-library/react";
 import { useEffect, useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { BOOT_SETTLE_MS, BOOT_SPLASH_MAX_MS, BootProvider, useBootHold } from "./boot";
+import appJson from "../../app.json";
+
+import { BOOT_MAX_MS, BOOT_SETTLE_MS, BOOT_SPLASH_MAX_MS, BootProvider, SPLASH_IMAGE_WIDTH, useBootHold } from "./boot";
 
 const splash = vi.hoisted(() => ({ hideAsync: vi.fn(() => Promise.resolve()) }));
 vi.mock("expo-splash-screen", () => splash);
-vi.mock("~/components/ui", () => ({ FullScreenLoader: () => null }));
 
 const control = { setLoading: (_value: boolean) => {} };
-function Screen({ initial }: { initial: boolean }) {
+function Screen({ initial, label }: { initial: boolean; label?: string }) {
   const [loading, setLoading] = useState(initial);
   useEffect(() => {
     control.setLoading = setLoading;
   }, []);
-  useBootHold(loading);
+  useBootHold(loading, label);
   return null;
 }
 
@@ -25,16 +26,24 @@ describe("BootProvider", () => {
   });
   afterEach(() => vi.useRealTimers());
 
-  it("keeps the splash and the cover up while a screen holds the boot", () => {
-    render(<BootProvider><Screen initial /></BootProvider>);
+  it("keeps the loader up while a screen holds the boot, captioned with what it waits on", () => {
+    render(
+      <BootProvider>
+        <Screen initial label="Loading map…" />
+      </BootProvider>,
+    );
     act(() => vi.advanceTimersByTime(BOOT_SETTLE_MS * 4));
 
     expect(screen.queryByTestId("boot-cover")).not.toBeNull();
-    expect(splash.hideAsync).not.toHaveBeenCalled();
+    expect(screen.getByText("Loading map…")).toBeTruthy();
   });
 
-  it("drops both once every hold is released", () => {
-    render(<BootProvider><Screen initial /></BootProvider>);
+  it("drops the loader and the splash once every hold is released", () => {
+    render(
+      <BootProvider>
+        <Screen initial />
+      </BootProvider>,
+    );
     act(() => control.setLoading(false));
     act(() => vi.advanceTimersByTime(BOOT_SETTLE_MS));
 
@@ -43,18 +52,45 @@ describe("BootProvider", () => {
   });
 
   it("ignores holds once booted, so later loads use the screen's own loader", () => {
-    render(<BootProvider><Screen initial={false} /></BootProvider>);
+    render(
+      <BootProvider>
+        <Screen initial={false} />
+      </BootProvider>,
+    );
     act(() => vi.advanceTimersByTime(BOOT_SETTLE_MS));
     act(() => control.setLoading(true));
 
     expect(screen.queryByTestId("boot-cover")).toBeNull();
   });
 
-  it("hides the static splash after the cap but keeps the animated cover", () => {
-    render(<BootProvider><Screen initial /></BootProvider>);
+  it("hands over from the static splash to the animated loader early", () => {
+    render(
+      <BootProvider>
+        <Screen initial />
+      </BootProvider>,
+    );
     act(() => vi.advanceTimersByTime(BOOT_SPLASH_MAX_MS));
 
     expect(splash.hideAsync).toHaveBeenCalled();
     expect(screen.queryByTestId("boot-cover")).not.toBeNull();
+  });
+
+  it("never covers the app for longer than the cap", () => {
+    render(
+      <BootProvider>
+        <Screen initial />
+      </BootProvider>,
+    );
+    act(() => vi.advanceTimersByTime(BOOT_MAX_MS));
+
+    expect(screen.queryByTestId("boot-cover")).toBeNull();
+  });
+
+  it("draws the mascot at the size app.json gives the native splash", () => {
+    const plugin = appJson.expo.plugins.find((p) => Array.isArray(p) && p[0] === "expo-splash-screen") as [
+      string,
+      { imageWidth: number },
+    ];
+    expect(plugin[1].imageWidth).toBe(SPLASH_IMAGE_WIDTH);
   });
 });
