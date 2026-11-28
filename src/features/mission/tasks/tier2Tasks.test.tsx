@@ -44,10 +44,15 @@ function run(taskType: Parameters<typeof TaskRunner>[0]["taskType"], content: Pa
 describe("hangman", () => {
   it("saves the word letter by letter, then shows the translation and Next", () => {
     const onComplete = run("hangman", { word: "cat", hint: "It says meow", translation: "кіт" });
-    expect(screen.getByText("Hint: It says meow")).toBeTruthy();
+    expect(screen.getByText("Guess the word")).toBeTruthy();
+    expect(screen.getByText("💡 It says meow")).toBeTruthy();
+    expect(screen.getByText("3 letters · tap the letters below")).toBeTruthy();
+    expect(screen.getByText("Found 0 of 3")).toBeTruthy();
     expect(screen.getByLabelText("Word: blank blank blank")).toBeTruthy();
 
     press("C");
+    expect(screen.getByText("Yes! C is in the word · 1/3")).toBeTruthy();
+    expect(haptic).toHaveBeenLastCalledWith("correct");
     press("A");
     expect(screen.getByLabelText("Word: C A blank")).toBeTruthy();
     press("T");
@@ -58,14 +63,24 @@ describe("hangman", () => {
     expect(onComplete).toHaveBeenCalledWith(undefined);
   });
 
+  it("says how many times a found letter appears", () => {
+    run("hangman", { word: "level" });
+    press("L");
+    expect(screen.getByText("Yes! L is in the word ×2 · 2/5")).toBeTruthy();
+  });
+
   it("shows letters the keyboard can't type for free", () => {
     run("hangman", { word: "it's ok" });
     expect(screen.getByLabelText("Word: blank blank ' blank , blank blank")).toBeTruthy();
+    expect(screen.getByText("5 letters · tap the letters below")).toBeTruthy();
   });
 
   it("counts lives down, reveals the word when they run out, and offers a retry", () => {
     run("hangman", { word: "cat" });
-    ["B", "D", "E", "F", "G"].forEach(press);
+    press("B");
+    expect(screen.getByText("No B — you lost a heart")).toBeTruthy();
+    expect(haptic).toHaveBeenLastCalledWith("wrong");
+    ["D", "E", "F", "G"].forEach(press);
     expect(screen.getByText("1 life left")).toBeTruthy();
     press("H");
 
@@ -75,6 +90,7 @@ describe("hangman", () => {
 
     press("Try Again");
     expect(screen.getByText("6 lives left")).toBeTruthy();
+    expect(screen.getByText("Found 0 of 3")).toBeTruthy();
   });
 });
 
