@@ -73,9 +73,13 @@ module or changes native config simply publishes an update no installed build
 accepts, and the change reaches testers with the next
 `eas build --auto-submit`.
 
-Rule of thumb: screens, styles, logic, copy → just merge. New package with
-native code, `app.json` native fields, permissions → merge, then
-`eas build --profile production --platform android --auto-submit`.
+Rule of thumb: just merge. Screens, styles, logic, copy reach testers as an
+OTA update. When a merge changes native code (a new package with native code,
+`app.json` native fields, permissions, the app icons), the same workflow sees
+that no Android production build has the new fingerprint and runs
+`eas build --profile production --platform android --auto-submit` itself:
+testers get the new build from Play's internal track (allow ~30 min for the
+build, the submission and Play's processing). iOS is not automated yet.
 
 ## Environment
 
