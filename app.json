@@ -16,7 +16,8 @@
     "android": {
       "package": "app.slaycity.mobile",
       "adaptiveIcon": {
-        "backgroundColor": "#111111",
+        "backgroundColor": "#6A00FF",
+        "backgroundImage": "./assets/icons/android-icon-background.png",
         "foregroundImage": "./assets/icons/android-icon-foreground.png",
         "monochromeImage": "./assets/icons/android-icon-monochrome.png"
       },
