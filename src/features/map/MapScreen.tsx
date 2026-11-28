@@ -8,6 +8,7 @@ import { alpha } from "@slay/tokens";
 import { AppContainer } from "~/components/layout";
 import { FullScreenLoader, SlayButton, SlayText } from "~/components/ui";
 import { useSession } from "~/hooks/useSession";
+import { useBootHold } from "~/lib/boot";
 import { supabase } from "~/lib/supabase";
 
 import { CityMap, type MapArrival } from "./CityMap";
@@ -51,6 +52,9 @@ export function MapScreen() {
     },
     onError: (error) => Alert.alert("Something went wrong", error.message),
   });
+
+  // At start-up the app's one loader covers this; afterwards it is the screen's own.
+  useBootHold(map.isPending);
 
   if (map.isPending) {
     return (

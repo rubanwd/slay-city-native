@@ -21,6 +21,7 @@ import { RouteGuard } from "~/features/auth";
 import { RouteError } from "~/features/errors";
 import { SessionProvider } from "~/hooks/useSession";
 import { installGlobalErrorHandler } from "~/lib/errorReporting";
+import { BootProvider } from "~/lib/boot";
 import { loadHapticsPreference } from "~/lib/haptics";
 import { LocaleProvider } from "~/lib/locale";
 import { queryClient } from "~/lib/query-client";
@@ -37,8 +38,10 @@ installGlobalErrorHandler();
 /**
  * Root layout.
  *
- * Loads Nunito (400–900) via expo-font/@expo-google-fonts/nunito and holds the
- * splash screen until it's ready, so text never flashes in the system font —
+ * Loads Nunito (400–900) via expo-font/@expo-google-fonts/nunito before any
+ * screen renders, so text never flashes in the system font. The splash screen
+ * is then held by `BootProvider` until the first screen — the map, for a
+ * student — is fully ready, so start-up shows one loading screen, not four —
  * every weight `@slay/tokens`' `fontFamilyByWeight` maps to must be registered
  * here before any screen renders.
  *
@@ -63,12 +66,6 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync().catch(() => {});
-    }
-  }, [fontsLoaded, fontError]);
-
-  useEffect(() => {
     function handleAppStateChange(state: AppStateStatus) {
       if (state === "active") {
         supabase.auth.startAutoRefresh();
@@ -91,14 +88,16 @@ export default function RootLayout() {
         <LocaleProvider>
           <SafeAreaProvider>
             <StatusBar style="light" />
-            <RouteGuard>
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  contentStyle: { backgroundColor: colors.black },
-                }}
-              />
-            </RouteGuard>
+            <BootProvider>
+              <RouteGuard>
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                    contentStyle: { backgroundColor: colors.black },
+                  }}
+                />
+              </RouteGuard>
+            </BootProvider>
           </SafeAreaProvider>
         </LocaleProvider>
       </SessionProvider>

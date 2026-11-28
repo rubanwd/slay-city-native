@@ -7,6 +7,7 @@ import { hasAnyGroup } from "@slay/data";
 import { SlayTabBar, slayTabScreenOptions, tabIcon } from "~/components/navigation";
 import { RouteError } from "~/features/errors";
 import { HOMEWORK_QUERY_KEY } from "~/features/homework";
+import { useBootHold } from "~/lib/boot";
 import { useStudentLocale } from "~/lib/locale";
 import { supabase } from "~/lib/supabase";
 
@@ -25,6 +26,8 @@ import { supabase } from "~/lib/supabase";
 export default function StudentLayout() {
   const nav = getMessages(useStudentLocale()).student.nav;
   const inGroup = useQuery({ queryKey: [HOMEWORK_QUERY_KEY, "visible"], queryFn: () => hasAnyGroup(supabase) });
+  // The tab bar appears complete at start-up, never gaining a tab a moment later.
+  useBootHold(inGroup.isPending);
 
   return (
     <Tabs screenOptions={slayTabScreenOptions} tabBar={SlayTabBar}>

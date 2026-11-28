@@ -15,6 +15,7 @@ import { alpha, colors, radii, withAlpha } from "@slay/tokens";
 
 import { useBannerDrop } from "~/animations";
 import { CoinAmount, FullScreenLoader, SlayButton, SlayPressable, SlayText, XpAmount } from "~/components/ui";
+import { useBootHold } from "~/lib/boot";
 import { imageSource } from "~/lib/imageSource";
 import { playSfx } from "~/lib/sfx";
 
@@ -108,6 +109,8 @@ export function CityMap({
   const mascot = imageSource(mascotImageUrl);
   const [loadedBackground, setLoadedBackground] = useState<string | null>(null);
   const backgroundLoaded = !background || loadedBackground === district?.backgroundUrl;
+  // The start-up loader stays until the art is on screen, so the map appears whole.
+  useBootHold(!backgroundLoaded);
 
   return (
     <View style={styles.screen}>
@@ -154,6 +157,8 @@ export function CityMap({
                 // The district art is large and revisited every time the map opens: keep it in memory too.
                 cachePolicy="memory-disk"
                 onLoad={() => setLoadedBackground(district?.backgroundUrl ?? null)}
+                // Art that fails to load must not leave the map behind a loader forever.
+                onError={() => setLoadedBackground(district?.backgroundUrl ?? null)}
               />
             ) : (
               <MapBackground />
