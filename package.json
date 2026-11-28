@@ -62,6 +62,7 @@
     "upstream:check": "node scripts/check-upstream-drift.mjs --upstream ./upstream",
     "upstream:manifest": "node scripts/generate-upstream-manifest.mjs --upstream ./upstream",
     "sfx:render": "node scripts/render-sfx.mjs",
+    "icons:render": "node scripts/render-icons.mjs",
     "drift:check": "node scripts/check-upstream-drift.mjs"
   },
   "private": true
