@@ -54,7 +54,7 @@ export function MapScreen() {
   });
 
   // At start-up the app's one loader covers this; afterwards it is the screen's own.
-  useBootHold(map.isPending);
+  useBootHold(map.isPending, "Loading map…");
 
   if (map.isPending) {
     return (

@@ -48,7 +48,7 @@ export function RouteGuard({ children }: { children: ReactNode }) {
       });
 
   // Start-up waits for the decision; an account error lets the retry show.
-  useBootHold(decision.kind === "redirect" || (decision.kind === "wait" && !account.isError));
+  useBootHold(decision.kind === "redirect" || (decision.kind === "wait" && !account.isError), "Signing in…");
 
   const redirectTo = decision.kind === "redirect" ? decision.to : null;
   useEffect(() => {

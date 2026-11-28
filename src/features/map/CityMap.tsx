@@ -110,7 +110,7 @@ export function CityMap({
   const [loadedBackground, setLoadedBackground] = useState<string | null>(null);
   const backgroundLoaded = !background || loadedBackground === district?.backgroundUrl;
   // The start-up loader stays until the art is on screen, so the map appears whole.
-  useBootHold(!backgroundLoaded);
+  useBootHold(!backgroundLoaded, "Drawing the city…");
 
   return (
     <View style={styles.screen}>
