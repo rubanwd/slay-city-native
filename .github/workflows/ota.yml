@@ -7,9 +7,10 @@ name: OTA update
 # Safe by construction: `runtimeVersion.policy` is `fingerprint` (app.json), so
 # an update is only offered to builds whose native code matches the commit it
 # was made from. A merge that changes native code (a new Expo module, a config
-# plugin, app.json native fields) publishes an update no installed build will
-# take — that change needs `eas build` (which auto-submits to Play's internal
-# track), see docs/RELEASES.md.
+# plugin, app.json native fields, the app icons) publishes an update no
+# installed build will take — so when no Android production build exists for
+# the new fingerprint, this workflow also starts one and auto-submits it to
+# Play's internal track. See docs/RELEASES.md.
 
 on:
   push:
@@ -54,3 +55,23 @@ jobs:
             --environment production \
             --message "$MESSAGE" \
             --non-interactive
+
+      # Native code changed (new fingerprint, no build for it yet): build the
+      # Android AAB and auto-submit it to Play's internal track, so testers get
+      # it from Play with no manual step. Errored or canceled builds don't
+      # count, so a failed build is retried by the next merge. `--no-wait`
+      # leaves the runner once the build is queued; EAS builds and submits.
+      - name: Android build when native code changed
+        run: |
+          set -euo pipefail
+          HASH="$(eas fingerprint:generate --platform android --build-profile production --json --non-interactive | jq -r '.hash')"
+          echo "Android fingerprint: $HASH"
+          EXISTING="$(eas build:list --platform android --build-profile production \
+            --fingerprint-hash "$HASH" --limit 50 --json --non-interactive \
+            | jq '[.[] | select(.status != "ERRORED" and .status != "CANCELED")] | length')"
+          if [ "$EXISTING" -gt 0 ]; then
+            echo "A production build already has this fingerprint — the OTA update above reaches it."
+            exit 0
+          fi
+          echo "No production build has this fingerprint — building and submitting to Play internal."
+          eas build --profile production --platform android --auto-submit --non-interactive --no-wait
